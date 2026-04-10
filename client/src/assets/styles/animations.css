@@ -1,0 +1,132 @@
+/* ========== 气泡动画 ========== */
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-50vh) scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100vh) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-wobble {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+}
+
+/* ========== 波浪动画 ========== */
+@keyframes wave {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-25%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes wave-slow {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(-10%) translateY(5px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+/* ========== 海豚动画 ========== */
+@keyframes dolphin-swim {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(-3deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(4px) rotate(3deg); }
+}
+
+@keyframes dolphin-jump {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  20% { transform: translateY(-30px) rotate(-10deg) scale(1.05); }
+  40% { transform: translateY(-50px) rotate(0deg) scale(1.1); }
+  60% { transform: translateY(-30px) rotate(10deg) scale(1.05); }
+  80% { transform: translateY(-10px) rotate(-5deg) scale(1); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+@keyframes dolphin-bubble {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ========== 卡片动画 ========== */
+@keyframes card-glow-success {
+  0%, 100% { box-shadow: 0 0 0 rgba(72, 201, 176, 0); }
+  50% { box-shadow: 0 0 30px rgba(72, 201, 176, 0.6); }
+}
+
+@keyframes card-glow-error {
+  0%, 100% { box-shadow: 0 0 0 rgba(231, 76, 60, 0); }
+  50% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.4); }
+}
+
+@keyframes card-shake {
+  0%, 100% { transform: translateX(0) rotateY(180deg); }
+  20% { transform: translateX(-8px) rotateY(180deg); }
+  40% { transform: translateX(8px) rotateY(180deg); }
+  60% { transform: translateX(-5px) rotateY(180deg); }
+  80% { transform: translateX(5px) rotateY(180deg); }
+}
+
+/* ========== 星星/粒子动画 ========== */
+@keyframes star-pop {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0.5); opacity: 0; }
+}
+
+/* ========== 连击火焰 ========== */
+@keyframes fire-flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); filter: brightness(1); }
+  25% { transform: scale(1.05) rotate(2deg); filter: brightness(1.1); }
+  50% { transform: scale(0.98) rotate(-1deg); filter: brightness(0.95); }
+  75% { transform: scale(1.02) rotate(1deg); filter: brightness(1.05); }
+}
+
+/* ========== 按钮效果 ========== */
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ========== 庆祝动画 ========== */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes firework-burst {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ========== 通用动画类 ========== */
+.animate-bubble-rise { animation: bubble-rise 8s ease-in-out infinite; }
+.animate-dolphin-swim { animation: dolphin-swim 3s ease-in-out infinite; }
+.animate-dolphin-jump { animation: dolphin-jump 0.8s ease-out; }
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+.animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+.animate-fire { animation: fire-flicker 0.5s ease-in-out infinite; }

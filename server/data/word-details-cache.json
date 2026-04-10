@@ -1,0 +1,1248 @@
+{
+  "regarded": {
+    "word": "regarded",
+    "phonetic": "/rɪˈɡɑːdɪd/",
+    "pos": "v.",
+    "translation": "认为，把……看作；<正式>（尤指以某种方式）注视，凝视；<古>注意，留心；<古>与……有关，涉及（regard 的过去式和过去分词）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "past": "regardeded",
+      "pastParticiple": "regardeded",
+      "presentParticiple": "regardeding",
+      "thirdPerson": "regardeds"
+    },
+    "roots": [
+      {
+        "part": "re-",
+        "type": "前缀",
+        "meaning": "再、重新"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "re",
+        "ipa": "/ɹɪ/"
+      },
+      {
+        "syllable": "gard",
+        "ipa": "/ˈɡɑːd/"
+      },
+      {
+        "syllable": "ed",
+        "ipa": "/ɪd/"
+      }
+    ]
+  },
+  "stamp": {
+    "word": "stamp",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [
+      "psychedelic"
+    ],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "stamp",
+        "ipa": "/stæmp/"
+      }
+    ]
+  },
+  "whole": {
+    "word": "whole",
+    "phonetic": "/həʊl/",
+    "pos": "adj.",
+    "translation": "全部的，整个的；完整的，完好无损的；(强调大小或重要性）整个的，全部的；要点，主旨；健全的，健康的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "wholes"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "whole",
+        "ipa": "/həʊl/"
+      }
+    ]
+  },
+  "enclosed": {
+    "word": "enclosed",
+    "phonetic": "/ɪnˈkləʊzd/",
+    "pos": "adj.",
+    "translation": "围住的，封闭的；随函附上的；与世隔绝的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "en",
+        "ipa": "/ən/"
+      },
+      {
+        "syllable": "closed",
+        "ipa": "/ˈkləʊzd/"
+      }
+    ]
+  },
+  "leaflet": {
+    "word": "leaflet",
+    "phonetic": "/ˈliːflət/",
+    "pos": "n.",
+    "translation": "传单，小册子；小叶，初生叶（统称）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "leaflets",
+      "thirdPerson": "leaflets",
+      "presentParticiple": "leafleting或leafletting",
+      "past": "leafleted或leafletted",
+      "pastParticiple": "leafleted或leafletted"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "leaf",
+        "ipa": "/ˈliːf/"
+      },
+      {
+        "syllable": "let",
+        "ipa": "/lɪt/"
+      }
+    ]
+  },
+  "failure": {
+    "word": "failure",
+    "phonetic": "/ˈfeɪljə(r)/",
+    "pos": "n.",
+    "translation": "失败；失败的人（或企业、事物）；未做到；缺乏，不足；故障，衰退；公司倒闭；歉收；突然失去",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "failures"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "fail",
+        "ipa": "/ˈfeɪ/"
+      },
+      {
+        "syllable": "ure",
+        "ipa": "/l.jɚ/"
+      }
+    ]
+  },
+  "courage": {
+    "word": "courage",
+    "phonetic": "/ˈkʌrɪdʒ/",
+    "pos": "n.",
+    "translation": "勇气，胆量",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "courages"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "cour",
+        "ipa": "/ˈkʌɹ/"
+      },
+      {
+        "syllable": "age",
+        "ipa": "/ɪdʒ/"
+      }
+    ]
+  },
+  "joy": {
+    "word": "joy",
+    "phonetic": "/dʒɔɪ/",
+    "pos": "n.",
+    "translation": "欢欣，高兴；使人高兴的人（或物），乐趣；成功，满足",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "joys"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "joy",
+        "ipa": "/dʒɔɪ/"
+      }
+    ]
+  },
+  "may": {
+    "word": "may",
+    "phonetic": "/meɪ/",
+    "pos": "aux.",
+    "translation": "可能，也许（表示某情况是可能的）；可以（征求同意或表示允许）；可能（表示某情况属实，另一情况也属实）；祝，愿（用于表达愿望）；可以，能够（表明目的）；可以，也许（用于提出礼貌的建议）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "may",
+        "ipa": "/meɪ/"
+      }
+    ]
+  },
+  "might": {
+    "word": "might",
+    "phonetic": "/maɪt/",
+    "pos": "v.",
+    "translation": "可能，可以（may 的过去式）；（表示可能性）可能，也许；（用于礼貌地建议）可以，也许；（对某人未做某事表示不满）应该；也许，可能（表示某情况属实，另一情况也属实）；可以，能（用于说明目的）；究竟，到底；可以，能够（预料）；我可以这么说（表示强调接下来的陈述）；好像，似乎；也许不会/也许永远不会做某事；用于礼貌地谈论某人或某事物",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "past": "mighted",
+      "pastParticiple": "mighted",
+      "presentParticiple": "mighting",
+      "thirdPerson": "mights"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "might",
+        "ipa": "/maɪt/"
+      }
+    ]
+  },
+  "dish": {
+    "word": "dish",
+    "phonetic": "/dɪʃ/",
+    "pos": "n.",
+    "translation": "碟，盘；一盘食物；全部餐具（the dishes）；菜肴；碟状物，盘状物；性感的人；轮盘；抛物面天线；凹形容器",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "dishes",
+      "thirdPerson": "dishes",
+      "presentParticiple": "dishing",
+      "past": "dished",
+      "pastParticiple": "dished"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "dish",
+        "ipa": "/dɪʃ/"
+      }
+    ]
+  },
+  "activity": {
+    "word": "activity",
+    "phonetic": "/ækˈtɪvəti/",
+    "pos": "n.",
+    "translation": "活跃状况，热闹；活动；（Activity）热力活性，活度",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "activities"
+    },
+    "roots": [
+      {
+        "part": "act",
+        "type": "词根",
+        "meaning": "行动"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "ac",
+        "ipa": "/æk/"
+      },
+      {
+        "syllable": "tiv",
+        "ipa": "/ˈtɪ./"
+      },
+      {
+        "syllable": "i",
+        "ipa": "/və./"
+      },
+      {
+        "syllable": "ty",
+        "ipa": "/ti/"
+      }
+    ]
+  },
+  "paintbrush": {
+    "word": "paintbrush",
+    "phonetic": "/ˈpeɪntbrʌʃ/",
+    "pos": "n.",
+    "translation": "画笔；漆刷",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "paintbrushes"
+    },
+    "roots": []
+  },
+  "hobby": {
+    "word": "hobby",
+    "phonetic": "/ˈhɒbi/",
+    "pos": "n.",
+    "translation": "业余爱好，嗜好；<古> 小马，马驹；燕隼",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "hobbies"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "hob",
+        "ipa": "/ˈhɒ./"
+      },
+      {
+        "syllable": "by",
+        "ipa": "/bi/"
+      }
+    ]
+  },
+  "commemorative": {
+    "word": "commemorative",
+    "phonetic": "/kəˈmemərətɪv/",
+    "pos": "adj.",
+    "translation": "纪念的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "-ive",
+        "type": "后缀",
+        "meaning": "有...性质的"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "com",
+        "ipa": "/kə/"
+      },
+      {
+        "syllable": "mem",
+        "ipa": "/ˈmem/"
+      },
+      {
+        "syllable": "o",
+        "ipa": "/ər/"
+      },
+      {
+        "syllable": "rat",
+        "ipa": "/ət/"
+      },
+      {
+        "syllable": "ive",
+        "ipa": "/ɪv/"
+      }
+    ]
+  },
+  "staff": {
+    "word": "staff",
+    "phonetic": "/stɑːf/",
+    "pos": "n.",
+    "translation": "全体员工，全体雇员；<美>（大、中、小学的）管理人员，行政人员；（军队的）全体参谋人员；陆军上士；手杖，拐杖；权杖，笏；旗杆；（测绘）标杆，标尺；<英>（钟表的）小轴杆；<英>（铁路的）路签；五线谱",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "staffs或staves",
+      "thirdPerson": "staffs",
+      "presentParticiple": "staffing",
+      "past": "staffed",
+      "pastParticiple": "staffed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "staff",
+        "ipa": "/ˈstæf/"
+      }
+    ]
+  },
+  "interested": {
+    "word": "interested",
+    "phonetic": "/ˈɪntrəstɪd/",
+    "pos": "adj.",
+    "translation": "感兴趣的，关心的；利益相关的，当事的；有私心的，有偏见的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "inter-",
+        "type": "前缀",
+        "meaning": "在...之间"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "in",
+        "ipa": "/ˈɪn/"
+      },
+      {
+        "syllable": "ter",
+        "ipa": "/təɹ/"
+      },
+      {
+        "syllable": "est",
+        "ipa": "/ɛs/"
+      },
+      {
+        "syllable": "ed",
+        "ipa": "/təd/"
+      }
+    ]
+  },
+  "service": {
+    "word": "service",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "ser",
+        "ipa": "/ˈsɜː/"
+      },
+      {
+        "syllable": "vice",
+        "ipa": "/vɪs/"
+      }
+    ]
+  },
+  "army": {
+    "word": "army",
+    "phonetic": "/ˈɑːmi/",
+    "pos": "n.",
+    "translation": "陆军，军队；大批，大群",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "armies"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "ar",
+        "ipa": "/ˈɑː./"
+      },
+      {
+        "syllable": "my",
+        "ipa": "/miː/"
+      }
+    ]
+  },
+  "audience": {
+    "word": "audience",
+    "phonetic": "/ˈɔːdiəns/",
+    "pos": "n.",
+    "translation": "观众，听众；读者；觐见，拜见；拥护者",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "audiences"
+    },
+    "roots": [
+      {
+        "part": "aud",
+        "type": "词根",
+        "meaning": "听"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "au",
+        "ipa": "/ˈɔːd/"
+      },
+      {
+        "syllable": "di",
+        "ipa": "/i./"
+      },
+      {
+        "syllable": "ence",
+        "ipa": "/əns/"
+      }
+    ]
+  },
+  "ink": {
+    "word": "ink",
+    "phonetic": "/ɪŋk/",
+    "pos": "n.",
+    "translation": "墨水，油墨；<非正式>文字宣传，纸媒宣传；（章鱼、乌贼等海洋生物分泌出的）墨汁",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "inks"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "ink",
+        "ipa": "/ɪŋk/"
+      }
+    ]
+  },
+  "gas": {
+    "word": "gas",
+    "phonetic": "/ɡæs/",
+    "pos": "n.",
+    "translation": "气体；气体燃料；（手术）麻醉气；毒气，瓦斯；汽油；有趣的人（或事）；胀气，胃气",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "gases或gasses",
+      "thirdPerson": "gases或gasses",
+      "presentParticiple": "gassing",
+      "past": "gassed",
+      "pastParticiple": "gassed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "gas",
+        "ipa": "/ɡæs/"
+      }
+    ]
+  },
+  "umbrella": {
+    "word": "umbrella",
+    "phonetic": "/ʌmˈbrelə/",
+    "pos": "n.",
+    "translation": "伞，雨伞，阳伞；综合体，总体；保护伞，庇护；（有众多附属小机构或小群体的）伞形组织；（战斗机或高射炮构成的）掩护幕，防空火网；（动）（水母）伞膜",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "umbrellas"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "um",
+        "ipa": "/ʌm/"
+      },
+      {
+        "syllable": "brel",
+        "ipa": "/ˈbɹɛl/"
+      },
+      {
+        "syllable": "la",
+        "ipa": "/ə/"
+      }
+    ]
+  },
+  "in danger": {
+    "word": "in danger",
+    "phonetic": "",
+    "pos": "",
+    "translation": "在危险中",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "in-",
+        "type": "前缀",
+        "meaning": "不、向内"
+      },
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "in danger",
+        "ipa": ""
+      }
+    ]
+  },
+  "for instance": {
+    "word": "for instance",
+    "phonetic": "",
+    "pos": "",
+    "translation": "例如：用于引出一个具体的例子来支持或解释前面所说的内容。",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "for instance",
+        "ipa": ""
+      }
+    ]
+  },
+  "actually": {
+    "word": "actually",
+    "phonetic": "/ˈæktʃuəli/",
+    "pos": "adv.",
+    "translation": "实际上，事实上；（用于开始新话题）其实；竟然，居然",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "past": "actuallied",
+      "pastParticiple": "actuallied",
+      "presentParticiple": "actuallying",
+      "thirdPerson": "actuallies"
+    },
+    "roots": [
+      {
+        "part": "-ly",
+        "type": "后缀",
+        "meaning": "...地（副词）"
+      },
+      {
+        "part": "act",
+        "type": "词根",
+        "meaning": "行动"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "ac",
+        "ipa": "/-/"
+      },
+      {
+        "syllable": "tual",
+        "ipa": "/ɪ/"
+      },
+      {
+        "syllable": "ly",
+        "ipa": ""
+      }
+    ]
+  },
+  "from dawn to dark": {
+    "word": "from dawn to dark",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "from dawn to dark",
+        "ipa": ""
+      }
+    ]
+  },
+  "president": {
+    "word": "president",
+    "phonetic": "/ˈprezɪdənt/",
+    "pos": "n.",
+    "translation": "总统，国家主席；（机构、俱乐部、学院等的）负责人，会长，院长，主席；（公司）董事长，（银行）行长，总裁；（基督教）圣餐主持教士",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "presidents"
+    },
+    "roots": [
+      {
+        "part": "pre-",
+        "type": "前缀",
+        "meaning": "在...之前"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "pre",
+        "ipa": "/ˈpɹɛ/"
+      },
+      {
+        "syllable": "sid",
+        "ipa": "/zɨdə/"
+      },
+      {
+        "syllable": "ent",
+        "ipa": "/nt/"
+      }
+    ]
+  },
+  "complete": {
+    "word": "complete",
+    "phonetic": "/kəmˈpliːt/",
+    "pos": "adj.",
+    "translation": "完全的，彻底的；全部的，完整的；完成的，结束的；技能全面的，技术娴熟的；向前传球成功的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "thirdPerson": "completes",
+      "presentParticiple": "completing",
+      "past": "completed",
+      "pastParticiple": "completed"
+    },
+    "roots": []
+  },
+  "booking": {
+    "word": "booking",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": []
+  },
+  "while": {
+    "word": "while",
+    "phonetic": "/waɪl/",
+    "pos": "conj.",
+    "translation": "当……的时候；与……同时；而，然而（表示对比）；尽管，虽然；直到……为止",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "whiles",
+      "thirdPerson": "whiles",
+      "presentParticiple": "whiling",
+      "past": "whiled",
+      "pastParticiple": "whiled"
+    },
+    "roots": []
+  },
+  "company": {
+    "word": "company",
+    "phonetic": "/ˈkʌmpəni/",
+    "pos": "n.",
+    "translation": "公司；陪伴，同伴；宾客，来宾；在一起的一群人；连队；剧团，歌舞团；女童军大队",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "companies",
+      "thirdPerson": "companies",
+      "presentParticiple": "companying",
+      "past": "companied",
+      "pastParticiple": "companied"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "com",
+        "ipa": "/ˈkʌmp/"
+      },
+      {
+        "syllable": "pa",
+        "ipa": "/(ə)/"
+      },
+      {
+        "syllable": "ny",
+        "ipa": "/ni/"
+      }
+    ]
+  },
+  "crew": {
+    "word": "crew",
+    "phonetic": "/kruː/",
+    "pos": "n.",
+    "translation": "全体船员，全体机组人员；一组工作人员；一伙人，一帮人；全体划船队员；赛艇运动；<美，非正式>（尤指演奏车库音乐的）一群乐师",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "crews",
+      "thirdPerson": "crews",
+      "presentParticiple": "crewing",
+      "past": "crewed",
+      "pastParticiple": "crewed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "crew",
+        "ipa": "/kruː/"
+      }
+    ]
+  },
+  "in fact": {
+    "word": "in fact",
+    "phonetic": "/ɪn fækt/",
+    "pos": "",
+    "translation": "实际上，事实上",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "in-",
+        "type": "前缀",
+        "meaning": "不、向内"
+      },
+      {
+        "part": "act",
+        "type": "词根",
+        "meaning": "行动"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "in fact",
+        "ipa": "/ɪn fækt/"
+      }
+    ]
+  },
+  "camp": {
+    "word": "camp",
+    "phonetic": "/kæmp/",
+    "pos": "n.",
+    "translation": "营地；兵营，军营；度假营；阵营，集团；（艺术和娱乐表现形式的）夸张；放牧区；年度短期兵役；<英>史前古营垒遗址",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "camps",
+      "thirdPerson": "camps",
+      "presentParticiple": "camping",
+      "past": "camped",
+      "pastParticiple": "camped"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "camp",
+        "ipa": "[kʰɛəmp]"
+      }
+    ]
+  },
+  "coming": {
+    "word": "coming",
+    "phonetic": "/ˈkʌmɪŋ/",
+    "pos": "adj.",
+    "translation": "即将发生的，下一个的；有希望成功的，有前途的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "comings"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "com",
+        "ipa": "/ˈkʌm/"
+      },
+      {
+        "syllable": "ing",
+        "ipa": "/ɪŋ/"
+      }
+    ]
+  },
+  "running": {
+    "word": "running",
+    "phonetic": "/ˈrʌnɪŋ/",
+    "pos": "n.",
+    "translation": "跑步，赛跑；管理，运作；走私，私运（毒品、枪支等）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "runnings"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "run",
+        "ipa": "/ˈɹʌn/"
+      },
+      {
+        "syllable": "ning",
+        "ipa": "/ɪŋ/"
+      }
+    ]
+  },
+  "stopped": {
+    "word": "stopped",
+    "phonetic": "/stɒpt/",
+    "pos": "v.",
+    "translation": "停止；停下来（stop 的过去式和过去分词）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "past": "stoppeded",
+      "pastParticiple": "stoppeded",
+      "presentParticiple": "stoppeding",
+      "thirdPerson": "stoppeds"
+    },
+    "roots": [
+      {
+        "part": "ped",
+        "type": "词根",
+        "meaning": "脚"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "stopped",
+        "ipa": "/stɑpt/"
+      }
+    ]
+  },
+  "paper": {
+    "word": "paper",
+    "phonetic": "/ˈpeɪpə(r)/",
+    "pos": "n.",
+    "translation": "纸；报纸；（工作、学习或个人的）资料，文件（papers）；证明，证件（如护照、身份证等）（papers）；政府报告，官方政策文件；<英>考试，答卷；（研究）论文，（学术）讲话；<美>（学校课程的）学期论文；墙纸，壁纸；有价证券；手纸，卫生纸；<俚>（剧院等娱乐场所的）免费入场券",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "papers",
+      "thirdPerson": "papers",
+      "presentParticiple": "papering",
+      "past": "papered",
+      "pastParticiple": "papered"
+    },
+    "roots": [
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "pa",
+        "ipa": "/ˈpeɪ/"
+      },
+      {
+        "syllable": "per",
+        "ipa": "/pə/"
+      }
+    ]
+  },
+  "tiger": {
+    "word": "tiger",
+    "phonetic": "/ˈtaɪɡə(r)/",
+    "pos": "n.",
+    "translation": "老虎；凶暴的人",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "tigers或tiger"
+    },
+    "roots": [
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "ti",
+        "ipa": "/ˈtaɪ/"
+      },
+      {
+        "syllable": "ger",
+        "ipa": "/ɡə/"
+      }
+    ]
+  },
+  "experience": {
+    "word": "experience",
+    "phonetic": "/ɪkˈspɪəriəns/",
+    "pos": "n.",
+    "translation": "经历，往事；经验，阅历；传统",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "experiences",
+      "thirdPerson": "experiences",
+      "presentParticiple": "experiencing",
+      "past": "experienced",
+      "pastParticiple": "experienced"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "ex",
+        "ipa": "/ɪkˈs/"
+      },
+      {
+        "syllable": "pe",
+        "ipa": "/pɪə./"
+      },
+      {
+        "syllable": "ri",
+        "ipa": "/ɹɪən/"
+      },
+      {
+        "syllable": "ence",
+        "ipa": "/s/"
+      }
+    ]
+  },
+  "fee": {
+    "word": "fee",
+    "phonetic": "/fiː/",
+    "pos": "n.",
+    "translation": "费用，酬金；会费，入场费；封地，采邑",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "fees",
+      "thirdPerson": "fees",
+      "presentParticiple": "feeing",
+      "past": "fee'd或feed",
+      "pastParticiple": "feed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "fee",
+        "ipa": "/fiː/"
+      }
+    ]
+  },
+  "access": {
+    "word": "access",
+    "phonetic": "/ˈækses/",
+    "pos": "n.",
+    "translation": "入口，通道；获得的机会，使用权；（对计算机存储器的）访问，存取；（情感）爆发，发作；探视权",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "accesses",
+      "thirdPerson": "accesses",
+      "presentParticiple": "accessing",
+      "past": "accessed",
+      "pastParticiple": "accessed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "ac",
+        "ipa": "/ˈæk/"
+      },
+      {
+        "syllable": "cess",
+        "ipa": "/sɛs/"
+      }
+    ]
+  },
+  "camper": {
+    "word": "camper",
+    "phonetic": "/ˈkæmpə(r)/",
+    "pos": "n.",
+    "translation": "露营者，野营者",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "campers"
+    },
+    "roots": [
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "cam",
+        "ipa": "/ˈkæm/"
+      },
+      {
+        "syllable": "per",
+        "ipa": "/pə(ɹ)/"
+      }
+    ]
+  },
+  "campsite": {
+    "word": "campsite",
+    "phonetic": "/ˈkæmpsaɪt/",
+    "pos": "n.",
+    "translation": "营地",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "campsites"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "camp",
+        "ipa": "/ˈkæmp/"
+      },
+      {
+        "syllable": "site",
+        "ipa": "/saɪt/"
+      }
+    ]
+  },
+  "integrity": {
+    "word": "integrity",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "in-",
+        "type": "前缀",
+        "meaning": "不、向内"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "in",
+        "ipa": "/ɪn/"
+      },
+      {
+        "syllable": "te",
+        "ipa": "/ˈtɛɡ/"
+      },
+      {
+        "syllable": "gri",
+        "ipa": "/ɹət/"
+      },
+      {
+        "syllable": "ty",
+        "ipa": "/i/"
+      }
+    ]
+  },
+  "by train": {
+    "word": "by train",
+    "phonetic": "/baɪ treɪn/",
+    "pos": "",
+    "translation": "乘火车：使用火车作为交通工具进行旅行或出行。",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "by train",
+        "ipa": "/baɪ treɪn/"
+      }
+    ]
+  },
+  "say": {
+    "word": "say",
+    "phonetic": "/seɪ/",
+    "pos": "vt.",
+    "translation": "说，讲；宣称，说明；认为，据说；发音，读；确信，确定（事实）；（对某人）意味着；表达，传达；指明，表明；假设，比如说；让某人做（某事）；复述，诵念；念，背诵；替（某人或某事）说好话（坏话）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "thirdPerson": "says",
+      "presentParticiple": "saying",
+      "past": "said",
+      "pastParticiple": "said"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "say",
+        "ipa": "/seɪ/"
+      }
+    ]
+  },
+  "percent": {
+    "word": "percent",
+    "phonetic": "/pəˈsent/",
+    "pos": "n.",
+    "translation": "百分之……；部分",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "percent或percents"
+    },
+    "roots": [
+      {
+        "part": "cent",
+        "type": "词根",
+        "meaning": "百"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "per",
+        "ipa": "/pə/"
+      },
+      {
+        "syllable": "cent",
+        "ipa": "/ˈsɛnt/"
+      }
+    ]
+  },
+  "whether": {
+    "word": "whether",
+    "phonetic": "/ˈweðə(r)/",
+    "pos": "conj.",
+    "translation": "是否（表选择或可能性）；不管，无论",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "whethers"
+    },
+    "roots": [
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "whe",
+        "ipa": "/ˈwɛð/"
+      },
+      {
+        "syllable": "ther",
+        "ipa": "/ə(ɹ)/"
+      }
+    ]
+  },
+  "able": {
+    "word": "able",
+    "phonetic": "/ˈeɪb(ə)l/",
+    "pos": "adj.",
+    "translation": "能够，有能力的；聪明能干的，精通（某事）的",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "a",
+        "ipa": "/ˈeɪ./"
+      },
+      {
+        "syllable": "ble",
+        "ipa": "/bl̩/"
+      }
+    ]
+  },
+  "get": {
+    "word": "get",
+    "phonetic": "/ɡet/",
+    "pos": "v.",
+    "translation": "收到，接到；获得，得到；挣得，赚得；去取，去带来；买；得（病），患（病）；遭受……之苦；变成，变得；形成（想法、感觉）；促使，使得；使开始，使进展；得以做，有机会做；到达；达到（某一点或某一阶段）；移动，去；理解，明白；有，经历；做（饭）；搭乘，乘坐；接（电话），应（门铃）；与……通电话；捕获，抓获；袭击，打伤，杀死；<非正式>使恼火，使难过；使困惑，难住；接收（电视广播信号）；受到（惩罚）；<非正式>注意到",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "past": "geted",
+      "pastParticiple": "geted",
+      "presentParticiple": "geting",
+      "thirdPerson": "gets"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "get",
+        "ipa": "/ɡɛt/"
+      }
+    ]
+  }
+}

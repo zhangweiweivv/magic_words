@@ -1,0 +1,176 @@
+:root {
+  /* ========== 海洋主题配色 ========== */
+  
+  /* 主色 - 海洋蓝 */
+  --ocean-deep: #1E3A5F;
+  --ocean-medium: #2E6B8A;
+  --ocean-light: #5DADE2;
+  --ocean-pale: #AED6F1;
+  
+  /* 点缀色 */
+  --coral: #FF7F50;
+  --coral-light: #FFB199;
+  --seaweed: #48C9B0;
+  --seaweed-light: #76D7C4;
+  --starfish: #F39C12;
+  --pearl: #FDFEFE;
+  
+  /* 背景 */
+  --sand: #FDF6E3;
+  --foam: #F8FBFD;
+  
+  /* 渐变 */
+  --gradient-ocean: linear-gradient(180deg, #AED6F1 0%, #5DADE2 50%, #2E6B8A 100%);
+  --gradient-deep: linear-gradient(180deg, #5DADE2 0%, #2E6B8A 50%, #1E3A5F 100%);
+  --gradient-coral: linear-gradient(135deg, #FF7F50 0%, #FFB199 100%);
+  --gradient-seaweed: linear-gradient(135deg, #48C9B0 0%, #76D7C4 100%);
+  --gradient-card-front: linear-gradient(135deg, #2E6B8A 0%, #1E3A5F 100%);
+  --gradient-card-back: linear-gradient(135deg, #FF7F50 0%, #48C9B0 100%);
+  
+  /* 语义色 */
+  --success: #48C9B0;
+  --success-light: #A3E4D7;
+  --error: #E74C3C;
+  --error-light: #F5B7B1;
+  --warning: #F39C12;
+  
+  /* ========== 字体 ========== */
+  --font-display: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', Monaco, monospace;
+  
+  /* ========== 圆角 ========== */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 30px;
+  --radius-xl: 40px;
+  --radius-full: 9999px;
+  
+  /* ========== 阴影 ========== */
+  --shadow-sm: 0 2px 8px rgba(30, 58, 95, 0.1);
+  --shadow-md: 0 4px 16px rgba(30, 58, 95, 0.15);
+  --shadow-lg: 0 8px 32px rgba(30, 58, 95, 0.2);
+  --shadow-xl: 0 12px 48px rgba(30, 58, 95, 0.25);
+  --shadow-glow: 0 0 20px rgba(93, 173, 226, 0.4);
+  --shadow-coral: 0 4px 16px rgba(255, 127, 80, 0.3);
+  --shadow-seaweed: 0 4px 16px rgba(72, 201, 176, 0.3);
+  
+  /* ========== 过渡 ========== */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ========== 默认主题颜色（用于 var() fallback） ========== */
+  --bg-primary: #4A90D9;
+  --bg-secondary: #5DADE2;
+  --bg-gradient: linear-gradient(180deg, #4A90D9 0%, #5DADE2 15%, #2E6B8A 85%, #1E3A5F 100%);
+  --accent-color: #4ECDC4;
+}
+
+/* ========== 商店主题 ========== */
+
+[data-theme="theme_coral"] {
+  --bg-primary: #FF6B6B;
+  --bg-secondary: #FF8E8E;
+  --bg-gradient: linear-gradient(180deg, #FF6B6B 0%, #FF8E8E 30%, #E85D5D 70%, #C0392B 100%);
+  --accent-color: #FF4757;
+}
+
+[data-theme="theme_deep"] {
+  --bg-primary: #0C2340;
+  --bg-secondary: #1B3A5C;
+  --bg-gradient: linear-gradient(180deg, #1B3A5C 0%, #0C2340 30%, #091A2A 70%, #050E18 100%);
+  --accent-color: #3498DB;
+}
+
+[data-theme="theme_arctic"] {
+  --bg-primary: #A8D8EA;
+  --bg-secondary: #CAE9F5;
+  --bg-gradient: linear-gradient(180deg, #CAE9F5 0%, #A8D8EA 30%, #87CEEB 70%, #6BB3D9 100%);
+  --accent-color: #00B4D8;
+}
+
+[data-theme="theme_shipwreck"] {
+  --bg-primary: #5D4037;
+  --bg-secondary: #795548;
+  --bg-gradient: linear-gradient(180deg, #795548 0%, #5D4037 30%, #4E342E 70%, #3E2723 100%);
+  --accent-color: #D4A574;
+}
+
+[data-theme="theme_castle"] {
+  --bg-primary: #6A1B9A;
+  --bg-secondary: #8E24AA;
+  --bg-gradient: linear-gradient(180deg, #8E24AA 0%, #6A1B9A 30%, #4A148C 70%, #311B92 100%);
+  --accent-color: #FFD700;
+}
+
+[data-theme="theme_beach"] {
+  --bg-primary: #F4A460;
+  --bg-secondary: #FFDAB9;
+  --bg-gradient: linear-gradient(180deg, #87CEEB 0%, #F4A460 40%, #DEB887 70%, #D2B48C 100%);
+  --accent-color: #FF6347;
+}
+
+[data-theme="theme_jellyfish"] {
+  --bg-primary: #9B59B6;
+  --bg-secondary: #D98CE0;
+  --bg-gradient: linear-gradient(180deg, #D98CE0 0%, #9B59B6 30%, #8E44AD 70%, #6C3483 100%);
+  --accent-color: #E91E9C;
+}
+
+[data-theme="theme_pirate_bay"] {
+  --bg-primary: #8B0000;
+  --bg-secondary: #B22222;
+  --bg-gradient: linear-gradient(180deg, #B22222 0%, #8B0000 30%, #4A0000 70%, #1C1C1C 100%);
+  --accent-color: #FFD700;
+}
+
+[data-theme="theme_atlantis"] {
+  --bg-primary: #00897B;
+  --bg-secondary: #26A69A;
+  --bg-gradient: linear-gradient(180deg, #26A69A 0%, #00897B 30%, #00796B 70%, #004D40 100%);
+  --accent-color: #FFD700;
+}
+
+[data-theme="theme_whale"] {
+  --bg-primary: #37474F;
+  --bg-secondary: #546E7A;
+  --bg-gradient: linear-gradient(180deg, #546E7A 0%, #37474F 30%, #263238 70%, #1C2833 100%);
+  --accent-color: #80DEEA;
+}
+
+[data-theme="theme_turtle"] {
+  --bg-primary: #4CAF50;
+  --bg-secondary: #81C784;
+  --bg-gradient: linear-gradient(180deg, #81C784 0%, #4CAF50 30%, #388E3C 70%, #D2B48C 100%);
+  --accent-color: #8BC34A;
+}
+
+[data-theme="theme_octopus"] {
+  --bg-primary: #4A148C;
+  --bg-secondary: #7B1FA2;
+  --bg-gradient: linear-gradient(180deg, #7B1FA2 0%, #4A148C 30%, #311B92 70%, #1A0533 100%);
+  --accent-color: #CE93D8;
+}
+
+[data-theme="theme_aurora"] {
+  --bg-primary: #1B5E20;
+  --bg-secondary: #4CAF50;
+  --bg-gradient: linear-gradient(180deg, #4CAF50 0%, #1B5E20 25%, #4A148C 75%, #311B92 100%);
+  --accent-color: #69F0AE;
+}
+
+[data-theme="theme_candy"] {
+  --bg-primary: #E91E63;
+  --bg-secondary: #FF80AB;
+  --bg-gradient: linear-gradient(180deg, #FF80AB 0%, #E91E63 25%, #FF6F00 50%, #FFD740 75%, #69F0AE 100%);
+  --accent-color: #FF4081;
+}
+
+[data-theme="theme_space"] {
+  --bg-primary: #1A0533;
+  --bg-secondary: #2D1B69;
+  --bg-gradient: linear-gradient(180deg, #2D1B69 0%, #1A0533 30%, #0D0221 70%, #000000 100%);
+  --accent-color: #BB86FC;
+}
