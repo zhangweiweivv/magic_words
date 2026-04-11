@@ -731,3 +731,83 @@ describe('GET /api/recommend/next', () => {
     }
   });
 });
+
+// ── Progress Overview API ──────────────────────────────────────────
+describe('GET /api/progress/overview', () => {
+  it('returns 200 with overall and collections', async () => {
+    const { status, body } = await request('GET', '/api/progress/overview');
+    assert.equal(status, 200);
+    assert.ok(body.overall, 'should have overall stats');
+    assert.ok(Array.isArray(body.collections), 'should have collections array');
+    // overall.total should equal sum of per-collection totals
+    const sumTotal = body.collections.reduce((sum, c) => sum + c.stats.total, 0);
+    assert.equal(body.overall.total, sumTotal, 'overall.total should equal sum of collection totals');
+  });
+
+  it('includes started article with correct status and stage', async () => {
+    // 寅集-01 was started earlier in tests
+    const { status, body } = await request('GET', '/api/progress/overview');
+    assert.equal(status, 200);
+    const yinCollection = body.collections.find(c => c.name === '寅集');
+    assert.ok(yinCollection, 'should have 寅集');
+    const article = yinCollection.articles.find(a => a.articleId === '寅集-01');
+    assert.ok(article, 'should find 寅集-01');
+    assert.equal(article.status, 'active');
+    assert.ok(article.currentStage >= 1, 'currentStage should be >= 1');
+    assert.ok(article.nextDueDate, 'should have nextDueDate');
+  });
+});
+
+// ── Data Consistency Test ──────────────────────────────────────────
+describe('Data consistency: state vs admin vs progress', () => {
+  it('key fields match across /api/state/:id, /api/admin/collection/:c/articles, /api/progress/overview', async () => {
+    // Use 寅集-01 which has been started
+    const articleId = '寅集-01';
+    const collection = '寅集';
+
+    // Fetch from all three endpoints
+    const [stateRes, adminRes, progressRes] = await Promise.all([
+      request('GET', `/api/state/${encodeURIComponent(articleId)}`),
+      request('GET', `/api/admin/collection/${encodeURIComponent(collection)}/articles`),
+      request('GET', '/api/progress/overview'),
+    ]);
+
+    assert.equal(stateRes.status, 200);
+    assert.equal(adminRes.status, 200);
+    assert.equal(progressRes.status, 200);
+
+    const stateData = stateRes.body.state;
+    const adminArticle = adminRes.body.articles.find(a => a.articleId === articleId);
+    const progressCollection = progressRes.body.collections.find(c => c.name === collection);
+    const progressArticle = progressCollection.articles.find(a => a.articleId === articleId);
+
+    assert.ok(adminArticle, 'should find article in admin response');
+    assert.ok(progressArticle, 'should find article in progress response');
+
+    // Compare key fields: status
+    assert.equal(stateData.status, adminArticle.status, 'status: state vs admin');
+    assert.equal(stateData.status, progressArticle.status, 'status: state vs progress');
+
+    // stage / currentStage
+    assert.equal(stateData.stage, adminArticle.stage, 'stage: state vs admin');
+    assert.equal(stateData.currentStage, progressArticle.currentStage, 'currentStage: state vs progress');
+
+    // totalStages
+    assert.equal(stateData.totalStages, adminArticle.totalStages, 'totalStages: state vs admin');
+    assert.equal(stateData.totalStages, progressArticle.totalStages, 'totalStages: state vs progress');
+
+    // intervals
+    assert.deepEqual(stateData.intervals, adminArticle.intervals, 'intervals: state vs admin');
+    assert.deepEqual(stateData.intervals, progressArticle.intervals, 'intervals: state vs progress');
+
+    // nextDueDate
+    assert.equal(stateData.nextDueDate, progressArticle.nextDueDate, 'nextDueDate: state vs progress');
+
+    // scheduleSource (treat missing as level_default)
+    const stateSource = stateData.scheduleSource || 'level_default';
+    const adminSource = adminArticle.scheduleSource || 'level_default';
+    const progressSource = progressArticle.scheduleSource || 'level_default';
+    assert.equal(stateSource, adminSource, 'scheduleSource: state vs admin');
+    assert.equal(stateSource, progressSource, 'scheduleSource: state vs progress');
+  });
+});
