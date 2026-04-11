@@ -20,7 +20,23 @@ router.get('/current', (req, res) => {
 // POST /api/weekly-exam/first-round - 记录第一轮成绩
 router.post('/first-round', (req, res) => {
   try {
-    const { generatedDate, total, correct, wrongDetails, rounds } = req.body;
+    const { generatedDate, total, correct, wrongDetails } = req.body;
+
+    if (!generatedDate) {
+      return res.status(400).json({ success: false, error: 'generatedDate is required' });
+    }
+    if (typeof total !== 'number' || typeof correct !== 'number') {
+      return res.status(400).json({
+        success: false,
+        error: 'total and correct must be numbers',
+      });
+    }
+    if (total < 0 || correct < 0 || correct > total) {
+      return res.status(400).json({
+        success: false,
+        error: 'invalid total/correct values',
+      });
+    }
 
     // Validate generatedDate matches current exam
     const status = weeklyExamService.readStatus();
@@ -35,7 +51,7 @@ router.post('/first-round', (req, res) => {
     }
 
     // wrongDetails: array of { word, meaning } → maps to wrongWords param
-    const wrongWords = wrongDetails || [];
+    const wrongWords = Array.isArray(wrongDetails) ? wrongDetails : [];
     const result = weeklyExamService.recordFirstRound(correct, total, wrongWords);
     res.json({ success: true, data: result });
   } catch (e) {
