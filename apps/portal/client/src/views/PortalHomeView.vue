@@ -16,11 +16,13 @@
         <p>小红本 · 诗词古文背诵</p>
       </a>
     </div>
+    <WeeklyReadingPlanWidget />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import WeeklyReadingPlanWidget from '../components/WeeklyReadingPlanWidget.vue'
 
 /**
  * Build service URL using same host as current page (LAN-friendly).
