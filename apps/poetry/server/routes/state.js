@@ -12,6 +12,7 @@ const router = express.Router();
 const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { startArticle, completeStage, deferArticle } = require('../services/stateMachine');
 const { getDueArticles, sortDueArticles } = require('../services/scheduler');
+const { notifyArticleComplete } = require('../services/slack');
 const paths = require('../services/paths');
 
 function statePath(articleId) {
@@ -91,6 +92,11 @@ router.post('/api/state/:articleId/complete', (req, res) => {
   for (const event of result.events) {
     appendJsonl(eventsPath(articleId), event);
   }
+
+  // Fire-and-forget Slack notification
+  notifyArticleComplete(result.nextState, result.events).catch((err) =>
+    console.error('[poetry:slack] notification error:', err.message)
+  );
 
   res.json({ state: result.nextState, events: result.events });
 });
