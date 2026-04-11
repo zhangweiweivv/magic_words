@@ -168,6 +168,31 @@ Expected: PASS
 - `git add ...`
 - `git commit -m "feat(poetry): add adaptive schedule recommendation"`
 
+### Task 6.5: Collections discovery + serial progression (active collection)
+
+**Goal:** Implement cross-collection *serial* learning order: only recommend new articles within the current active collection; move to next collection only after current collection fully graduated.
+
+**Files:**
+- Create: `apps/poetry/server/services/collections.js`
+- Create: `apps/poetry/server/services/activeCollection.js`
+- Test: `apps/poetry/server/test/collections.test.js`
+
+**Step 1: Write failing tests**
+- Discover collections from `小红本/` root `*.md`.
+- Sort collections:
+  - If name matches 地支（子丑寅卯辰巳午未申酉戌亥） use that natural order.
+  - Else fallback to localeCompare.
+- Compute active collection: first collection where not all articles are `graduated`.
+
+**Step 2: Implement minimal functions**
+- `listCollections()`
+- `sortCollections(names)`
+- `getActiveCollection({ collections, articleStatesByCollection })`
+
+**Step 3: Commit**
+- `git add ...`
+- `git commit -m "feat(poetry): add serial collection progression"`
+
 ### Task 7: Scheduling engine (due list + collision priority)
 
 **Files:**
@@ -214,20 +239,22 @@ Expected: PASS
 - `git add ...`
 - `git commit -m "feat(poetry): state machine with detailed audit events"`
 
-### Task 9: Topic rotation (N-topic round robin)
+### Task 9: Topic rotation (N-topic round robin) — scoped to active collection
 
 **Files:**
 - Create: `apps/poetry/server/services/rotation.js`
 - Test: `apps/poetry/server/test/rotation.test.js`
 
 **Step 1: Implement**
-- Input: catalog grouped by genre/topic
-- Persistent cursor file: `rotation-state.json`
+- Scope: rotation only runs *within the active collection*.
+- Input: catalog grouped by genre/topic (for one collection)
+- Persistent cursor file: `rotation-state.json` (per-collection key inside file)
 - Output: recommended next article id
 
 **Step 2: Tests**
 - N=3,4,5 topics
 - Skip exhausted topic
+- Verify cursor resets/initializes when collection changes
 
 **Step 3: Commit**
 - `git add ...`
