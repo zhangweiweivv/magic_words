@@ -18,6 +18,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'))
 })
 
-app.listen(PORT, () => {
-  console.log(`🏰 Portal server running on http://localhost:${PORT}`)
-})
+// Only listen when run directly (not when required by tests)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🏰 Portal server running on http://localhost:${PORT}`)
+  })
+}
+
+module.exports = app
