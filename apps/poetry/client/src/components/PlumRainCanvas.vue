@@ -72,6 +72,8 @@ function drawPlum(ctx, size) {
     // Petal as an ellipse offset from center
     ctx.ellipse(0, -size * 0.55, petalW, petalH, 0, 0, Math.PI * 2)
     ctx.fill()
+    // optional soft outline (strokeStyle may be unset)
+    if (ctx.strokeStyle && ctx.lineWidth > 0) ctx.stroke()
     ctx.restore()
   }
 
@@ -183,16 +185,20 @@ function render(now) {
     ctx.translate(p.x, p.y)
     ctx.rotate(p.rot)
 
-    // plum palette (very restrained)
-    const fill = p.depth > 0.7 ? 'rgba(192, 57, 43, 0.30)' : 'rgba(212, 168, 67, 0.18)'
+    // plum palette (brighter but still lightweight)
+    // Note: final opacity = globalAlpha * rgba alpha.
+    const petalFill = p.depth > 0.7 ? 'rgba(255, 110, 160, 0.22)' : 'rgba(255, 190, 210, 0.14)'
+    const petalStroke = p.depth > 0.7 ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.14)'
 
     ctx.globalAlpha = p.alpha
-    ctx.fillStyle = fill
+    ctx.fillStyle = petalFill
+    ctx.strokeStyle = petalStroke
+    ctx.lineWidth = Math.max(0.6, p.size * 0.06)
     drawPlum(ctx, p.size)
 
-    // center dot slightly darker
+    // center dot: warm + slightly brighter to stand out on light backgrounds
     ctx.globalAlpha = p.alpha * 0.9
-    ctx.fillStyle = 'rgba(44, 44, 44, 0.22)'
+    ctx.fillStyle = 'rgba(255, 205, 120, 0.35)'
     ctx.beginPath()
     ctx.arc(0, 0, p.size * 0.12, 0, Math.PI * 2)
     ctx.fill()
