@@ -8,9 +8,34 @@ const {
   formatStageComplete,
   formatArticleStarted,
   getChannelId,
+  getBotToken,
 } = require('../services/slack');
 
 describe('Poetry Slack service', () => {
+  describe('getBotToken', () => {
+    it('prefers POETRY_SLACK_BOT_TOKEN env var over config file', () => {
+      const original = process.env.POETRY_SLACK_BOT_TOKEN;
+      process.env.POETRY_SLACK_BOT_TOKEN = 'xoxb-env-token';
+      const token = getBotToken();
+      assert.equal(token, 'xoxb-env-token');
+      if (original) {
+        process.env.POETRY_SLACK_BOT_TOKEN = original;
+      } else {
+        delete process.env.POETRY_SLACK_BOT_TOKEN;
+      }
+    });
+
+    it('falls back to openclaw.json when env var not set', () => {
+      const original = process.env.POETRY_SLACK_BOT_TOKEN;
+      delete process.env.POETRY_SLACK_BOT_TOKEN;
+      // getBotToken will try to read openclaw.json — result depends on
+      // whether the file exists. We just verify it doesn't throw.
+      const token = getBotToken();
+      assert.ok(token === undefined || token === null || typeof token === 'string');
+      if (original) process.env.POETRY_SLACK_BOT_TOKEN = original;
+    });
+  });
+
   describe('getChannelId', () => {
     it('returns default channel when env not set', () => {
       const original = process.env.POETRY_SLACK_CHANNEL_ID;

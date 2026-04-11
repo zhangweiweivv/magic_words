@@ -25,9 +25,13 @@ function getChannelId() {
 }
 
 /**
- * Read bot token from openclaw config (same approach as vocab slack).
+ * Read bot token: prefer env var POETRY_SLACK_BOT_TOKEN,
+ * fall back to openclaw.json config.
  */
 function getBotToken() {
+  if (process.env.POETRY_SLACK_BOT_TOKEN) {
+    return process.env.POETRY_SLACK_BOT_TOKEN;
+  }
   try {
     const configPath = path.join(
       process.env.HOME || '/Users/vvhome',
@@ -192,4 +196,5 @@ module.exports = {
   formatStageComplete,
   formatArticleStarted,
   getChannelId,
+  getBotToken,
 };
