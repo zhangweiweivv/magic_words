@@ -286,7 +286,13 @@ function generateExam(cycleDate) {
     };
 
     if (type === 'choice') {
-      question.options = generateChoiceOptions(w, windowWords, allLearned, rng);
+      const options = generateChoiceOptions(w, windowWords, allLearned, rng);
+      // If not enough distractors (< 4 options), fall back to spelling
+      if (options.length < 4) {
+        question.type = 'spelling';
+      } else {
+        question.options = options;
+      }
     } else if (type === 'fillBlank') {
       question.hint = generateHintMask(w.word, rng, hideRatio);
     }
@@ -328,6 +334,12 @@ function generateChoiceOptions(targetWord, windowWords, allLearned, rng) {
       if (!candidates.includes(w)) candidates.push(w);
       if (candidates.length >= 10) break;
     }
+  }
+
+  // Not enough distractors even after fallback — return short array
+  // (caller will detect < 4 options and fall back to spelling)
+  if (candidates.length < 3) {
+    return fisherYatesShuffle([correct, ...candidates], rng);
   }
 
   // Pick 3 random distractors (Fisher-Yates)

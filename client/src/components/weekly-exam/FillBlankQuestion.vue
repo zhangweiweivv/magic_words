@@ -1,5 +1,5 @@
 <template>
-  <div class="spelling-question">
+  <div class="fill-blank-question">
     <div class="question-meaning">{{ question.meaning }}</div>
     <div class="question-hint">填写缺失的字母</div>
 
@@ -138,7 +138,7 @@ defineExpose({
 </script>
 
 <style scoped>
-.spelling-question {
+.fill-blank-question {
   text-align: center;
   margin-top: 10px;
 }

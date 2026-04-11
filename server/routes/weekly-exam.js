@@ -8,6 +8,11 @@ const weeklyExamService = require('../services/weeklyExam');
 const { success, error: errRes } = require('../utils/response');
 
 // GET /api/weekly-exam/current - 获取当前周考
+// TODO: Defense in depth — currently the full question data (including `word` for choice
+// questions) is sent to the client, which means the correct answer is visible in the
+// response payload. Ideally, choice questions should omit `word` and the backend should
+// validate answers in recordFirstRound. This requires refactoring client-side scoring
+// to server-side scoring, which is a larger change.
 router.get('/current', (req, res) => {
   try {
     const exam = weeklyExamService.getOrGenerateExam();
@@ -74,6 +79,11 @@ router.post('/complete', (req, res) => {
     }
     if (status.generatedDate !== generatedDate) {
       return errRes(res, `generatedDate mismatch: expected ${status.generatedDate}, got ${generatedDate}`, 400);
+    }
+
+    // Enforce first round must be recorded before completing
+    if (!status.firstRoundRecorded) {
+      return errRes(res, 'First round must be recorded before completing', 400);
     }
 
     const result = weeklyExamService.markComplete(rounds);

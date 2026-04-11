@@ -84,6 +84,17 @@
       </div>
     </div>
 
+    <!-- 首轮提交失败（需重试） -->
+    <div v-else-if="stage === 'firstRoundSubmitFailed'" class="state error-state">
+      <div class="state-icon">⚠️</div>
+      <h2>提交失败</h2>
+      <p class="error-text">{{ firstRoundSubmitError }}</p>
+      <div class="state-actions">
+        <OceanButton variant="secondary" @click="goHome">返回港口</OceanButton>
+        <OceanButton variant="primary" @click="retryFirstRoundSubmit">重试提交</OceanButton>
+      </div>
+    </div>
+
     <!-- 首轮结果页（展示分数，并引导错题重做） -->
     <div v-else-if="stage === 'firstRoundResult'" class="state result-state">
       <div class="state-icon">🎯</div>
@@ -238,6 +249,7 @@ const loadError = ref('')
 const exam = ref(null)
 const startingExam = ref(false)
 const questionRef = ref(null)
+const firstRoundSubmitError = ref('')
 
 // localStorage key for redo persistence
 const REDO_STORAGE_KEY = 'weekly-exam-redo-state'
@@ -393,6 +405,27 @@ async function finishIfNoWrongs() {
   stage.value = 'completed'
 }
 
+async function submitFirstRoundWithRetry() {
+  try {
+    firstRoundSubmitError.value = ''
+    await weeklyExamApi.submitFirstRound({
+      generatedDate: exam.value?.generatedDate,
+      total: totalQuestions.value,
+      correct: firstRoundCorrect.value,
+      wrongDetails: wrongDetails.value
+    })
+    stage.value = 'firstRoundResult'
+  } catch (e) {
+    console.warn('weeklyExam submitFirstRound failed:', e)
+    firstRoundSubmitError.value = e?.response?.data?.error || e?.message || '网络错误，请重试'
+    stage.value = 'firstRoundSubmitFailed'
+  }
+}
+
+async function retryFirstRoundSubmit() {
+  await submitFirstRoundWithRetry()
+}
+
 function startRedo() {
   mode.value = 'redo'
   redoRoundIndex.value = 1
@@ -483,6 +516,10 @@ function recordWrong() {
     nextWrongQueue.value.push({ ...currentQuestion.value })
     if (currentQuestion.value?.word) currentRoundWrongWords.value.push(currentQuestion.value.word)
   }
+  // Save redo state after each answer in redo mode (crash recovery)
+  if (mode.value === 'redo') {
+    saveRedoState()
+  }
 }
 
 function handleAnswer({ correct }) {
@@ -518,19 +555,7 @@ function nextQuestion() {
 async function endRound() {
   // 首轮：提交首轮结果，进入首轮结果页
   if (mode.value === 'first') {
-    try {
-      await weeklyExamApi.submitFirstRound({
-        generatedDate: exam.value?.generatedDate,
-        total: totalQuestions.value,
-        correct: firstRoundCorrect.value,
-        wrongDetails: wrongDetails.value
-      })
-    } catch (e) {
-      console.warn('weeklyExam submitFirstRound failed:', e)
-      // 不中断流程，让用户继续错题重做/完成
-    }
-
-    stage.value = 'firstRoundResult'
+    await submitFirstRoundWithRetry()
     return
   }
 
