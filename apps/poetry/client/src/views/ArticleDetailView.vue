@@ -96,18 +96,18 @@ onMounted(loadData)
   border: none;
   color: var(--accent-red);
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-family: inherit;
   margin-bottom: 0.5rem;
 }
 
 .detail-header h1 {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   color: var(--ink-black);
 }
 
 .schedule-info h2, .timeline h2 {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--accent-red);
   margin-bottom: 0.8rem;
   padding-bottom: 0.4rem;
@@ -130,13 +130,13 @@ onMounted(loadData)
 
 .info-item .label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--ink-light);
   margin-bottom: 0.2rem;
 }
 
 .info-item .value {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -157,7 +157,7 @@ onMounted(loadData)
   gap: 0.8rem;
   padding: 0.6rem 0;
   border-bottom: 1px dashed var(--border-subtle);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 }
 
 .event-time {
