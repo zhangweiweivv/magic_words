@@ -570,7 +570,8 @@ const calendarDays = computed(() => {
 async function verifyPassword() {
   try {
     const res = await shopApi.verifyParent(password.value)
-    if (res.valid) {
+    const valid = res.valid ?? res.data?.valid
+    if (valid) {
       verified.value = true
       errorMsg.value = ''
       loadData()
