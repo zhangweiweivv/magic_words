@@ -1,7 +1,7 @@
 // server/services/expansion.js
 const fs = require('fs').promises
 const path = require('path')
-const { lookupTranslation } = require('./translate')
+const { lookupTranslation, lookupWordDetails } = require('./translate')
 
 const EXPANSION_STATE_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/expansion-state.json'
 const QUIZ_CONFIG_FILE = path.join(__dirname, '..', 'config', 'quiz-config.json')
@@ -117,21 +117,27 @@ async function extractExistingWords(filePath) {
 async function fetchTranslation(word, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
+      const details = await lookupWordDetails(word)
+      if (details && details.meaning) {
+        return { meaning: details.meaning, examples: details.examples || '' }
+      }
+      // Fallback to basic translation
       const translation = await lookupTranslation(word)
       if (translation) {
-        return translation
+        // Truncate to first 2 meanings
+        const short = translation.split(/[；;]/).slice(0, 2).join('；')
+        return { meaning: short.length > 20 ? short.slice(0, 20) : short, examples: '' }
       }
       console.log(`[expansion] Empty translation for "${word}" (attempt ${attempt}/${maxRetries})`)
     } catch (e) {
       console.log(`[expansion] Translation failed for "${word}" (attempt ${attempt}/${maxRetries}):`, e.message)
     }
     if (attempt < maxRetries) {
-      // Exponential backoff: 500ms, 1000ms, 2000ms
       await new Promise(resolve => setTimeout(resolve, 500 * attempt))
     }
   }
-  console.error(`[expansion] ⚠️ All ${maxRetries} attempts failed for "${word}", marking as 待补充`)
-  return '待补充'
+  console.error(`[expansion] ⚠️ All ${maxRetries} attempts failed for "${word}"`)
+  return { meaning: '待补充', examples: '' }
 }
 
 /**
@@ -244,15 +250,17 @@ async function expandWords(force = false) {
     }
   }
 
-  // 5. Fetch translations (serial to avoid rate limiting)
+  // 5. Fetch translations + examples (serial to avoid rate limiting)
   for (const item of selected) {
-    item.translation = await fetchTranslation(item.word)
+    const result = await fetchTranslation(item.word)
+    item.meaning = result.meaning
+    item.examples = result.examples
     // Small delay between API calls
     await new Promise(resolve => setTimeout(resolve, 300))
   }
 
   // 5.5 Check for failed translations and warn
-  const failedWords = selected.filter(item => item.translation === '待补充')
+  const failedWords = selected.filter(item => item.meaning === '待补充')
   if (failedWords.length > 0) {
     console.error(`[expansion] ⚠️ ${failedWords.length} words still have 待补充: ${failedWords.map(w => w.word).join(', ')}`)
   }
@@ -268,8 +276,9 @@ async function expandWords(force = false) {
   for (const item of selected) {
     const emoji = getRandomEmoji()
     const levelTag = `[${item.level}]`
-    const meaning = item.translation || '待补充'
-    lines.push(`> | ${item.word} | ${meaning} | ${levelTag} ${item.pos} |`)
+    const meaning = item.meaning || '待补充'
+    const examples = item.examples ? `${item.examples}` : `${levelTag} ${item.pos}`
+    lines.push(`> | ${item.word} | ${meaning} | ${examples} |`)
   }
 
   lines.push('')
@@ -323,7 +332,7 @@ async function expandWords(force = false) {
     wordsAdded: selected.length,
     failedTranslations: failedWords.map(w => w.word),
     summary,
-    words: selected.map(s => ({ word: s.word, level: s.level, translation: s.translation })),
+    words: selected.map(s => ({ word: s.word, level: s.level, meaning: s.meaning, examples: s.examples })),
     totalAdded: newState.totalAdded,
     nextExpansion: (() => {
       const next = new Date(today + 'T00:00:00+08:00')
