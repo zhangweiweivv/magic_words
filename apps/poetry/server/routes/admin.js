@@ -18,6 +18,7 @@ const { computeDifficulty } = require('../services/difficulty');
 const { applyConfigChange } = require('../services/stateMachine');
 const { listCollections, parseCollection } = require('../services/catalog');
 const { isValidArticleId, statePath, eventsPath, withCurrentStage } = require('./helpers');
+const { buildArticleSummary } = require('../services/articleSummary');
 const paths = require('../services/paths');
 
 // ── Read-only APIs ──────────────────────────────────────────
@@ -42,18 +43,10 @@ router.get('/api/admin/collection/:collection/articles', (req, res) => {
     return res.status(404).json({ error: `Collection '${collection}' not found` });
   }
 
-  // Enrich each article with state info (difficulty, scheduleSource, status)
+  // Enrich each article with state info via shared summary builder
   const enriched = parsed.articles.map(article => {
     const state = readJson(statePath(article.articleId), null);
-    return {
-      ...article,
-      difficulty: state ? state.difficulty : null,
-      scheduleSource: state ? (state.scheduleSource || 'level_default') : null,
-      status: state ? state.status : 'not_started',
-      stage: state ? state.stage : null,
-      totalStages: state ? state.totalStages : null,
-      intervals: state ? state.intervals : null,
-    };
+    return buildArticleSummary({ article, state });
   });
 
   res.json({ collection, articles: enriched });

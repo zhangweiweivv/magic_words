@@ -758,10 +758,10 @@ describe('GET /api/progress/overview', () => {
   });
 });
 
-// ── Data Consistency Test ──────────────────────────────────────────
-describe('Data consistency: state vs admin vs progress', () => {
-  it('key fields match across /api/state/:id, /api/admin/collection/:c/articles, /api/progress/overview', async () => {
-    // Use 寅集-01 which has been started
+// ── Contract Test: all three views share same projection ──────────
+describe('contract: progress/admin/state projections match', () => {
+  it('started article: status, stage/currentStage, totalStages, intervals, nextDueDate, scheduleSource are identical', async () => {
+    // 寅集-01 was started earlier — an active article with state on disk
     const articleId = '寅集-01';
     const collection = '寅集';
 
@@ -784,13 +784,15 @@ describe('Data consistency: state vs admin vs progress', () => {
     assert.ok(adminArticle, 'should find article in admin response');
     assert.ok(progressArticle, 'should find article in progress response');
 
-    // Compare key fields: status
+    // status
     assert.equal(stateData.status, adminArticle.status, 'status: state vs admin');
     assert.equal(stateData.status, progressArticle.status, 'status: state vs progress');
 
-    // stage / currentStage
-    assert.equal(stateData.stage, adminArticle.stage, 'stage: state vs admin');
+    // stage / currentStage — state endpoint adds currentStage via withCurrentStage;
+    // admin + progress both use buildArticleSummary which also adds currentStage
+    assert.equal(stateData.currentStage, adminArticle.currentStage, 'currentStage: state vs admin');
     assert.equal(stateData.currentStage, progressArticle.currentStage, 'currentStage: state vs progress');
+    assert.equal(stateData.stage, adminArticle.stage, 'stage (0-based): state vs admin');
 
     // totalStages
     assert.equal(stateData.totalStages, adminArticle.totalStages, 'totalStages: state vs admin');
@@ -801,6 +803,7 @@ describe('Data consistency: state vs admin vs progress', () => {
     assert.deepEqual(stateData.intervals, progressArticle.intervals, 'intervals: state vs progress');
 
     // nextDueDate
+    assert.equal(stateData.nextDueDate, adminArticle.nextDueDate, 'nextDueDate: state vs admin');
     assert.equal(stateData.nextDueDate, progressArticle.nextDueDate, 'nextDueDate: state vs progress');
 
     // scheduleSource (treat missing as level_default)
@@ -809,5 +812,36 @@ describe('Data consistency: state vs admin vs progress', () => {
     const progressSource = progressArticle.scheduleSource || 'level_default';
     assert.equal(stateSource, adminSource, 'scheduleSource: state vs admin');
     assert.equal(stateSource, progressSource, 'scheduleSource: state vs progress');
+  });
+
+  it('not-started article: admin and progress both return consistent null/not_started fields', async () => {
+    const collection = '寅集';
+
+    const [adminRes, progressRes] = await Promise.all([
+      request('GET', `/api/admin/collection/${encodeURIComponent(collection)}/articles`),
+      request('GET', '/api/progress/overview'),
+    ]);
+
+    // Find an article that has never been started (no state file)
+    // 寅集 has articles 1-16 in catalog; find one not started in tests
+    const progressCollection = progressRes.body.collections.find(c => c.name === collection);
+    const notStartedProgress = progressCollection.articles.find(a => a.status === 'not_started');
+    if (!notStartedProgress) return; // all started, skip
+
+    const notStartedAdmin = adminRes.body.articles.find(a => a.articleId === notStartedProgress.articleId);
+    assert.ok(notStartedAdmin, 'should find same article in admin');
+
+    assert.equal(notStartedAdmin.status, 'not_started', 'admin status');
+    assert.equal(notStartedProgress.status, 'not_started', 'progress status');
+    assert.equal(notStartedAdmin.stage, null, 'admin stage null');
+    assert.equal(notStartedProgress.stage, null, 'progress stage null');
+    assert.equal(notStartedAdmin.currentStage, null, 'admin currentStage null');
+    assert.equal(notStartedProgress.currentStage, null, 'progress currentStage null');
+    assert.equal(notStartedAdmin.totalStages, null, 'admin totalStages null');
+    assert.equal(notStartedProgress.totalStages, null, 'progress totalStages null');
+    assert.equal(notStartedAdmin.intervals, null, 'admin intervals null');
+    assert.equal(notStartedProgress.intervals, null, 'progress intervals null');
+    assert.equal(notStartedAdmin.scheduleSource, null, 'admin scheduleSource null');
+    assert.equal(notStartedProgress.scheduleSource, null, 'progress scheduleSource null');
   });
 });
