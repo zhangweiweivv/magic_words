@@ -126,6 +126,68 @@ describe('GET /api/catalog/:collection', () => {
 });
 
 // ── State API ──────────────────────────────────────────────
+describe('GET /api/state/current', () => {
+  it('returns null when there is no active article', async () => {
+    // only a graduated state exists
+    writeJson(path.join(stateRoot, `测试集-99.json`), {
+      articleId: '测试集-99',
+      collection: '测试集',
+      title: '已毕业',
+      stage: 3,
+      totalStages: 3,
+      intervals: [1, 2, 4],
+      status: 'graduated',
+      startedAt: '2026-04-01',
+      lastCompletedAt: '2026-04-05',
+      nextDueDate: '2026-04-05',
+      difficulty: 2,
+    });
+
+    const { status, body } = await request('GET', '/api/state/current');
+    assert.equal(status, 200);
+    assert.ok('current' in body);
+    assert.equal(body.current, null);
+  });
+
+  it('returns most recently active article', async () => {
+    // Use future timestamps to avoid interference with other tests that may create active states.
+    writeJson(path.join(stateRoot, `测试集-01.json`), {
+      articleId: '测试集-01',
+      collection: '测试集',
+      title: '测试A',
+      stage: 0,
+      totalStages: 4,
+      intervals: [0, 1, 3, 7],
+      status: 'active',
+      startedAt: '2999-01-01',
+      lastCompletedAt: '2999-01-01',
+      nextDueDate: '2999-01-02',
+      difficulty: 3,
+    });
+
+    writeJson(path.join(stateRoot, `测试集-02.json`), {
+      articleId: '测试集-02',
+      collection: '测试集',
+      title: '测试B',
+      stage: 0,
+      totalStages: 4,
+      intervals: [0, 1, 3, 7],
+      status: 'active',
+      startedAt: '2999-01-03',
+      lastCompletedAt: '2999-01-03',
+      nextDueDate: '2999-01-04',
+      difficulty: 3,
+    });
+
+    const { status, body } = await request('GET', '/api/state/current');
+    assert.equal(status, 200);
+    assert.ok(body.current);
+    assert.equal(body.current.articleId, '测试集-02');
+    assert.equal(body.current.status, 'active');
+    assert.ok(body.current.currentStage >= 1);
+  });
+});
+
 describe('POST /api/state/:articleId/complete', () => {
   it('starts a new article on first complete', async () => {
     const articleId = '寅集-01';

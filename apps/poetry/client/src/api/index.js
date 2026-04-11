@@ -20,6 +20,10 @@ export function fetchArticleState(articleId) {
   return request(`/state/${encodeURIComponent(articleId)}`)
 }
 
+export function fetchCurrent() {
+  return request('/state/current')
+}
+
 export function completeArticle(articleId) {
   return request(`/state/${encodeURIComponent(articleId)}/complete`, { method: 'POST' })
 }

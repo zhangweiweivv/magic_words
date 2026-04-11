@@ -83,6 +83,35 @@ router.get('/api/state/due', (_req, res) => {
   res.json({ due: sorted.map(withCurrentStage), today });
 });
 
+// GET /api/state/current
+router.get('/api/state/current', (_req, res) => {
+  let files;
+  try {
+    fs.mkdirSync(paths.STATE_ROOT, { recursive: true });
+    files = fs.readdirSync(paths.STATE_ROOT).filter(f => f.endsWith('.json') && !f.endsWith('.tmp.json'));
+  } catch {
+    files = [];
+  }
+
+  const states = files
+    .map(f => readJson(path.join(paths.STATE_ROOT, f)))
+    .filter(Boolean)
+    .filter(s => s.status === 'active');
+
+  if (states.length === 0) {
+    return res.json({ current: null });
+  }
+
+  // Most recently active = latest lastCompletedAt, fallback to startedAt.
+  states.sort((a, b) => {
+    const ta = a.lastCompletedAt || a.startedAt || '';
+    const tb = b.lastCompletedAt || b.startedAt || '';
+    return String(tb).localeCompare(String(ta));
+  });
+
+  res.json({ current: withCurrentStage(states[0]) });
+});
+
 // GET /api/state/:articleId
 router.get('/api/state/:articleId', (req, res) => {
   const { articleId } = req.params;
