@@ -147,8 +147,12 @@ function readWrongPool(cycleDate, windowWeeks) {
   try {
     if (!fs.existsSync(WRONG_POOL_FILE)) return [];
     const data = JSON.parse(fs.readFileSync(WRONG_POOL_FILE, 'utf-8'));
-    // Each entry: { word, meaning, addedDate }
-    return (data || []).filter(w => isWithinWindow(w.addedDate, cycleDate, windowWeeks));
+    // Each entry: { word, meaning, graduatedDate?, addedDate }
+    // Filtering rule: wrong pool is limited to the SAME N-week window by the word's graduation date.
+    return (data || []).filter(w => {
+      const gd = w.graduatedDate || w.addedDate;
+      return isWithinWindow(gd, cycleDate, windowWeeks);
+    });
   } catch {
     return [];
   }
@@ -244,6 +248,7 @@ function generateExam(cycleDate) {
     const question = {
       word: w.word,
       meaning: w.meaning,
+      graduatedDate: w.date || null,
       type,
       level,
       isFromWrongPool: isWrong,
@@ -360,6 +365,13 @@ function recordFirstRound(correct, total, wrongWords) {
   const status = readStatus();
   if (!status) throw new Error('No active exam');
 
+  // Build a lookup of graduation dates from current exam questions (preferred)
+  const qGradMap = new Map(
+    (status.questions || [])
+      .filter(q => q && q.word)
+      .map(q => [String(q.word).toLowerCase(), q.graduatedDate || null])
+  );
+
   // Update wrong pool
   const existingPool = (() => {
     try {
@@ -372,10 +384,17 @@ function recordFirstRound(correct, total, wrongWords) {
   const today = getTodayDateCST();
 
   for (const w of wrongWords) {
-    if (!existingSet.has(w.word.toLowerCase())) {
+    const key = String(w.word || '').toLowerCase();
+    if (!key) continue;
+
+    // Determine graduation date for window filtering
+    const graduatedDate = w.graduatedDate || qGradMap.get(key) || null;
+
+    if (!existingSet.has(key)) {
       existingPool.push({
         word: w.word,
         meaning: w.meaning,
+        graduatedDate,
         addedDate: today,
         source: 'weekly-exam',
       });
@@ -419,11 +438,34 @@ function markComplete(roundsSummary) {
   const status = readStatus();
   if (!status) throw new Error('No active exam');
 
+  const wasCompleted = !!status.completed;
+
   status.completed = true;
   if (roundsSummary) {
     status.roundsSummary = roundsSummary;
   }
   writeStatus(status);
+
+  // Slack notify (only on first completion)
+  if (!wasCompleted) {
+    try {
+      const firstRound = Array.isArray(status.rounds) ? status.rounds[0] : null;
+      const correct = firstRound?.correct ?? 0;
+      const total = firstRound?.total ?? status.total ?? 0;
+      const wrongWords = firstRound?.wrongWords ?? [];
+      const roundsCount = 1 + (Array.isArray(roundsSummary) ? roundsSummary.length : 0);
+
+      slackService.sendWeeklyExamComplete({
+        generatedDate: status.generatedDate,
+        score: correct,
+        total,
+        rounds: roundsCount,
+        wrongWords,
+      });
+    } catch (e) {
+      console.error('[weekly-exam] sendWeeklyExamComplete failed:', e.message);
+    }
+  }
 
   return status;
 }

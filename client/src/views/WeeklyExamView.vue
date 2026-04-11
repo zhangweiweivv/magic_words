@@ -523,7 +523,8 @@ function recordWrong() {
     wrongDetails.value.push({
       word: currentQuestion.value?.word,
       meaning: currentQuestion.value?.meaning,
-      type: currentQuestion.value?.type
+      type: currentQuestion.value?.type,
+      graduatedDate: currentQuestion.value?.graduatedDate || null,
     })
     wrongQueue.value.push({ ...currentQuestion.value })
   } else {
