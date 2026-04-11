@@ -5,6 +5,7 @@ const healthRoutes = require('./routes/health');
 const articleRoutes = require('./routes/articles');
 const stateRoutes = require('./routes/state');
 const configRoutes = require('./routes/config');
+const adminRoutes = require('./routes/admin');
 const recommendRoutes = require('./routes/recommend');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(healthRoutes);
 app.use(articleRoutes);
 app.use(stateRoutes);
 app.use(configRoutes);
+app.use(adminRoutes);
 app.use(recommendRoutes);
 
 // Serve built SPA from client/dist

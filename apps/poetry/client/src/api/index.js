@@ -54,3 +54,37 @@ export function fetchRecommendation() {
 export function fetchArticleContent(articleId) {
   return request(`/article/${encodeURIComponent(articleId)}/content`)
 }
+
+// ── Admin APIs ──────────────────────────────────────────
+
+export function fetchDifficultyRules() {
+  return request('/admin/difficulty/rules')
+}
+
+export function fetchAdminCollections() {
+  return request('/admin/collections')
+}
+
+export function fetchCollectionArticles(collection) {
+  return request(`/admin/collection/${encodeURIComponent(collection)}/articles`)
+}
+
+export function updateDifficultyLevel(level, config) {
+  return request(`/admin/difficulty/${level}`, {
+    method: 'PUT',
+    body: JSON.stringify(config)
+  })
+}
+
+export function overrideArticleSchedule(articleId, config) {
+  return request(`/admin/article/${encodeURIComponent(articleId)}/override`, {
+    method: 'PUT',
+    body: JSON.stringify(config)
+  })
+}
+
+export function resetArticleToDefault(articleId) {
+  return request(`/admin/article/${encodeURIComponent(articleId)}/reset-to-default`, {
+    method: 'PUT'
+  })
+}

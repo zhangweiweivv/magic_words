@@ -468,6 +468,179 @@ describe('POST /api/state/:articleId/complete (auto catalog lookup)', () => {
 });
 
 // ── Recommend API ──────────────────────────────────────────────
+// ── Recommend API ──────────────────────────────────────────────
+
+// ── difficulty defaults + scheduleSource priority ──────────────────
+describe('difficulty defaults + scheduleSource priority', () => {
+  it('PUT /api/config/article/:articleId sets scheduleSource to override', async () => {
+    const articleId = '寅集-src-01';
+    // Start article first
+    await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {
+      collection: '寅集',
+      title: '测试Source',
+      charCount: 200,
+      genre: '文言文',
+    });
+    // Verify initial scheduleSource
+    const { body: initial } = await request('GET', `/api/state/${encodeURIComponent(articleId)}`);
+    assert.equal(initial.state.scheduleSource, 'level_default');
+
+    // Override via config endpoint
+    const { status, body } = await request('PUT', `/api/config/article/${encodeURIComponent(articleId)}`, {
+      intervals: [1, 5, 10], totalStages: 3
+    });
+    assert.equal(status, 200);
+    assert.equal(body.state.scheduleSource, 'override');
+
+    // Verify persisted
+    const { body: after } = await request('GET', `/api/state/${encodeURIComponent(articleId)}`);
+    assert.equal(after.state.scheduleSource, 'override');
+  });
+
+  it('batch apply difficulty defaults does NOT overwrite override states', async () => {
+    // Start two articles with same difficulty (2)
+    const overrideId = '寅集-batch-01';
+    const defaultId = '寅集-batch-02';
+    await request('POST', `/api/state/${encodeURIComponent(overrideId)}/complete`, {
+      collection: '寅集', title: 'Override', charCount: 80, genre: '文言文',
+    });
+    await request('POST', `/api/state/${encodeURIComponent(defaultId)}/complete`, {
+      collection: '寅集', title: 'Default', charCount: 80, genre: '文言文',
+    });
+
+    // Override one
+    await request('PUT', `/api/config/article/${encodeURIComponent(overrideId)}`, {
+      intervals: [1, 5, 10], totalStages: 3
+    });
+
+    // Batch apply difficulty level 2 with applyToExisting
+    const { status, body } = await request('PUT', '/api/admin/difficulty/2', {
+      totalStages: 3, intervals: [2, 6, 12], applyToExisting: true
+    });
+    assert.equal(status, 200);
+    assert.ok(body.applied);
+    assert.ok(body.applied.skippedOverrides >= 1, 'should skip override states');
+
+    // Verify override state was NOT changed
+    const { body: overrideState } = await request('GET', `/api/state/${encodeURIComponent(overrideId)}`);
+    assert.deepEqual(overrideState.state.intervals, [1, 5, 10]);
+    assert.equal(overrideState.state.scheduleSource, 'override');
+
+    // Verify default state WAS changed
+    const { body: defaultState } = await request('GET', `/api/state/${encodeURIComponent(defaultId)}`);
+    assert.deepEqual(defaultState.state.intervals, [2, 6, 12]);
+    assert.equal(defaultState.state.scheduleSource, 'level_default');
+  });
+
+  it('reset-to-default flips override -> level_default', async () => {
+    const articleId = '寅集-reset-01';
+    await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {
+      collection: '寅集', title: 'ResetTest', charCount: 80, genre: '文言文',
+    });
+    // Override it
+    await request('PUT', `/api/config/article/${encodeURIComponent(articleId)}`, {
+      intervals: [1, 5, 10], totalStages: 3
+    });
+    const { body: before } = await request('GET', `/api/state/${encodeURIComponent(articleId)}`);
+    assert.equal(before.state.scheduleSource, 'override');
+
+    // Reset to default
+    const { status, body } = await request('PUT', `/api/admin/article/${encodeURIComponent(articleId)}/reset-to-default`);
+    assert.equal(status, 200);
+    assert.equal(body.state.scheduleSource, 'level_default');
+  });
+});
+
+// ── Admin read-only APIs ──────────────────────────────────────────
+describe('GET /api/admin/difficulty/rules', () => {
+  it('returns difficulty defaults', async () => {
+    const { status, body } = await request('GET', '/api/admin/difficulty/rules');
+    assert.equal(status, 200);
+    assert.ok(body.defaults);
+    assert.ok(body.defaults[1]);
+    assert.ok(body.defaults[2]);
+    assert.ok(body.defaults[3]);
+    assert.ok(body.defaults[4]);
+    assert.ok(Array.isArray(body.defaults[1].intervals));
+  });
+});
+
+describe('GET /api/admin/collections', () => {
+  it('returns sorted collections', async () => {
+    const { status, body } = await request('GET', '/api/admin/collections');
+    assert.equal(status, 200);
+    assert.ok(Array.isArray(body.collections));
+    assert.deepEqual(body.collections, ['寅集', '卯集']);
+  });
+});
+
+describe('GET /api/admin/collection/:collection/articles', () => {
+  it('returns articles with difficulty info', async () => {
+    const { status, body } = await request('GET', `/api/admin/collection/${encodeURIComponent('寅集')}/articles`);
+    assert.equal(status, 200);
+    assert.ok(Array.isArray(body.articles));
+    assert.ok(body.articles.length >= 1);
+    const first = body.articles[0];
+    assert.ok('difficulty' in first);
+    assert.ok('scheduleSource' in first);
+    assert.ok('status' in first);
+  });
+
+  it('returns 404 for unknown collection', async () => {
+    const { status } = await request('GET', `/api/admin/collection/${encodeURIComponent('不存在集')}/articles`);
+    assert.equal(status, 404);
+  });
+});
+
+// ── Admin write APIs ──────────────────────────────────────────
+describe('PUT /api/admin/difficulty/:level', () => {
+  it('updates difficulty defaults', async () => {
+    const { status, body } = await request('PUT', '/api/admin/difficulty/1', {
+      totalStages: 4, intervals: [1, 2, 5, 10]
+    });
+    assert.equal(status, 200);
+    assert.equal(body.defaults.totalStages, 4);
+    assert.deepEqual(body.defaults.intervals, [1, 2, 5, 10]);
+  });
+
+  it('rejects invalid level', async () => {
+    const { status } = await request('PUT', '/api/admin/difficulty/5', {
+      totalStages: 3, intervals: [1, 2, 5]
+    });
+    assert.equal(status, 400);
+  });
+
+  it('rejects intervals shorter than totalStages', async () => {
+    const { status } = await request('PUT', '/api/admin/difficulty/1', {
+      totalStages: 5, intervals: [1, 2]
+    });
+    assert.equal(status, 400);
+  });
+});
+
+// ── Per-article admin override ──────────────────────────────────────────
+describe('PUT /api/admin/article/:articleId/override', () => {
+  it('sets override on an article', async () => {
+    const articleId = '寅集-adm-over-01';
+    await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {
+      collection: '寅集', title: 'AdminOverride', charCount: 80, genre: '文言文',
+    });
+    const { status, body } = await request('PUT', `/api/admin/article/${encodeURIComponent(articleId)}/override`, {
+      intervals: [3, 6, 12], totalStages: 3
+    });
+    assert.equal(status, 200);
+    assert.equal(body.state.scheduleSource, 'override');
+    assert.deepEqual(body.state.intervals, [3, 6, 12]);
+  });
+
+  it('returns 404 for unknown article', async () => {
+    const { status } = await request('PUT', `/api/admin/article/${encodeURIComponent('不存在-01')}/override`, {
+      intervals: [1, 2], totalStages: 2
+    });
+    assert.equal(status, 404);
+  });
+});
+
 describe('GET /api/recommend/next', () => {
   it('returns a recommendation from the active collection', async () => {
     const { status, body } = await request('GET', '/api/recommend/next');
