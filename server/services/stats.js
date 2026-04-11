@@ -45,7 +45,7 @@ async function getDailyStats() {
   const content = await fs.readFile(STATS_FILE, 'utf-8')
   
   const dailyRecords = []
-  const dailyMatch = content.match(/## 每日记录\n\|[^\n]+\n\|[^\n]+\n([\s\S]*?)(?=\n##|$)/)
+  const dailyMatch = content.match(/## 每日记录\n+\|[^\n]+\n\|[^\n]+\n([\s\S]*?)(?=\n##|$)/)
   if (dailyMatch) {
     const rows = dailyMatch[1].trim().split('\n').filter(r => r.startsWith('|'))
     for (const row of rows) {
