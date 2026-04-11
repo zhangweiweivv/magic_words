@@ -9,23 +9,35 @@
       <p v-else class="article-meta">（浏览模式：还未开始学习）</p>
     </header>
 
+    <nav v-if="chipItems.length" class="section-chips">
+      <button
+        v-for="item in chipItems"
+        :key="item.key"
+        class="chip"
+        type="button"
+        @click="scrollToSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+
     <section class="article-content">
       <div v-if="loadingContent" class="placeholder-text">内容加载中…</div>
       <div v-else-if="contentError" class="placeholder-text">{{ contentError }}</div>
       <div v-else>
-        <div v-if="sections.original" class="content-block">
+        <div v-if="sections.original" id="section-original" class="content-block">
           <h3>原文</h3>
           <div class="content-text">{{ sections.original }}</div>
         </div>
-        <div v-if="sections.notes" class="content-block">
+        <div v-if="sections.notes" id="section-notes" class="content-block">
           <h3>注释</h3>
           <div class="content-text">{{ sections.notes }}</div>
         </div>
-        <div v-if="sections.translation" class="content-block">
+        <div v-if="sections.translation" id="section-translation" class="content-block">
           <h3>译文</h3>
           <div class="content-text">{{ sections.translation }}</div>
         </div>
-        <div v-if="sections.appreciation" class="content-block">
+        <div v-if="sections.appreciation" id="section-appreciation" class="content-block">
           <h3>赏析</h3>
           <div class="content-text">{{ sections.appreciation }}</div>
         </div>
@@ -82,6 +94,24 @@ const sections = ref({ original: '', notes: '', translation: '', appreciation: '
 const loadingContent = ref(true)
 const contentError = ref('')
 
+const chipItems = ref([])
+
+function rebuildChips() {
+  const s = sections.value || {}
+  const items = []
+  if ((s.original || '').trim()) items.push({ key: 'original', label: '原文', targetId: 'section-original' })
+  if ((s.notes || '').trim()) items.push({ key: 'notes', label: '注释', targetId: 'section-notes' })
+  if ((s.translation || '').trim()) items.push({ key: 'translation', label: '译文', targetId: 'section-translation' })
+  if ((s.appreciation || '').trim()) items.push({ key: 'appreciation', label: '赏析', targetId: 'section-appreciation' })
+  chipItems.value = items
+}
+
+function scrollToSection(targetId) {
+  const el = document.getElementById(targetId)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 async function loadState() {
   try {
     const data = await fetchArticleState(articleId)
@@ -99,7 +129,8 @@ async function loadContent() {
     const data = await fetchArticleContent(articleId)
     contentTitle.value = data.title
     sections.value = data.sections || { original: '', notes: '', translation: '', appreciation: '' }
-  } catch (e) {
+    rebuildChips()
+  } catch (e) {  
     contentError.value = `未找到正文内容（${e.message}）`
   } finally {
     loadingContent.value = false
@@ -161,6 +192,28 @@ onMounted(() => {
   margin-top: 0.3rem;
   color: var(--ink-light);
   font-size: 0.9rem;
+}
+
+.section-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 1rem;
+}
+
+.chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--paper-white);
+  color: var(--ink-dark);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.chip:hover {
+  background: var(--paper-light);
 }
 
 .article-content {
