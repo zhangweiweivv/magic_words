@@ -3,10 +3,17 @@
     <header class="article-header">
       <button class="back-btn" @click="router.push('/')">← 返回</button>
       <h1>{{ contentTitle || state?.title || articleId }}</h1>
-      <p v-if="state" class="article-meta">
-        {{ state.collection }} · 第{{ state.currentStage }}/{{ state.totalStages }}轮
-      </p>
-      <p v-else class="article-meta">（浏览模式：还未开始学习）</p>
+
+      <div v-if="state" class="meta-badges">
+        <span class="badge">{{ state.collection }}</span>
+        <span class="badge badge-accent">第{{ state.currentStage }}/{{ state.totalStages }}轮</span>
+        <span v-if="state.status === 'graduated'" class="badge badge-success">已毕业</span>
+        <span v-else class="badge">学习中</span>
+      </div>
+      <div v-else class="meta-badges">
+        <span class="badge">浏览模式</span>
+        <span class="badge badge-muted">还未开始学习</span>
+      </div>
     </header>
 
     <nav v-if="chipItems.length" class="section-chips">
@@ -167,10 +174,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.article-view {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem 2.5rem;
+}
+
 .article-header {
   padding: 1.5rem 0 1rem;
   border-bottom: 2px solid var(--border-subtle);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .back-btn {
@@ -189,17 +202,44 @@ onMounted(() => {
   letter-spacing: 0.05em;
 }
 
-.article-meta {
-  margin-top: 0.3rem;
+.meta-badges {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--paper-white);
+  color: var(--ink-dark);
+  font-size: 0.85rem;
+}
+
+.badge-muted {
   color: var(--ink-light);
-  font-size: 0.9rem;
+}
+
+.badge-accent {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(192, 57, 43, 0.06);
+  color: var(--accent-red);
+}
+
+.badge-success {
+  background: rgba(39, 174, 96, 0.08);
+  color: var(--success-green);
 }
 
 .section-chips {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin: 0.5rem 0 1rem;
+  margin: 0.75rem 0 1rem;
 }
 
 .chip {
@@ -219,11 +259,12 @@ onMounted(() => {
 
 .article-content {
   min-height: 200px;
-  padding: 1.5rem;
+  padding: 1.75rem;
   background: var(--paper-white);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .placeholder-text {
