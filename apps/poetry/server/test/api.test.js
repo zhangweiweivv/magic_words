@@ -428,6 +428,22 @@ describe('PUT /api/config/article/:articleId', () => {
     });
     assert.equal(status, 400);
   });
+
+  it('returns 400 when intervals is shorter than totalStages (prevents orphaned active state)', async () => {
+    const articleId = '寅集-config-03';
+    await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {
+      collection: '寅集',
+      title: '《孟子》三则',
+      charCount: 50,
+      genre: '文言文',
+    });
+
+    const { status } = await request('PUT', `/api/config/article/${encodeURIComponent(articleId)}`, {
+      intervals: [1, 2],
+      totalStages: 5,
+    });
+    assert.equal(status, 400);
+  });
 });
 
 // ── Path traversal validation ──────────────────────────────────────────
@@ -638,6 +654,19 @@ describe('PUT /api/admin/article/:articleId/override', () => {
       intervals: [1, 2], totalStages: 2
     });
     assert.equal(status, 404);
+  });
+
+  it('returns 400 when intervals is shorter than totalStages', async () => {
+    const articleId = '寅集-adm-over-02';
+    await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {
+      collection: '寅集', title: 'AdminOverrideBad', charCount: 80, genre: '文言文',
+    });
+
+    const { status } = await request('PUT', `/api/admin/article/${encodeURIComponent(articleId)}/override`, {
+      intervals: [1, 2],
+      totalStages: 5,
+    });
+    assert.equal(status, 400);
   });
 });
 
