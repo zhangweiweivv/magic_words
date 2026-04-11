@@ -7,7 +7,10 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "build": "cd client && npm run build",
-    "start": "cd server && npm start"
+    "start": "cd server && npm start",
+    "dev:portal": "concurrently \"cd apps/portal/server && node index.js\" \"cd apps/portal/client && npm run dev\"",
+    "dev:poetry": "concurrently \"cd apps/poetry/server && node index.js\" \"cd apps/poetry/client && npm run dev\"",
+    "dev:all": "concurrently \"npm run server\" \"npm run client\" \"cd apps/portal/client && npm run dev\" \"cd apps/poetry/client && npm run dev\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
