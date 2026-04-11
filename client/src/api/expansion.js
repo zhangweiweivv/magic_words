@@ -9,7 +9,7 @@ export const expansionApi = {
   },
 
   async expand(force = false) {
-    const res = await api.post(`${EXPANSION_BASE}/expand`, { force })
+    const res = await api.post(`${EXPANSION_BASE}/expand`, { force }, { timeout: 30000 })
     return res.data
   }
 }
