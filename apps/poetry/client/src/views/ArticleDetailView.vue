@@ -18,7 +18,7 @@
         </div>
         <div class="info-item">
           <span class="label">下次复习</span>
-          <span class="value">{{ state.nextDue || '—' }}</span>
+          <span class="value">{{ state.nextDueDate || '—' }}</span>
         </div>
         <div class="info-item">
           <span class="label">复习间隔</span>
