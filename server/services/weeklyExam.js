@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const { OBSIDIAN_PATH, getLearnedWords } = require('./obsidian');
+const EXCLUDED_WORDS = require('../config/excluded-basic-words');
 const { buildCefrMap } = require('./petVocab');
 const { getTodayDateCST } = require('../utils/date');
 const slackService = require('./slack');
@@ -228,7 +229,7 @@ function generateExam(cycleDate) {
 
   // 1. Get all learned words within window
   const allLearned = getLearnedWords();
-  const windowWords = allLearned.filter(w => isWithinWindow(w.date, cycleDate, windowWeeks));
+  const windowWords = allLearned.filter(w => isWithinWindow(w.date, cycleDate, windowWeeks) && !EXCLUDED_WORDS.has(w.word.toLowerCase()));
 
   // 2. Get wrong pool within window
   const wrongPool = readWrongPool(cycleDate, windowWeeks, allLearned);
