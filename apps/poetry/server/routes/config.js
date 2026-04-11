@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { applyConfigChange } = require('../services/stateMachine');
+const { validateLevelConfig } = require('../services/difficultyDefaults');
 const { withCurrentStage, isValidArticleId, statePath, eventsPath } = require('./helpers');
 
 // PUT /api/config/article/:articleId
@@ -20,11 +21,12 @@ router.put('/api/config/article/:articleId', (req, res) => {
   }
 
   const { intervals, totalStages } = req.body || {};
-  if (!Array.isArray(intervals) || !intervals.every(n => typeof n === 'number' && n > 0)) {
-    return res.status(400).json({ error: 'intervals must be an array of positive numbers' });
-  }
-  if (typeof totalStages !== 'number' || totalStages < 1) {
-    return res.status(400).json({ error: 'totalStages must be a positive number' });
+  const newConfig = { intervals, totalStages };
+
+  // Critical validation: prevent active articles from entering an "orphaned" state
+  // (status=active but nextDueDate=null) when intervals is shorter than totalStages.
+  if (!validateLevelConfig(newConfig)) {
+    return res.status(400).json({ error: 'Invalid config: intervals must be array of positive numbers with length >= totalStages' });
   }
 
   const now = new Date().toISOString();

@@ -134,11 +134,10 @@ router.put('/api/admin/article/:articleId/override', (req, res) => {
   }
 
   const { intervals, totalStages } = req.body || {};
-  if (!Array.isArray(intervals) || !intervals.every(n => typeof n === 'number' && n > 0)) {
-    return res.status(400).json({ error: 'intervals must be an array of positive numbers' });
-  }
-  if (typeof totalStages !== 'number' || totalStages < 1) {
-    return res.status(400).json({ error: 'totalStages must be a positive number' });
+  const newConfig = { intervals, totalStages };
+
+  if (!validateLevelConfig(newConfig)) {
+    return res.status(400).json({ error: 'Invalid config: intervals must be array of positive numbers with length >= totalStages' });
   }
 
   const now = new Date().toISOString();
