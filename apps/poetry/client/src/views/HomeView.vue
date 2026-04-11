@@ -23,7 +23,7 @@
     </section>
 
     <section class="current-section">
-      <h2>✅ 正在学习</h2>
+      <h2>🕒 最近一次学习</h2>
       <div v-if="!current" class="empty">暂无正在学习的文章</div>
       <div v-else class="current-card">
         <div class="current-info" @click="continueCurrent">

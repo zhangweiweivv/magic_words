@@ -61,6 +61,9 @@ describe('HomeView', () => {
 
     await flushPromises()
 
+    // section title
+    expect(wrapper.find('.current-section').text()).toContain('最近一次学习')
+
     const currentCard = wrapper.find('.current-card')
     expect(currentCard.exists()).toBe(true)
     expect(currentCard.text()).toContain('《论语》八章')

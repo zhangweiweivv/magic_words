@@ -84,6 +84,8 @@ router.get('/api/state/due', (_req, res) => {
 });
 
 // GET /api/state/current
+// "最近一次学习"：按每篇文章 events.jsonl 的最新 timestamp 排序；
+// 若某篇缺少 events 文件，则回退使用 lastCompletedAt/startedAt。
 router.get('/api/state/current', (_req, res) => {
   let files;
   try {
@@ -95,21 +97,41 @@ router.get('/api/state/current', (_req, res) => {
 
   const states = files
     .map(f => readJson(path.join(paths.STATE_ROOT, f)))
-    .filter(Boolean)
-    .filter(s => s.status === 'active');
+    .filter(Boolean);
 
   if (states.length === 0) {
     return res.json({ current: null });
   }
 
-  // Most recently active = latest lastCompletedAt, fallback to startedAt.
-  states.sort((a, b) => {
-    const ta = a.lastCompletedAt || a.startedAt || '';
-    const tb = b.lastCompletedAt || b.startedAt || '';
-    return String(tb).localeCompare(String(ta));
-  });
+  function recencyMs(state) {
+    // Prefer latest event timestamp
+    const events = readEvents(state.articleId);
+    let best = null;
+    for (const e of events) {
+      if (!e || !e.timestamp) continue;
+      const ms = Date.parse(e.timestamp);
+      if (Number.isNaN(ms)) continue;
+      best = best == null ? ms : Math.max(best, ms);
+    }
+    if (best != null) return best;
 
-  res.json({ current: withCurrentStage(states[0]) });
+    // Fallback to state dates (YYYY-MM-DD)
+    const d = state.lastCompletedAt || state.startedAt;
+    if (!d) return null;
+    const ms = Date.parse(`${String(d).slice(0, 10)}T00:00:00.000Z`);
+    return Number.isNaN(ms) ? null : ms;
+  }
+
+  const ranked = states
+    .map(s => ({ state: s, ms: recencyMs(s) }))
+    .filter(x => x.ms != null)
+    .sort((a, b) => b.ms - a.ms);
+
+  if (ranked.length === 0) {
+    return res.json({ current: null });
+  }
+
+  res.json({ current: withCurrentStage(ranked[0].state) });
 });
 
 // GET /api/state/:articleId
