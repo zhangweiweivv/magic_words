@@ -8,6 +8,7 @@ const path = require('path');
 const { OBSIDIAN_PATH, getLearnedWords } = require('./obsidian');
 const { buildCefrMap } = require('./petVocab');
 const { getTodayDateCST } = require('../utils/date');
+const slackService = require('./slack');
 
 // Read config fresh each time (so ParentView changes take effect without restart)
 function getQuizConfig() {
@@ -307,6 +308,14 @@ function generateChoiceOptions(targetWord, windowWords, allLearned, rng) {
  * Returns exam data if valid for current cycle, generates new if needed.
  */
 function getOrGenerateExam() {
+  return ensureCurrentExam({ sendSlackReady: false });
+}
+
+/**
+ * Ensure the current weekly exam exists for the current cycle.
+ * If a new exam is generated and sendSlackReady=true, send a Slack notification.
+ */
+function ensureCurrentExam({ sendSlackReady = false } = {}) {
   const now = new Date();
   const cfg = getWeeklyExamConfig();
   const cycleDate = getExamCycleDate(now, cfg.examDay);
@@ -326,6 +335,21 @@ function getOrGenerateExam() {
     rounds: [],
   };
   writeStatus(newStatus);
+
+  if (sendSlackReady) {
+    try {
+      slackService.sendWeeklyExamReady({
+        generatedDate: newStatus.generatedDate,
+        total: newStatus.total,
+        wrongCount: newStatus.wrongCount,
+        sampledCount: newStatus.sampledCount,
+        windowWeeks: newStatus.windowWeeks,
+      });
+    } catch (e) {
+      console.error('[weekly-exam] sendWeeklyExamReady failed:', e.message);
+    }
+  }
+
   return newStatus;
 }
 
@@ -414,6 +438,7 @@ module.exports = {
   fisherYatesShuffle,
   generateChoiceOptions,
   // Service functions
+  ensureCurrentExam,
   getOrGenerateExam,
   generateExam,
   recordFirstRound,
