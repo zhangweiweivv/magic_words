@@ -48,6 +48,7 @@
     </section>
 
     <nav class="nav-links">
+      <router-link to="/progress" class="nav-link">📚 我的进度</router-link>
       <router-link to="/parent" class="nav-link">👨‍👩‍👧 家长中心</router-link>
     </nav>
   </div>
