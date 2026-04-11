@@ -4,16 +4,22 @@
     <p class="subtitle">欢迎来到可可的学习城堡！选择一个房间开始探索吧 ✨</p>
 
     <div class="rooms">
-      <a class="room-card vocab" :href="vocabUrl" target="_blank">
+      <a class="room-card vocab" :href="vocabUrl" target="_blank" rel="noopener noreferrer">
         <div class="room-icon">🌊</div>
         <h2>可可的单词魔法屋</h2>
         <p>英语单词冒险之旅</p>
       </a>
 
-      <a class="room-card poetry" :href="poetryUrl" target="_blank">
+      <a class="room-card poetry" :href="poetryUrl" target="_blank" rel="noopener noreferrer">
         <div class="room-icon">📜</div>
         <h2>可可古诗文</h2>
         <p>小红本 · 诗词古文背诵</p>
+      </a>
+
+      <a class="room-card typing" :href="typingUrl" target="_blank" rel="noopener noreferrer">
+        <div class="room-icon">⌨️</div>
+        <h2>Typing Master</h2>
+        <p>打字练习 · 提升速度与准确率</p>
       </a>
     </div>
     <WeeklyReadingPlanWidget />
@@ -41,6 +47,7 @@ function serviceUrl(port) {
 // vocab frontend is served by Vite dev server on 5173 (server API on 3001)
 const vocabUrl = computed(() => serviceUrl(5173))
 const poetryUrl = computed(() => serviceUrl(3002))
+const typingUrl = 'https://mango-smoke-0c143a30f.4.azurestaticapps.net/'
 </script>
 
 <style scoped>
@@ -99,6 +106,11 @@ const poetryUrl = computed(() => serviceUrl(3002))
 
 .room-card.poetry {
   background: linear-gradient(145deg, #8b0000, #c0392b);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.room-card.typing {
+  background: linear-gradient(145deg, #6c5ce7, #a29bfe);
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
