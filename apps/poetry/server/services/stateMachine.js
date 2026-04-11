@@ -37,6 +37,8 @@ function startArticle(_state, meta, now) {
     articleId: meta.articleId,
     collection: meta.collection,
     title: meta.title,
+    charCount: meta.charCount,
+    genre: meta.genre || null,
     stage: 0,
     totalStages: schedule.totalStages,
     intervals: schedule.intervals,

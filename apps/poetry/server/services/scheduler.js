@@ -53,7 +53,9 @@ function sortDueArticles(dueList) {
   return [...dueList].sort((a, b) => {
     if (b.overdueDays !== a.overdueDays) return b.overdueDays - a.overdueDays;
     if (b.stage !== a.stage) return b.stage - a.stage;
-    return (a.charCount || 0) - (b.charCount || 0);
+    if ((a.charCount || 0) !== (b.charCount || 0)) return (a.charCount || 0) - (b.charCount || 0);
+    // Deterministic final tiebreak by articleId
+    return (a.articleId || '').localeCompare(b.articleId || '');
   });
 }
 

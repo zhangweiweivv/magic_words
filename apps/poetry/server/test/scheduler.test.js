@@ -122,5 +122,17 @@ describe('scheduler', () => {
       assert.strictEqual(sorted[1].articleId, 'a');
       assert.strictEqual(sorted[2].articleId, 'b');
     });
+
+    it('breaks charCount tie deterministically by articleId', () => {
+      const list = [
+        { articleId: 'z-01', overdueDays: 0, stage: 2, charCount: 50 },
+        { articleId: 'a-01', overdueDays: 0, stage: 2, charCount: 50 },
+        { articleId: 'm-01', overdueDays: 0, stage: 2, charCount: 50 },
+      ];
+      const sorted = sortDueArticles(list);
+      assert.strictEqual(sorted[0].articleId, 'a-01');
+      assert.strictEqual(sorted[1].articleId, 'm-01');
+      assert.strictEqual(sorted[2].articleId, 'z-01');
+    });
   });
 });

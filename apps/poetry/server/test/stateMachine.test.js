@@ -25,6 +25,8 @@ describe('stateMachine', () => {
       assert.strictEqual(nextState.articleId, 'zi-01');
       assert.strictEqual(nextState.status, 'active');
       assert.strictEqual(nextState.stage, 0);
+      assert.strictEqual(nextState.charCount, 20);
+      assert.strictEqual(nextState.genre, '五言绝句');
       assert.ok(nextState.intervals.length > 0);
       assert.strictEqual(nextState.startedAt, '2026-04-10');
       assert.strictEqual(nextState.lastCompletedAt, '2026-04-10');
