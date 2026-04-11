@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <PlumRainCanvas />
     <header class="home-header">
       <h1>📜 可可古诗文</h1>
       <p class="collection-name" v-if="collectionName">当前集：{{ collectionName }}</p>
@@ -56,6 +57,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchDueList, fetchCurrent, fetchRecommendation } from '../api/index.js'
+import PlumRainCanvas from '../components/PlumRainCanvas.vue'
 
 const router = useRouter()
 const dueList = ref([])
