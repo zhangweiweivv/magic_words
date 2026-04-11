@@ -22,8 +22,20 @@
       </ul>
     </section>
 
+    <section class="current-section">
+      <h2>✅ 正在学习</h2>
+      <div v-if="!current" class="empty">暂无正在学习的文章</div>
+      <div v-else class="current-card">
+        <div class="current-info" @click="continueCurrent">
+          <span class="current-title">{{ current.title }}</span>
+          <span class="current-stage">第{{ current.currentStage }}轮</span>
+        </div>
+        <button class="continue-btn" @click.stop="continueCurrent">继续学习</button>
+      </div>
+    </section>
+
     <section class="recommend-section">
-      <h2>🌟 推荐新学</h2>
+      <h2>⭐ 下一篇推荐</h2>
       <div v-if="!recommendation" class="empty">当前没有新篇推荐</div>
       <div v-else class="recommend-card" @click="startNewArticle">
         <div class="recommend-info">
@@ -43,12 +55,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchDueList, fetchRecommendation, completeArticle } from '../api/index.js'
+import { fetchDueList, fetchCurrent, fetchRecommendation, completeArticle } from '../api/index.js'
 
 const router = useRouter()
 const dueList = ref([])
 const collectionName = ref('')
 const loading = ref(true)
+const current = ref(null)
 const recommendation = ref(null)
 
 async function loadDue() {
@@ -66,17 +79,34 @@ async function loadDue() {
   }
 }
 
+async function loadCurrent() {
+  try {
+    const data = await fetchCurrent()
+    current.value = data.current || null
+    if (!collectionName.value && current.value && current.value.collection) {
+      collectionName.value = current.value.collection
+    }
+  } catch (e) {
+    console.error('Failed to load current article:', e)
+  }
+}
+
 async function loadRecommendation() {
   try {
     const data = await fetchRecommendation()
     recommendation.value = data.recommendation || null
-    // If collection name wasn't set from due list, use recommendation
+    // If collection name wasn't set from due list/current, use recommendation
     if (!collectionName.value && recommendation.value) {
       collectionName.value = recommendation.value.collection
     }
   } catch (e) {
     console.error('Failed to load recommendation:', e)
   }
+}
+
+function continueCurrent() {
+  if (!current.value) return
+  router.push({ name: 'article', params: { articleId: current.value.articleId } })
 }
 
 async function startNewArticle() {
@@ -95,6 +125,7 @@ function goToArticle(articleId) {
 
 onMounted(() => {
   loadDue()
+  loadCurrent()
   loadRecommendation()
 })
 </script>
@@ -119,16 +150,55 @@ onMounted(() => {
   font-size: 0.9rem;
 }
 
-.due-section, .recommend-section {
+.due-section, .current-section, .recommend-section {
   margin-bottom: 2rem;
 }
 
-.due-section h2, .recommend-section h2 {
+.due-section h2, .current-section h2, .recommend-section h2 {
   font-size: 1.2rem;
   color: var(--accent-red);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-subtle);
+}
+
+.current-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--paper-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.current-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+.current-title {
+  font-size: 1.05rem;
+  color: var(--ink-black);
+}
+
+.current-stage {
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.continue-btn {
+  padding: 0.5rem 1rem;
+  background: var(--accent-red, #c0392b);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .loading, .empty {
