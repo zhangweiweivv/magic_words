@@ -114,15 +114,23 @@ async function extractExistingWords(filePath) {
 /**
  * Fetch Chinese translation for a word via the translate service (direct call)
  */
-async function fetchTranslation(word) {
-  try {
-    const translation = await lookupTranslation(word)
-    if (translation) {
-      return translation
+async function fetchTranslation(word, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const translation = await lookupTranslation(word)
+      if (translation) {
+        return translation
+      }
+      console.log(`[expansion] Empty translation for "${word}" (attempt ${attempt}/${maxRetries})`)
+    } catch (e) {
+      console.log(`[expansion] Translation failed for "${word}" (attempt ${attempt}/${maxRetries}):`, e.message)
     }
-  } catch (e) {
-    console.log(`[expansion] Translation failed for "${word}":`, e.message)
+    if (attempt < maxRetries) {
+      // Exponential backoff: 500ms, 1000ms, 2000ms
+      await new Promise(resolve => setTimeout(resolve, 500 * attempt))
+    }
   }
+  console.error(`[expansion] ⚠️ All ${maxRetries} attempts failed for "${word}", marking as 待补充`)
   return '待补充'
 }
 
@@ -240,7 +248,13 @@ async function expandWords(force = false) {
   for (const item of selected) {
     item.translation = await fetchTranslation(item.word)
     // Small delay between API calls
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await new Promise(resolve => setTimeout(resolve, 300))
+  }
+
+  // 5.5 Check for failed translations and warn
+  const failedWords = selected.filter(item => item.translation === '待补充')
+  if (failedWords.length > 0) {
+    console.error(`[expansion] ⚠️ ${failedWords.length} words still have 待补充: ${failedWords.map(w => w.word).join(', ')}`)
   }
 
   // 6. Build callout block
@@ -305,8 +319,9 @@ async function expandWords(force = false) {
 
   return {
     expanded: true,
-    message: `成功扩充 ${selected.length} 个新词`,
+    message: `成功扩充 ${selected.length} 个新词` + (failedWords.length > 0 ? `（${failedWords.length} 个翻译待补充）` : ''),
     wordsAdded: selected.length,
+    failedTranslations: failedWords.map(w => w.word),
     summary,
     words: selected.map(s => ({ word: s.word, level: s.level, translation: s.translation })),
     totalAdded: newState.totalAdded,
