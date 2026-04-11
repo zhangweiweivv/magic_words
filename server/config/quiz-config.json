@@ -44,15 +44,31 @@
     "examDay": 6,
     "windowWeeks": 1,
     "sampleRates": {
-      "A1": 0.2,
-      "A2": 0.4,
+      "A1": 0.4,
+      "A2": 0.6,
       "B1+": 0.6
     },
     "questionTypes": {
-      "A1": { "choice": 60, "fillBlank": 30, "spelling": 10 },
-      "A2": { "choice": 30, "fillBlank": 40, "spelling": 30 },
-      "B1+": { "choice": 10, "fillBlank": 30, "spelling": 60 },
-      "wrong": { "choice": 0, "fillBlank": 0, "spelling": 100 }
+      "A1": {
+        "choice": 0,
+        "fillBlank": 50,
+        "spelling": 50
+      },
+      "A2": {
+        "choice": 20,
+        "fillBlank": 40,
+        "spelling": 40
+      },
+      "B1+": {
+        "choice": 20,
+        "fillBlank": 40,
+        "spelling": 40
+      },
+      "wrong": {
+        "choice": 0,
+        "fillBlank": 40,
+        "spelling": 60
+      }
     }
   },
   "slackChannelId": "C0AL4DAQ02U"
