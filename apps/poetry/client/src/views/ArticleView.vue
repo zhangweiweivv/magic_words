@@ -35,19 +35,43 @@
       <div v-else>
         <div v-if="sections.original" id="section-original" class="content-block">
           <h3>原文</h3>
-          <div class="content-text">{{ sections.original }}</div>
+          <div class="content-text">
+            <template v-for="(line, idx) in formatSection(sections.original)" :key="`o-${idx}`">
+              <div v-if="line.type === 'divider'" class="content-divider" />
+              <div v-else-if="line.type === 'heading'" class="content-heading">{{ line.text }}</div>
+              <div v-else class="content-line">{{ line.text }}</div>
+            </template>
+          </div>
         </div>
         <div v-if="sections.notes" id="section-notes" class="content-block">
           <h3>注释</h3>
-          <div class="content-text">{{ sections.notes }}</div>
+          <div class="content-text">
+            <template v-for="(line, idx) in formatSection(sections.notes)" :key="`n-${idx}`">
+              <div v-if="line.type === 'divider'" class="content-divider" />
+              <div v-else-if="line.type === 'heading'" class="content-heading">{{ line.text }}</div>
+              <div v-else class="content-line">{{ line.text }}</div>
+            </template>
+          </div>
         </div>
         <div v-if="sections.translation" id="section-translation" class="content-block">
           <h3>译文</h3>
-          <div class="content-text">{{ sections.translation }}</div>
+          <div class="content-text">
+            <template v-for="(line, idx) in formatSection(sections.translation)" :key="`t-${idx}`">
+              <div v-if="line.type === 'divider'" class="content-divider" />
+              <div v-else-if="line.type === 'heading'" class="content-heading">{{ line.text }}</div>
+              <div v-else class="content-line">{{ line.text }}</div>
+            </template>
+          </div>
         </div>
         <div v-if="sections.appreciation" id="section-appreciation" class="content-block">
           <h3>赏析</h3>
-          <div class="content-text">{{ sections.appreciation }}</div>
+          <div class="content-text">
+            <template v-for="(line, idx) in formatSection(sections.appreciation)" :key="`a-${idx}`">
+              <div v-if="line.type === 'divider'" class="content-divider" />
+              <div v-else-if="line.type === 'heading'" class="content-heading">{{ line.text }}</div>
+              <div v-else class="content-line">{{ line.text }}</div>
+            </template>
+          </div>
         </div>
       </div>
     </section>
@@ -118,6 +142,32 @@ function scrollToSection(targetId) {
   const el = document.getElementById(targetId)
   if (!el) return
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function toChapterHeadingText(inner) {
+  const s = String(inner || '').trim()
+  if (!s) return ''
+  // Common Chinese numerals used as chapter markers
+  if (/^[一二三四五六七八九十]+$/.test(s)) return `（${s}）`
+  return s
+}
+
+function stripBoldMarkers(text) {
+  return String(text || '').replace(/\*\*(.*?)\*\*/g, '$1')
+}
+
+function formatSection(text) {
+  if (!text) return []
+  const lines = String(text).split('\n')
+  return lines.map(raw => {
+    const t = String(raw).trim()
+    if (t === '***' || t === '---') return { type: 'divider', text: '' }
+
+    const m = t.match(/^\*\*(.+?)\*\*$/)
+    if (m) return { type: 'heading', text: toChapterHeadingText(m[1]) }
+
+    return { type: 'text', text: stripBoldMarkers(raw) }
+  })
 }
 
 async function loadState() {
@@ -284,9 +334,25 @@ onMounted(() => {
 }
 
 .content-text {
-  white-space: pre-wrap;
-  line-height: 1.6;
+  line-height: 1.7;
   color: var(--ink-black);
+}
+
+.content-line {
+  white-space: pre-wrap;
+}
+
+.content-heading {
+  margin: 0.6rem 0 0.2rem;
+  font-weight: 800;
+  color: var(--ink-dark);
+  letter-spacing: 0.04em;
+}
+
+.content-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 0.9rem 0;
 }
 
 .start-learning-btn {

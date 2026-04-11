@@ -153,6 +153,43 @@ describe('ArticleView', () => {
     expect(spy).toHaveBeenCalled()
   })
 
+  it('renders markdown-like chapter headings and removes *** separators', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: 'poem-4',
+      title: '测试排版',
+      sections: {
+        original: '**一**\n子曰：学而时习之\n***\n**二**\n有朋自远方来',
+        notes: '',
+        translation: '',
+        appreciation: ''
+      }
+    })
+    fetchArticleState.mockRejectedValue(new Error('404'))
+
+    const router = createTestRouter()
+    await router.push('/article/poem-4')
+    await router.isReady()
+
+    const wrapper = mount(ArticleView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    // raw markdown markers should not leak
+    expect(wrapper.text()).not.toContain('**一**')
+    expect(wrapper.text()).not.toContain('***')
+
+    // headings should render as dedicated elements
+    const headings = wrapper.findAll('.content-heading')
+    expect(headings.length).toBeGreaterThanOrEqual(2)
+    expect(headings[0].text()).toContain('（一）')
+    expect(headings[1].text()).toContain('（二）')
+
+    const dividers = wrapper.findAll('.content-divider')
+    expect(dividers.length).toBe(1)
+  })
+
   it('calls API and updates UI when clicking Start button in browse mode', async () => {
     fetchArticleContent.mockResolvedValue({
       articleId: '寅集-01',
