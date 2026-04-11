@@ -9,7 +9,13 @@
     </header>
 
     <section class="article-content">
-      <p class="placeholder-text">（古诗文内容加载中…）</p>
+      <p class="placeholder-text">
+        （当前版本：已实现“推荐/进度/艾宾浩斯/记录/家长配置”。
+        <br />
+        正文内容（原文/注释/译文/赏析/拼音）还没录入到 Obsidian，因此这里暂时不展示。
+        <br />
+        等我把《小红本》寅集的每篇正文整理成：<code>小红本/{{ state?.collection || '寅集' }}/{{ articleId }}-*.md</code> 后，这里会自动显示。）
+      </p>
     </section>
 
     <div class="actions">
