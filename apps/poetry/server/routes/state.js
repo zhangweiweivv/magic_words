@@ -46,7 +46,17 @@ function readEvents(articleId) {
   const fp = eventsPath(articleId);
   try {
     const raw = fs.readFileSync(fp, 'utf-8');
-    return raw.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
+    const events = [];
+    for (const line of raw.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        events.push(JSON.parse(trimmed));
+      } catch {
+        // Skip malformed lines (e.g. partial writes)
+      }
+    }
+    return events;
   } catch {
     return [];
   }

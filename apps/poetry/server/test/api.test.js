@@ -248,6 +248,43 @@ describe('GET /api/state/:articleId', () => {
   });
 });
 
+describe('GET /api/state/:articleId (JSONL robustness)', () => {
+  it('returns valid events even when JSONL contains malformed lines', async () => {
+    const articleId = '寅集-malformed-01';
+    // Create state file directly
+    const stateData = {
+      articleId,
+      collection: '寅集',
+      title: '测试篇',
+      stage: 1,
+      totalStages: 4,
+      intervals: [1, 2, 4, 7],
+      status: 'active',
+      startedAt: '2026-04-01',
+      lastCompletedAt: '2026-04-02',
+      nextDueDate: '2026-04-04',
+      difficulty: 3,
+    };
+    writeJson(path.join(stateRoot, `${articleId}.json`), stateData);
+
+    // Write events JSONL with one malformed line
+    const eventsContent = [
+      JSON.stringify({ type: 'article_started', ts: '2026-04-01T00:00:00Z', data: {} }),
+      '{broken json!!!',  // malformed line
+      JSON.stringify({ type: 'stage_completed', ts: '2026-04-02T00:00:00Z', data: { fromStage: 0, toStage: 1 } }),
+      '',  // empty line
+    ].join('\n');
+    fs.writeFileSync(path.join(stateRoot, `${articleId}.events.jsonl`), eventsContent, 'utf-8');
+
+    const { status, body } = await request('GET', `/api/state/${encodeURIComponent(articleId)}`);
+    assert.equal(status, 200);
+    assert.ok(Array.isArray(body.events));
+    assert.equal(body.events.length, 2, 'should return 2 valid events, skipping the malformed line');
+    assert.equal(body.events[0].type, 'article_started');
+    assert.equal(body.events[1].type, 'stage_completed');
+  });
+});
+
 // ── Config API ──────────────────────────────────────────────
 describe('PUT /api/config/article/:articleId', () => {
   it('updates article intervals and totalStages', async () => {
