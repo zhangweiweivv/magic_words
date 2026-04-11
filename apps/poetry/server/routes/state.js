@@ -13,17 +13,9 @@ const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { startArticle, completeStage, deferArticle } = require('../services/stateMachine');
 const { getDueArticles, sortDueArticles } = require('../services/scheduler');
 const { notifyArticleComplete } = require('../services/slack');
-const { listCollections, parseCollection } = require('../services/catalog');
+const { parseCollection } = require('../services/catalog');
 const paths = require('../services/paths');
-
-/**
- * Add currentStage alias (= stage + 1, human-readable "第N轮") to state object.
- * Client templates expect currentStage; server stores 0-based stage.
- */
-function withCurrentStage(state) {
-  if (!state) return state;
-  return { ...state, currentStage: state.stage + 1 };
-}
+const { withCurrentStage, isValidArticleId, statePath, eventsPath } = require('./helpers');
 
 /**
  * Look up article metadata from the catalog by articleId.
@@ -43,36 +35,11 @@ function lookupArticleMeta(articleId) {
   const article = result.articles.find(a => a.articleId === articleId);
   if (!article) return null;
 
-  // Note: charCount isn't in the catalog markdown yet, so it may need to be
-  // provided by the client. We return what we have.
   return {
     collection: collectionName,
     title: article.title,
     section: article.section,
   };
-}
-
-/**
- * Validate articleId to prevent path traversal attacks.
- * Only allows: Unicode word chars, hyphens, digits.
- * Rejects: .., /, \, null bytes, etc.
- */
-function isValidArticleId(id) {
-  if (!id || typeof id !== 'string') return false;
-  if (id.length > 100) return false;
-  // Must not contain path separators or parent-dir traversal
-  if (/[\/\\]/.test(id)) return false;
-  if (id.includes('..')) return false;
-  if (id.includes('\0')) return false;
-  return true;
-}
-
-function statePath(articleId) {
-  return path.join(paths.STATE_ROOT, `${articleId}.json`);
-}
-
-function eventsPath(articleId) {
-  return path.join(paths.STATE_ROOT, `${articleId}.events.jsonl`);
 }
 
 function readEvents(articleId) {

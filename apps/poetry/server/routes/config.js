@@ -3,39 +3,10 @@
  * PUT /api/config/article/:articleId — override intervals/stages
  */
 const express = require('express');
-const path = require('path');
 const router = express.Router();
 const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { applyConfigChange } = require('../services/stateMachine');
-const paths = require('../services/paths');
-
-/**
- * Add currentStage alias (= stage + 1) to state object for client compatibility.
- */
-function withCurrentStage(state) {
-  if (!state) return state;
-  return { ...state, currentStage: state.stage + 1 };
-}
-
-/**
- * Validate articleId to prevent path traversal.
- */
-function isValidArticleId(id) {
-  if (!id || typeof id !== 'string') return false;
-  if (id.length > 100) return false;
-  if (/[\/\\]/.test(id)) return false;
-  if (id.includes('..')) return false;
-  if (id.includes('\0')) return false;
-  return true;
-}
-
-function statePath(articleId) {
-  return path.join(paths.STATE_ROOT, `${articleId}.json`);
-}
-
-function eventsPath(articleId) {
-  return path.join(paths.STATE_ROOT, `${articleId}.events.jsonl`);
-}
+const { withCurrentStage, isValidArticleId, statePath, eventsPath } = require('./helpers');
 
 // PUT /api/config/article/:articleId
 router.put('/api/config/article/:articleId', (req, res) => {
