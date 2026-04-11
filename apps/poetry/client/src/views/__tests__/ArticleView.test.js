@@ -53,7 +53,7 @@ describe('ArticleView', () => {
 
     const startBtn = wrapper.find('.start-learning-btn')
     expect(startBtn.exists()).toBe(true)
-    expect(startBtn.text()).toContain('开始学习')
+    expect(startBtn.text()).toContain('今日已学完')
     // Should render some content
     expect(wrapper.text()).toContain('原文行1')
   })

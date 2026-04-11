@@ -39,7 +39,7 @@
         :disabled="completed"
         @click="handleStart"
       >
-        {{ completed ? '✅ 已开始' : '开始学习' }}
+        {{ completed ? '✅ 已完成' : '今日已学完' }}
       </button>
 
       <button
