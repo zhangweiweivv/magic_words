@@ -9,6 +9,7 @@ const {
   seededRng,
   generateHintMask,
   fisherYatesShuffle,
+  generateChoiceOptions,
 } = require('../services/weeklyExam');
 
 describe('getExamCycleDate', () => {
@@ -156,6 +157,22 @@ describe('generateHintMask', () => {
     const mask = generateHintMask('go', rng);
     assert.strictEqual(mask[0], 'g');
     assert.strictEqual(mask.length, 2);
+  });
+});
+
+describe('generateChoiceOptions', () => {
+  it('returns English word options (not meanings)', () => {
+    const rng = seededRng('seed');
+    const target = { word: 'complete', meaning: '完成' };
+    const windowWords = [
+      target,
+      { word: 'form', meaning: '表格' },
+      { word: 'fee', meaning: '费用' },
+      { word: 'access', meaning: '访问' },
+    ];
+    const options = generateChoiceOptions(target, windowWords, windowWords, rng);
+    assert.strictEqual(options.includes('complete'), true);
+    assert.strictEqual(options.includes('完成'), false);
   });
 });
 

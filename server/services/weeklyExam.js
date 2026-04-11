@@ -275,18 +275,20 @@ function generateExam(cycleDate) {
  * Generate 4 choice options (1 correct + 3 distractors).
  */
 function generateChoiceOptions(targetWord, windowWords, allLearned, rng) {
-  const correct = targetWord.meaning;
+  // Choice question UI shows Chinese meaning and asks to pick the correct English word.
+  const correct = targetWord.word;
+
   const candidates = windowWords
     .filter(w => w.word.toLowerCase() !== targetWord.word.toLowerCase())
-    .map(w => w.meaning);
+    .map(w => w.word);
 
   // Fallback to all learned if not enough distractors
   if (candidates.length < 3) {
     const extra = allLearned
       .filter(w => w.word.toLowerCase() !== targetWord.word.toLowerCase())
-      .map(w => w.meaning);
-    for (const m of extra) {
-      if (!candidates.includes(m)) candidates.push(m);
+      .map(w => w.word);
+    for (const w of extra) {
+      if (!candidates.includes(w)) candidates.push(w);
       if (candidates.length >= 10) break;
     }
   }
@@ -410,6 +412,7 @@ module.exports = {
   pickQuestionType,
   generateHintMask,
   fisherYatesShuffle,
+  generateChoiceOptions,
   // Service functions
   getOrGenerateExam,
   generateExam,
