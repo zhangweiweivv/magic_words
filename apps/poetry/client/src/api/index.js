@@ -88,3 +88,9 @@ export function resetArticleToDefault(articleId) {
     method: 'PUT'
   })
 }
+
+// ── Progress APIs ──────────────────────────────────────────
+
+export function fetchProgressOverview() {
+  return request('/progress/overview')
+}

@@ -19,6 +19,7 @@ function createTestRouter() {
     routes: [
       { path: '/', name: 'home', component: HomeView },
       { path: '/article/:articleId', name: 'article', component: { template: '<div>article</div>' } },
+      { path: '/progress', name: 'progress', component: { template: '<div>progress</div>' } },
       { path: '/parent', name: 'parent', component: { template: '<div>parent</div>' } }
     ]
   })
