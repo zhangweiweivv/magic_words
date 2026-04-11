@@ -70,7 +70,8 @@ describe('Poetry Slack service', () => {
       const msg = formatStageComplete(state, events);
       assert.ok(msg.includes('📜'));
       assert.ok(msg.includes('静夜思'));
-      assert.ok(msg.includes('1 → 2/4'));
+      // 1-based: fromStage 1 → display 2, state.stage 2 → display 3
+      assert.ok(msg.includes('2 → 3/4'));
       assert.ok(msg.includes('2026-04-15'));
       assert.ok(!msg.includes('毕业'));
     });

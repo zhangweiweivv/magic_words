@@ -128,9 +128,12 @@ function formatStageComplete(state, events) {
   const graduated = events.some((e) => e.type === 'graduated');
   const stageEvent = events.find((e) => e.type === 'stage_completed');
 
-  const stageLabel = `第${state.stage}/${state.totalStages}阶段`;
+  // Use 1-based stage numbers for human display
+  const currentStage = state.stage + 1;
 
   if (graduated) {
+    // Graduated: show totalStages/totalStages (all done)
+    const stageLabel = `第${state.totalStages}/${state.totalStages}阶段`;
     return (
       `🎓 可可完成了古诗文《${state.title}》的全部学习！\n\n` +
       `📖 集合：${state.collection}\n` +
@@ -140,11 +143,12 @@ function formatStageComplete(state, events) {
     );
   }
 
-  const fromStage = stageEvent?.data?.fromStage ?? '?';
+  const fromStageRaw = stageEvent?.data?.fromStage;
+  const fromStage = fromStageRaw != null ? fromStageRaw + 1 : '?';
   return (
     `📜 可可完成了古诗文复习！\n\n` +
     `📖 《${state.title}》（${state.collection}）\n` +
-    `📚 阶段：${fromStage} → ${state.stage}/${state.totalStages}\n` +
+    `📚 阶段：${fromStage} → ${currentStage}/${state.totalStages}\n` +
     `📅 下次复习：${state.nextDueDate || '无'}`
   );
 }
