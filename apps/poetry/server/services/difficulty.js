@@ -58,17 +58,14 @@ function computeDifficulty({ charCount, genre }) {
 
 /**
  * Recommend an Ebbinghaus-inspired schedule for given difficulty.
+ * Uses persisted defaults if available, falling back to hardcoded schedules.
  * @param {number} difficulty 1-4
  * @returns {{ totalStages: number, intervals: number[] }}
  */
 function recommendSchedule(difficulty) {
-  const SCHEDULES = {
-    1: { totalStages: 3, intervals: [1, 2, 5] },
-    2: { totalStages: 3, intervals: [1, 3, 7] },
-    3: { totalStages: 4, intervals: [1, 3, 7, 14] },
-    4: { totalStages: 5, intervals: [2, 4, 7, 14, 21] },
-  };
-  return SCHEDULES[difficulty] || SCHEDULES[2];
+  const { readDifficultyDefaults } = require('./difficultyDefaults');
+  const defaults = readDifficultyDefaults();
+  return defaults[difficulty] || defaults[2] || { totalStages: 3, intervals: [1, 3, 7] };
 }
 
 module.exports = { lengthScore, genreScore, computeDifficulty, recommendSchedule };

@@ -39,6 +39,7 @@ function startArticle(_state, meta, now) {
     title: meta.title,
     charCount: meta.charCount,
     genre: meta.genre || null,
+    scheduleSource: 'level_default',
     stage: 0,
     totalStages: schedule.totalStages,
     intervals: schedule.intervals,

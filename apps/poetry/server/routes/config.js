@@ -30,6 +30,9 @@ router.put('/api/config/article/:articleId', (req, res) => {
   const now = new Date().toISOString();
   const result = applyConfigChange(existing, { intervals, totalStages }, now);
 
+  // Per-article override: mark as override so batch level-default apply won't overwrite
+  result.nextState.scheduleSource = 'override';
+
   writeJson(statePath(articleId), result.nextState);
   for (const event of result.events) {
     appendJsonl(eventsPath(articleId), event);
