@@ -26,6 +26,10 @@
       <h2>🌟 新篇推荐</h2>
       <p class="stub">（敬请期待）</p>
     </section>
+
+    <nav class="nav-links">
+      <router-link to="/parent" class="nav-link">👨‍👩‍👧 家长中心</router-link>
+    </nav>
   </div>
 </template>
 
@@ -137,5 +141,23 @@ onMounted(loadDue)
   text-align: center;
   color: var(--ink-light);
   padding: 1rem;
+}
+
+.nav-links {
+  text-align: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 1rem;
+}
+
+.nav-link {
+  color: var(--accent-red);
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
 }
 </style>

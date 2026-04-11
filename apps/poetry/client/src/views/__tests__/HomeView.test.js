@@ -15,7 +15,8 @@ function createTestRouter() {
     history: createMemoryHistory(),
     routes: [
       { path: '/', name: 'home', component: HomeView },
-      { path: '/article/:articleId', name: 'article', component: { template: '<div>article</div>' } }
+      { path: '/article/:articleId', name: 'article', component: { template: '<div>article</div>' } },
+      { path: '/parent', name: 'parent', component: { template: '<div>parent</div>' } }
     ]
   })
 }
