@@ -347,6 +347,36 @@ describe('GET /api/state/:articleId (JSONL robustness)', () => {
   });
 });
 
+// ── Article Content API ─────────────────────────────────────────────
+describe('GET /api/article/:articleId/content', () => {
+  it('returns parsed content sections from Obsidian file', async () => {
+    // Create a per-article content file under CONTENT_ROOT/<collection>/
+    const articleId = '寅集-01';
+    const collectionDir = path.join(contentRoot, '寅集');
+    fs.mkdirSync(collectionDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(collectionDir, `${articleId}-测试.md`),
+      `# 测试标题\n\n## 原文\n\n原文行1\n原文行2\n\n## 注释\n\n注释A\n\n## 译文\n\n译文B\n\n## 赏析\n\n赏析C\n`,
+      'utf-8'
+    );
+
+    const { status, body } = await request('GET', `/api/article/${encodeURIComponent(articleId)}/content`);
+    assert.equal(status, 200);
+    assert.equal(body.articleId, articleId);
+    assert.equal(body.title, '测试标题');
+    assert.ok(body.sections);
+    assert.ok(body.sections.original.includes('原文行1'));
+    assert.ok(body.sections.notes.includes('注释A'));
+    assert.ok(body.sections.translation.includes('译文B'));
+    assert.ok(body.sections.appreciation.includes('赏析C'));
+  });
+
+  it('returns 404 when content file is missing', async () => {
+    const { status } = await request('GET', `/api/article/${encodeURIComponent('寅集-02')}/content`);
+    assert.equal(status, 404);
+  });
+});
+
 // ── Config API ──────────────────────────────────────────────
 describe('PUT /api/config/article/:articleId', () => {
   it('updates article intervals and totalStages', async () => {
