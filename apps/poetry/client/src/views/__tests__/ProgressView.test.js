@@ -166,4 +166,28 @@ describe('ProgressView', () => {
       params: { articleId: '寅集-01' }
     })
   })
+
+  it('navigates to article when clicking a not-started article row (browse mode)', async () => {
+    fetchProgressOverview.mockResolvedValue(mockData)
+
+    const router = createTestRouter()
+    const pushSpy = vi.spyOn(router, 'push')
+    await router.push('/progress')
+    await router.isReady()
+
+    const wrapper = mount(ProgressView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    // Third row in first expanded collection is not_started
+    const rows = wrapper.findAll('[data-test="article-row"]')
+    await rows[2].trigger('click')
+
+    expect(pushSpy).toHaveBeenCalledWith({
+      name: 'article',
+      params: { articleId: '寅集-03' }
+    })
+  })
 })
