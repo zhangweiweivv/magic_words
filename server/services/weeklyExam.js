@@ -143,16 +143,44 @@ function generateHintMask(word, rng) {
 /**
  * Read wrong pool JSON, filtered to window.
  */
-function readWrongPool(cycleDate, windowWeeks) {
+function readWrongPool(cycleDate, windowWeeks, learnedWords = null) {
   try {
     if (!fs.existsSync(WRONG_POOL_FILE)) return [];
-    const data = JSON.parse(fs.readFileSync(WRONG_POOL_FILE, 'utf-8'));
-    // Each entry: { word, meaning, graduatedDate?, addedDate }
+    const data = JSON.parse(fs.readFileSync(WRONG_POOL_FILE, 'utf-8')) || [];
+
     // Filtering rule: wrong pool is limited to the SAME N-week window by the word's graduation date.
-    return (data || []).filter(w => {
-      const gd = w.graduatedDate || w.addedDate;
+    // Backfill legacy entries that only had addedDate.
+    const learnedMap = Array.isArray(learnedWords)
+      ? new Map(
+          learnedWords
+            .filter(w => w && w.word)
+            .map(w => [String(w.word).toLowerCase(), w.date || null])
+        )
+      : null;
+
+    let changed = false;
+
+    const filtered = data.filter(entry => {
+      const key = String(entry?.word || '').toLowerCase();
+      if (!key) return false;
+
+      if (!entry.graduatedDate && learnedMap) {
+        const gd = learnedMap.get(key) || null;
+        if (gd) {
+          entry.graduatedDate = gd;
+          changed = true;
+        }
+      }
+
+      const gd = entry.graduatedDate || (learnedMap ? learnedMap.get(key) : null);
       return isWithinWindow(gd, cycleDate, windowWeeks);
     });
+
+    if (changed) {
+      writeWrongPool(data);
+    }
+
+    return filtered;
   } catch {
     return [];
   }
@@ -200,7 +228,7 @@ function generateExam(cycleDate) {
   const windowWords = allLearned.filter(w => isWithinWindow(w.date, cycleDate, windowWeeks));
 
   // 2. Get wrong pool within window
-  const wrongPool = readWrongPool(cycleDate, windowWeeks);
+  const wrongPool = readWrongPool(cycleDate, windowWeeks, allLearned);
   const wrongWordSet = new Set(wrongPool.map(w => w.word.toLowerCase()));
 
   // 3. Separate wrong words from regular words
