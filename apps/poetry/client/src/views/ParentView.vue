@@ -5,6 +5,20 @@
       <h1>👨‍👩‍👧 家长中心</h1>
     </header>
 
+    <section class="effects-settings">
+      <h2>页面特效</h2>
+      <label class="toggle-row">
+        <input
+          class="toggle-input"
+          type="checkbox"
+          data-test="plum-rain-toggle"
+          v-model="plumRainOn"
+        />
+        <span class="toggle-label">梅花雨特效</span>
+      </label>
+      <p v-if="reducedMotion" class="hint">系统已开启“减少动态效果”，将自动不播放</p>
+    </section>
+
     <section class="article-search">
       <h2>调整复习计划</h2>
       <div class="search-bar">
@@ -47,11 +61,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchArticleState, updateArticleConfig } from '../api/index.js'
+import {
+  plumRainEnabled,
+  setPlumRainEnabled,
+  syncPlumRainEnabledFromStorage,
+  isReducedMotion
+} from '../utils/plumRainSetting.js'
 
 const router = useRouter()
+
+const reducedMotion = ref(isReducedMotion())
+
+const plumRainOn = computed({
+  get: () => plumRainEnabled.value,
+  set: (v) => setPlumRainEnabled(v)
+})
+
+onMounted(() => {
+  syncPlumRainEnabledFromStorage()
+  reducedMotion.value = isReducedMotion()
+})
 
 const searchId = ref('')
 const state = ref(null)
@@ -121,6 +153,42 @@ async function saveConfig() {
 .parent-header h1 {
   font-size: 1.6rem;
   color: var(--ink-black);
+}
+
+.effects-settings {
+  margin-bottom: 2rem;
+}
+
+.effects-settings h2 {
+  font-size: 1.1rem;
+  color: var(--accent-red);
+  margin-bottom: 0.8rem;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  background: var(--paper-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.toggle-input {
+  width: 18px;
+  height: 18px;
+}
+
+.toggle-label {
+  font-size: 1rem;
+  color: var(--ink-dark);
+}
+
+.hint {
+  margin-top: 0.5rem;
+  color: var(--ink-light);
+  font-size: 0.9rem;
 }
 
 .article-search h2 {
