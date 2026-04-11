@@ -36,7 +36,8 @@ function serviceUrl(port) {
   }
 }
 
-const vocabUrl = computed(() => serviceUrl(3000))
+// vocab frontend is served by Vite dev server on 5173 (server API on 3001)
+const vocabUrl = computed(() => serviceUrl(5173))
 const poetryUrl = computed(() => serviceUrl(3002))
 </script>
 
