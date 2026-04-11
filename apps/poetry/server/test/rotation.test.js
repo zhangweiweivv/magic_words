@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const { getNextArticle, _resetCursorForTest } = require('../services/rotation');
+const { getNextArticle } = require('../services/rotation');
 
 describe('rotation', () => {
   let tmpDir;
