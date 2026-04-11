@@ -6,3 +6,6 @@ dist/
 .worktrees/
 *.parquet
 *.bak.*
+
+# Local dev helpers (do not commit)
+server/run_*.js
