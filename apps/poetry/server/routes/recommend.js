@@ -78,14 +78,15 @@ router.get('/api/recommend/next', (_req, res) => {
     startedIds.add(f.replace(/\.json$/, ''));
   }
 
-  // 4. Use rotation to find next article (read-only: we DON'T pass a cursorFile
-  //    so the cursor won't be persisted — this is just a recommendation peek)
+  // 4. Use rotation to find next article (stable recommendation):
+  //    DO NOT advance cursor on GET; only advance when user actually starts learning.
   const cursorFile = path.join(paths.STATE_ROOT, '_rotation_cursor.json');
   const next = getNextArticle({
     collection: activeCollection,
     catalog,
     startedIds,
     cursorFile,
+    advanceCursor: false,
   });
 
   if (!next) {

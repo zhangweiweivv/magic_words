@@ -376,8 +376,35 @@ describe('GET /api/recommend/next', () => {
     assert.equal(body.recommendation.collection, '寅集');
   });
 
+  it('stable recommendation: repeated GET does not advance rotation cursor', async () => {
+    const r1 = await request('GET', '/api/recommend/next');
+    const r2 = await request('GET', '/api/recommend/next');
+    assert.equal(r1.status, 200);
+    assert.equal(r2.status, 200);
+    assert.ok(r1.body.recommendation);
+    assert.ok(r2.body.recommendation);
+    assert.equal(r1.body.recommendation.articleId, r2.body.recommendation.articleId);
+    assert.equal(r1.body.recommendation.topic, r2.body.recommendation.topic);
+  });
+
+  it('starting a new article advances cursor to next topic (1:1:1 rotation)', async () => {
+    const r1 = await request('GET', '/api/recommend/next');
+    assert.equal(r1.status, 200);
+    assert.ok(r1.body.recommendation);
+
+    // Start the recommended article (no body; server should auto-lookup from catalog)
+    const startedId = r1.body.recommendation.articleId;
+    const s1 = await request('POST', `/api/state/${encodeURIComponent(startedId)}/complete`, {});
+    assert.equal(s1.status, 200);
+
+    // Next recommendation should move to a different topic (next in rotation)
+    const r2 = await request('GET', '/api/recommend/next');
+    assert.equal(r2.status, 200);
+    assert.ok(r2.body.recommendation);
+    assert.notEqual(r2.body.recommendation.topic, r1.body.recommendation.topic);
+  });
+
   it('skips already-started articles', async () => {
-    // Start article 寅集-01 (done in earlier test), recommendation should not return it
     const { body } = await request('GET', '/api/recommend/next');
     assert.ok(body.recommendation);
     assert.notEqual(body.recommendation.articleId, '寅集-01');
@@ -394,10 +421,6 @@ describe('GET /api/recommend/next', () => {
     }
     const { status, body } = await request('GET', '/api/recommend/next');
     assert.equal(status, 200);
-    // Either null (all exhausted in 寅集) or jumps to 卡集 (which is empty)
-    // Since 寅集 has only 7 articles in our test data, and we started them all:
-    // 寅集-01, 02, 03, 07, 08, 15, 16 = all 7 articles started
-    // Active collection becomes 卡集 (empty), so recommendation is null
     if (body.recommendation === null) {
       assert.ok(body.reason);
     }

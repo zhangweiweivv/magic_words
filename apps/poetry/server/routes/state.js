@@ -15,6 +15,7 @@ const { getDueArticles, sortDueArticles } = require('../services/scheduler');
 const { notifyArticleComplete } = require('../services/slack');
 const { parseCollection } = require('../services/catalog');
 const paths = require('../services/paths');
+const { advanceCursorAfterSelection } = require('../services/rotation');
 const { withCurrentStage, isValidArticleId, statePath, eventsPath } = require('./helpers');
 
 /**
@@ -111,12 +112,16 @@ router.post('/api/state/:articleId/complete', (req, res) => {
     let { collection, title, charCount, genre } = req.body || {};
 
     // Auto-lookup from catalog if meta not fully provided
+    let catalogMeta = null;
     if (!collection || !title) {
-      const catalogMeta = lookupArticleMeta(articleId);
+      catalogMeta = lookupArticleMeta(articleId);
       if (catalogMeta) {
         collection = collection || catalogMeta.collection;
         title = title || catalogMeta.title;
       }
+    } else {
+      // Even if body provided, try to resolve section for cursor advance
+      catalogMeta = lookupArticleMeta(articleId);
     }
 
     if (!collection || !title) {
@@ -129,6 +134,25 @@ router.post('/api/state/:articleId/complete', (req, res) => {
     if (charCount == null) charCount = 0;
 
     result = startArticle(null, { articleId, collection, title, charCount, genre }, now);
+
+    // Stable recommendation mode: advance rotation cursor ONLY when user actually starts learning.
+    // Advance to the topic after the started article's topic (if known).
+    const parsed = parseCollection(collection);
+    if (parsed && parsed.articles && catalogMeta && catalogMeta.section) {
+      const catalog = {};
+      for (const a of parsed.articles) {
+        const topic = a.section || '未分类';
+        if (!catalog[topic]) catalog[topic] = [];
+        catalog[topic].push({ articleId: a.articleId, topic, title: a.title });
+      }
+      const cursorFile = path.join(paths.STATE_ROOT, '_rotation_cursor.json');
+      advanceCursorAfterSelection({
+        collection,
+        catalog,
+        cursorFile,
+        selectedTopic: catalogMeta.section || '未分类',
+      });
+    }
   } else {
     if (existing.status === 'graduated') {
       return res.status(400).json({ error: 'Article is already graduated' });
