@@ -46,13 +46,13 @@
 
       <div class="score-card">
         <div class="score-title">首轮成绩</div>
-        <div class="score-value">{{ completedFirstRoundCorrect }} / {{ exam?.total ?? 0 }}</div>
+        <div class="score-value">{{ completedFirstRoundCorrect }} / {{ completedFirstRoundTotal }}</div>
         <div class="score-sub">正确率：{{ completedFirstRoundRate }}%</div>
       </div>
 
-      <div v-if="Array.isArray(exam?.rounds) && exam.rounds.length" class="rounds-card">
+      <div v-if="completedRedoRounds.length" class="rounds-card">
         <div class="rounds-title">错题重做轮次</div>
-        <div class="round" v-for="(r, idx) in exam.rounds" :key="idx">
+        <div class="round" v-for="(r, idx) in completedRedoRounds" :key="idx">
           <div class="round-left">第 {{ idx + 1 }} 轮</div>
           <div class="round-right">✅ {{ r.correct }} / {{ r.correct + r.wrong }}（错 {{ r.wrong }}）</div>
         </div>
@@ -346,19 +346,25 @@ const firstRoundRate = computed(() => {
   return Math.round((firstRoundCorrect.value / totalQuestions.value) * 100)
 })
 
-// alreadyCompleted 页面：尝试用 total/wrongCount 推算首轮成绩
+// alreadyCompleted 页面：首轮成绩以后端记录为准（exam.rounds[0]），否则再 fallback
+const completedFirstRoundTotal = computed(() => {
+  const r0 = Array.isArray(exam.value?.rounds) ? exam.value.rounds[0] : null
+  if (r0 && typeof r0.total === 'number') return r0.total
+  return exam.value?.total || 0
+})
 const completedFirstRoundCorrect = computed(() => {
-  const t = exam.value?.total
-  const w = exam.value?.wrongCount
-  if (typeof t === 'number' && typeof w === 'number') return Math.max(0, t - w)
-  // fallback：如果后端没给 wrongCount，就直接展示 total（保底）
-  if (typeof t === 'number') return t
+  const r0 = Array.isArray(exam.value?.rounds) ? exam.value.rounds[0] : null
+  if (r0 && typeof r0.correct === 'number') return r0.correct
   return 0
 })
 const completedFirstRoundRate = computed(() => {
-  const t = exam.value?.total || 0
+  const t = completedFirstRoundTotal.value
   if (!t) return 0
   return Math.round((completedFirstRoundCorrect.value / t) * 100)
+})
+
+const completedRedoRounds = computed(() => {
+  return Array.isArray(exam.value?.roundsSummary) ? exam.value.roundsSummary : []
 })
 
 // fillBlank: 将 hint 解析为字母+空格输入
