@@ -41,6 +41,11 @@ describe('buildCefrMap', () => {
     }
   });
 
+  test('maps multi-word phrase "be over" to A1', () => {
+    map = buildCefrMap();
+    assert.strictEqual(map.get('be over'), 'A1');
+  });
+
   test('map has substantial entries', () => {
     map = buildCefrMap();
     assert.ok(map.size > 2000, `expected >2000 entries, got ${map.size}`);

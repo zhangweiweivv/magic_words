@@ -1,10 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const { OBSIDIAN_PATH } = require('./obsidian');
 
-const VOCAB_PATH = path.join(
-  process.env.HOME || '/Users/vvhome',
-  'vv_obsidian/vv_obsidian/可可pet/可可单词本/PET官方单词库.md'
-);
+const VOCAB_PATH = path.join(OBSIDIAN_PATH, 'PET官方单词库.md');
 
 let cachedMap = null;
 
@@ -16,7 +14,15 @@ let cachedMap = null;
 function buildCefrMap() {
   if (cachedMap) return cachedMap;
 
-  const content = fs.readFileSync(VOCAB_PATH, 'utf-8');
+  let content;
+  try {
+    content = fs.readFileSync(VOCAB_PATH, 'utf-8');
+  } catch (err) {
+    throw new Error(
+      `无法读取 PET 单词库文件: ${VOCAB_PATH}\n` +
+      `请确认文件存在且可读。原始错误: ${err.message}`
+    );
+  }
   const lines = content.split('\n');
   const map = new Map();
 
@@ -38,8 +44,8 @@ function buildCefrMap() {
     const cells = line.split('|').map(c => c.trim());
     // cells[0] is empty (before first |), cells[1] is #, cells[2] is word
     if (cells.length < 4) continue;
-    // Skip header/separator rows
-    if (cells[1] === '#' || cells[1].startsWith('-')) continue;
+    // Only treat rows with a numeric index in the first column as data rows
+    if (!/^\d+$/.test(cells[1])) continue;
 
     const word = cells[2];
     if (!word || word.startsWith('-')) continue;
