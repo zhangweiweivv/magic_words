@@ -6,10 +6,11 @@ import ArticleView from '../ArticleView.vue'
 // Mock the API module
 vi.mock('../../api/index.js', () => ({
   fetchArticleState: vi.fn(),
+  fetchArticleContent: vi.fn(),
   completeArticle: vi.fn()
 }))
 
-import { fetchArticleState, completeArticle } from '../../api/index.js'
+import { fetchArticleState, fetchArticleContent, completeArticle } from '../../api/index.js'
 
 function createTestRouter() {
   return createRouter({
@@ -27,7 +28,42 @@ describe('ArticleView', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the complete button', async () => {
+  it('shows a Start button when browsing an article that has no state yet', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: '寅集-01',
+      title: '《论语》八章',
+      sections: {
+        original: '原文行1',
+        notes: '注释A',
+        translation: '译文B',
+        appreciation: '赏析C'
+      }
+    })
+    fetchArticleState.mockRejectedValue(new Error('404'))
+
+    const router = createTestRouter()
+    await router.push('/article/寅集-01')
+    await router.isReady()
+
+    const wrapper = mount(ArticleView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    const startBtn = wrapper.find('.start-learning-btn')
+    expect(startBtn.exists()).toBe(true)
+    expect(startBtn.text()).toContain('开始学习')
+    // Should render some content
+    expect(wrapper.text()).toContain('原文行1')
+  })
+
+  it('renders the complete button when state exists', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: 'poem-1',
+      title: '静夜思',
+      sections: { original: '床前明月光', notes: '', translation: '', appreciation: '' }
+    })
     fetchArticleState.mockResolvedValue({
       state: {
         articleId: 'poem-1',
@@ -55,33 +91,27 @@ describe('ArticleView', () => {
     expect(btn.text()).toContain('今日已学完')
   })
 
-  it('calls API and updates UI when clicking complete button', async () => {
-    fetchArticleState.mockResolvedValue({
-      state: {
-        articleId: 'poem-1',
-        title: '静夜思',
-        collection: '子集',
-        currentStage: 1,
-        totalStages: 5,
-        status: 'active'
-      },
-      events: []
+  it('calls API and updates UI when clicking Start button in browse mode', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: '寅集-01',
+      title: '《论语》八章',
+      sections: { original: '原文', notes: '', translation: '', appreciation: '' }
     })
-
+    fetchArticleState.mockRejectedValue(new Error('404'))
     completeArticle.mockResolvedValue({
       state: {
-        articleId: 'poem-1',
-        title: '静夜思',
-        collection: '子集',
-        currentStage: 2,
-        totalStages: 5,
+        articleId: '寅集-01',
+        title: '《论语》八章',
+        collection: '寅集',
+        currentStage: 1,
+        totalStages: 4,
         status: 'active'
       },
-      events: [{ type: 'stage_completed', timestamp: '2026-04-11T12:00:00Z' }]
+      events: [{ type: 'article_started', timestamp: '2026-04-11T12:00:00Z' }]
     })
 
     const router = createTestRouter()
-    await router.push('/article/poem-1')
+    await router.push('/article/寅集-01')
     await router.isReady()
 
     const wrapper = mount(ArticleView, {
@@ -90,14 +120,10 @@ describe('ArticleView', () => {
 
     await flushPromises()
 
-    const btn = wrapper.find('.complete-btn')
-    await btn.trigger('click')
+    const startBtn = wrapper.find('.start-learning-btn')
+    await startBtn.trigger('click')
     await flushPromises()
 
-    expect(completeArticle).toHaveBeenCalledWith('poem-1')
-    // Button text should change to show completion
-    expect(btn.text()).toContain('已完成')
-    // Button should be disabled
-    expect(btn.attributes('disabled')).toBeDefined()
+    expect(completeArticle).toHaveBeenCalledWith('寅集-01')
   })
 })

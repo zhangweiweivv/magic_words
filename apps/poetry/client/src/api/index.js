@@ -50,3 +50,7 @@ export function updateArticleConfig(articleId, config) {
 export function fetchRecommendation() {
   return request('/recommend/next')
 }
+
+export function fetchArticleContent(articleId) {
+  return request(`/article/${encodeURIComponent(articleId)}/content`)
+}

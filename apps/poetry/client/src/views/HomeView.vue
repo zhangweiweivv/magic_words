@@ -37,12 +37,12 @@
     <section class="recommend-section">
       <h2>⭐ 下一篇推荐</h2>
       <div v-if="!recommendation" class="empty">当前没有新篇推荐</div>
-      <div v-else class="recommend-card" @click="startNewArticle">
+      <div v-else class="recommend-card" @click="browseRecommendation">
         <div class="recommend-info">
           <span class="recommend-title">{{ recommendation.title }}</span>
           <span class="recommend-topic">{{ recommendation.topic }}</span>
         </div>
-        <button class="start-btn" @click.stop="startNewArticle">开始学习</button>
+        <button class="start-btn" @click.stop="browseRecommendation">浏览详情</button>
       </div>
     </section>
 
@@ -55,7 +55,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchDueList, fetchCurrent, fetchRecommendation, completeArticle } from '../api/index.js'
+import { fetchDueList, fetchCurrent, fetchRecommendation } from '../api/index.js'
 
 const router = useRouter()
 const dueList = ref([])
@@ -109,14 +109,9 @@ function continueCurrent() {
   router.push({ name: 'article', params: { articleId: current.value.articleId } })
 }
 
-async function startNewArticle() {
+function browseRecommendation() {
   if (!recommendation.value) return
-  try {
-    await completeArticle(recommendation.value.articleId)
-    router.push({ name: 'article', params: { articleId: recommendation.value.articleId } })
-  } catch (e) {
-    console.error('Failed to start article:', e)
-  }
+  router.push({ name: 'article', params: { articleId: recommendation.value.articleId } })
 }
 
 function goToArticle(articleId) {

@@ -181,10 +181,10 @@ describe('HomeView', () => {
     expect(card.text()).toContain('《论语》八章')
     expect(card.text()).toContain('先秦诸子')
     expect(wrapper.find('.start-btn').exists()).toBe(true)
-    expect(wrapper.find('.start-btn').text()).toBe('开始学习')
+    expect(wrapper.find('.start-btn').text()).toBe('浏览详情')
   })
 
-  it('calls completeArticle and navigates when clicking start button', async () => {
+  it('navigates to article page (browse) when clicking recommendation button, without starting learning', async () => {
     fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
     fetchCurrent.mockResolvedValue({ current: null })
     fetchRecommendation.mockResolvedValue({
@@ -195,7 +195,6 @@ describe('HomeView', () => {
         collection: '寅集'
       }
     })
-    completeArticle.mockResolvedValue({ state: {}, events: [] })
 
     const router = createTestRouter()
     const pushSpy = vi.spyOn(router, 'push')
@@ -211,7 +210,7 @@ describe('HomeView', () => {
     await wrapper.find('.start-btn').trigger('click')
     await flushPromises()
 
-    expect(completeArticle).toHaveBeenCalledWith('寅集-01')
+    expect(completeArticle).not.toHaveBeenCalled()
     expect(pushSpy).toHaveBeenCalledWith({
       name: 'article',
       params: { articleId: '寅集-01' }
