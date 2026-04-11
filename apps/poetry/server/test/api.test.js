@@ -127,64 +127,75 @@ describe('GET /api/catalog/:collection', () => {
 
 // ── State API ──────────────────────────────────────────────
 describe('GET /api/state/current', () => {
-  it('returns null when there is no active article', async () => {
-    // only a graduated state exists
+  it('falls back to lastCompletedAt/startedAt when events are missing', async () => {
+    // state exists but no events file
     writeJson(path.join(stateRoot, `测试集-99.json`), {
       articleId: '测试集-99',
       collection: '测试集',
-      title: '已毕业',
-      stage: 3,
+      title: '只有state没有events',
+      stage: 0,
       totalStages: 3,
       intervals: [1, 2, 4],
-      status: 'graduated',
+      status: 'active',
       startedAt: '2026-04-01',
-      lastCompletedAt: '2026-04-05',
-      nextDueDate: '2026-04-05',
+      lastCompletedAt: '2026-04-01',
+      nextDueDate: '2026-04-02',
       difficulty: 2,
     });
 
     const { status, body } = await request('GET', '/api/state/current');
     assert.equal(status, 200);
     assert.ok('current' in body);
-    assert.equal(body.current, null);
+    assert.ok(body.current);
+    assert.equal(body.current.articleId, '测试集-99');
   });
 
-  it('returns most recently active article', async () => {
-    // Use future timestamps to avoid interference with other tests that may create active states.
+  it('returns article with most recent event timestamp (active vs graduated)', async () => {
+    // A: active but older event
     writeJson(path.join(stateRoot, `测试集-01.json`), {
       articleId: '测试集-01',
       collection: '测试集',
-      title: '测试A',
+      title: '更早学习',
       stage: 0,
-      totalStages: 4,
-      intervals: [0, 1, 3, 7],
+      totalStages: 3,
+      intervals: [1, 2, 4],
       status: 'active',
-      startedAt: '2999-01-01',
-      lastCompletedAt: '2999-01-01',
-      nextDueDate: '2999-01-02',
-      difficulty: 3,
+      startedAt: '2026-04-01',
+      lastCompletedAt: '2026-04-01',
+      nextDueDate: '2026-04-02',
+      difficulty: 2,
     });
+    fs.writeFileSync(
+      path.join(stateRoot, `测试集-01.events.jsonl`),
+      JSON.stringify({ type: 'article_started', articleId: '测试集-01', timestamp: '2999-01-01T00:00:00Z', data: {} }) + '\n',
+      'utf-8'
+    );
 
+    // B: graduated but newer event
     writeJson(path.join(stateRoot, `测试集-02.json`), {
       articleId: '测试集-02',
       collection: '测试集',
-      title: '测试B',
-      stage: 0,
-      totalStages: 4,
-      intervals: [0, 1, 3, 7],
-      status: 'active',
-      startedAt: '2999-01-03',
-      lastCompletedAt: '2999-01-03',
-      nextDueDate: '2999-01-04',
-      difficulty: 3,
+      title: '最近学习（已毕业也算）',
+      stage: 3,
+      totalStages: 3,
+      intervals: [1, 2, 4],
+      status: 'graduated',
+      startedAt: '2026-04-01',
+      lastCompletedAt: '2026-04-03',
+      nextDueDate: null,
+      difficulty: 2,
     });
+    fs.writeFileSync(
+      path.join(stateRoot, `测试集-02.events.jsonl`),
+      JSON.stringify({ type: 'graduated', articleId: '测试集-02', timestamp: '2999-01-02T00:00:00Z', data: {} }) + '\n',
+      'utf-8'
+    );
 
     const { status, body } = await request('GET', '/api/state/current');
     assert.equal(status, 200);
     assert.ok(body.current);
     assert.equal(body.current.articleId, '测试集-02');
-    assert.equal(body.current.status, 'active');
-    assert.ok(body.current.currentStage >= 1);
+    assert.equal(body.current.status, 'graduated');
   });
 });
 
