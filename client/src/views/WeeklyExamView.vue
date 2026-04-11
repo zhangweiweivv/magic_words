@@ -78,7 +78,9 @@
 
       <div class="state-actions">
         <OceanButton variant="secondary" @click="goHome">返回港口</OceanButton>
-        <OceanButton variant="coral" size="large" @click="startFirstRound">开始考试</OceanButton>
+        <OceanButton variant="coral" size="large" @click="startFirstRound" :disabled="startingExam">
+          {{ startingExam ? '准备中...' : '开始考试' }}
+        </OceanButton>
       </div>
     </div>
 
@@ -169,95 +171,34 @@
       </transition>
 
       <!-- 选择题 -->
-      <div v-if="currentQuestion?.type === 'choice'" class="choice-question">
-        <div class="question-meaning">{{ currentQuestion.meaning }}</div>
-        <div class="question-hint">选择正确的英文单词</div>
-
-        <div class="options">
-          <el-button
-            v-for="(option, idx) in currentQuestion.options || []"
-            :key="idx"
-            class="option-btn"
-            :class="{
-              selected: selectedOption === idx,
-              correct: showAnswer && option === currentQuestion.word,
-              wrong: showAnswer && selectedOption === idx && option !== currentQuestion.word
-            }"
-            :disabled="showAnswer"
-            @click="selectOption(idx)"
-          >
-            {{ option }}
-          </el-button>
-        </div>
-
-        <div v-if="showAnswer && !isCorrect" class="correct-answer">正确答案: {{ currentQuestion.word }}</div>
-      </div>
+      <ChoiceQuestion
+        v-if="currentQuestion?.type === 'choice'"
+        :question="currentQuestion"
+        :showAnswer="showAnswer"
+        :isCorrect="isCorrect"
+        ref="questionRef"
+        @answer="handleAnswer"
+      />
 
       <!-- 拼写补全题 -->
-      <div v-else-if="currentQuestion?.type === 'fillBlank'" class="spelling-question">
-        <div class="question-meaning">{{ currentQuestion.meaning }}</div>
-        <div class="question-hint">填写缺失的字母</div>
-
-        <div class="fill-blank-letters">
-          <template v-for="(letter, idx) in hintLetters" :key="idx">
-            <span v-if="!letter.isBlank" class="letter-fixed">{{ letter.char }}</span>
-            <input
-              v-else
-              type="text"
-              maxlength="1"
-              class="letter-input"
-              :class="{
-                correct: showAnswer && fillBlankInputs[idx]?.toLowerCase() === letter.char.toLowerCase(),
-                wrong: showAnswer && fillBlankInputs[idx]?.toLowerCase() !== letter.char.toLowerCase()
-              }"
-              :disabled="showAnswer"
-              :ref="(el) => { if (el) blankInputRefs[idx] = el }"
-              v-model="fillBlankInputs[idx]"
-              @input="onBlankInput(idx)"
-              @keydown="onBlankKeydown($event, idx)"
-            />
-          </template>
-        </div>
-
-        <div v-if="showAnswer && !isCorrect" class="correct-answer">正确答案: {{ currentQuestion.word }}</div>
-
-        <el-button
-          v-if="!showAnswer"
-          type="primary"
-          size="large"
-          @click="checkFillBlank"
-          :disabled="!allBlanksFilled"
-        >
-          确认
-        </el-button>
-      </div>
+      <FillBlankQuestion
+        v-else-if="currentQuestion?.type === 'fillBlank'"
+        :question="currentQuestion"
+        :showAnswer="showAnswer"
+        :isCorrect="isCorrect"
+        ref="questionRef"
+        @answer="handleAnswer"
+      />
 
       <!-- 完全拼写题 -->
-      <div v-else-if="currentQuestion?.type === 'spelling'" class="spelling-question">
-        <div class="question-meaning">{{ currentQuestion.meaning }}</div>
-        <div class="question-hint">请拼写英文单词</div>
-
-        <el-input
-          v-model="spellingInput"
-          class="spelling-input"
-          size="large"
-          :disabled="showAnswer"
-          @keyup.enter="checkSpelling"
-          placeholder="输入英文单词..."
-        />
-
-        <div v-if="showAnswer && !isCorrect" class="correct-answer">正确答案: {{ currentQuestion.word }}</div>
-
-        <el-button
-          v-if="!showAnswer"
-          type="primary"
-          size="large"
-          @click="checkSpelling"
-          :disabled="!spellingInput.trim()"
-        >
-          确认
-        </el-button>
-      </div>
+      <SpellingQuestion
+        v-else-if="currentQuestion?.type === 'spelling'"
+        :question="currentQuestion"
+        :showAnswer="showAnswer"
+        :isCorrect="isCorrect"
+        ref="questionRef"
+        @answer="handleAnswer"
+      />
 
       <!-- 下一题/完成 -->
       <el-button
@@ -274,11 +215,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BubbleBackground from '../components/ocean/BubbleBackground.vue'
 import WaveDecoration from '../components/ocean/WaveDecoration.vue'
 import OceanButton from '../components/ocean/OceanButton.vue'
+import ChoiceQuestion from '../components/weekly-exam/ChoiceQuestion.vue'
+import FillBlankQuestion from '../components/weekly-exam/FillBlankQuestion.vue'
+import SpellingQuestion from '../components/weekly-exam/SpellingQuestion.vue'
 import { weeklyExamApi } from '../api/weeklyExam'
 import { useAudio } from '../composables/useAudio'
 import { useEffects } from '../composables/useEffects'
@@ -292,6 +236,11 @@ const { onCorrect, onWrong } = useEffects()
 const loading = ref(true)
 const loadError = ref('')
 const exam = ref(null)
+const startingExam = ref(false)
+const questionRef = ref(null)
+
+// localStorage key for redo persistence
+const REDO_STORAGE_KEY = 'weekly-exam-redo-state'
 
 // stage:
 // - intro: 介绍页
@@ -307,17 +256,11 @@ const currentQuestions = ref([])
 const currentIndex = ref(0)
 
 // 反馈与答案状态
-const selectedOption = ref(null)
-const spellingInput = ref('')
 const showAnswer = ref(false)
 const showFeedback = ref(false)
 const feedbackType = ref('')
 const feedbackText = ref('')
 const isCorrect = ref(false)
-
-// fillBlank 状态
-const fillBlankInputs = ref({}) // { index: 'a' }
-const blankInputRefs = ref({})
 
 // 计分（仅首轮）
 const firstRoundCorrect = ref(0)
@@ -367,45 +310,6 @@ const completedRedoRounds = computed(() => {
   return Array.isArray(exam.value?.roundsSummary) ? exam.value.roundsSummary : []
 })
 
-// fillBlank: 将 hint 解析为字母+空格输入
-const hintLetters = ref([]) // [{ char, isBlank }]
-watch(currentQuestion, (q) => {
-  // 重置 hintLetters
-  if (q?.type === 'fillBlank') {
-    hintLetters.value = buildHintLetters(q.word, q.hint)
-  } else {
-    hintLetters.value = []
-  }
-})
-
-const allBlanksFilled = computed(() => {
-  if (!hintLetters.value.length) return false
-  const blanks = hintLetters.value
-    .map((l, idx) => ({ ...l, idx }))
-    .filter(l => l.isBlank)
-  return blanks.every(l => fillBlankInputs.value[l.idx]?.trim())
-})
-
-function buildHintLetters(word, hint) {
-  const w = (word || '').split('')
-  const h = (hint || '').split('')
-
-  // 优先使用 hint；不符合长度时 fallback：全部 blank（保留非字母/首字母）
-  if (hint && h.length === w.length) {
-    return h.map((ch, idx) => {
-      if (ch === '_') return { char: w[idx], isBlank: true }
-      return { char: ch, isBlank: false }
-    })
-  }
-
-  // fallback: 只固定首字母和非字母字符
-  return w.map((ch, idx) => {
-    const isLetter = /[a-zA-Z]/.test(ch)
-    const fixed = idx === 0 || !isLetter
-    return { char: ch, isBlank: !fixed }
-  })
-}
-
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
@@ -450,15 +354,13 @@ async function fetchExam() {
 }
 
 function resetQuestionState() {
-  selectedOption.value = null
-  spellingInput.value = ''
-  fillBlankInputs.value = {}
-  blankInputRefs.value = {}
   showAnswer.value = false
   isCorrect.value = false
+  questionRef.value?.reset?.()
 }
 
 function startFirstRound() {
+  startingExam.value = true
   mode.value = 'first'
   firstRoundCorrect.value = 0
   wrongDetails.value = []
@@ -471,11 +373,14 @@ function startFirstRound() {
   currentQuestions.value = Array.isArray(exam.value?.questions) ? [...exam.value.questions] : []
   currentIndex.value = 0
   resetQuestionState()
+  clearRedoStorage()
   stage.value = 'inProgress'
+  startingExam.value = false
 }
 
 async function finishIfNoWrongs() {
   // 首轮全对：直接 complete
+  clearRedoStorage()
   try {
     await weeklyExamApi.complete({
       generatedDate: exam.value?.generatedDate,
@@ -499,7 +404,54 @@ function startRedo() {
   nextWrongQueue.value = []
   currentRoundWrongWords.value = []
   resetQuestionState()
+  saveRedoState()
   stage.value = 'inProgress'
+}
+
+// redo state localStorage persistence
+function saveRedoState() {
+  try {
+    const state = {
+      generatedDate: exam.value?.generatedDate,
+      wrongQueue: wrongQueue.value,
+      redoRoundIndex: redoRoundIndex.value,
+      roundsSummary: roundsSummary.value,
+      firstRoundCorrect: firstRoundCorrect.value,
+      totalQuestions: totalQuestions.value,
+    }
+    localStorage.setItem(REDO_STORAGE_KEY, JSON.stringify(state))
+  } catch { /* ignore */ }
+}
+
+function restoreRedoState(generatedDate) {
+  try {
+    const raw = localStorage.getItem(REDO_STORAGE_KEY)
+    if (!raw) return false
+    const state = JSON.parse(raw)
+    if (state.generatedDate !== generatedDate) {
+      clearRedoStorage()
+      return false
+    }
+    wrongQueue.value = state.wrongQueue || []
+    redoRoundIndex.value = state.redoRoundIndex || 1
+    roundsSummary.value = state.roundsSummary || []
+    firstRoundCorrect.value = state.firstRoundCorrect || 0
+    return wrongQueue.value.length > 0
+  } catch {
+    return false
+  }
+}
+
+function clearRedoStorage() {
+  try { localStorage.removeItem(REDO_STORAGE_KEY) } catch { /* ignore */ }
+}
+
+// beforeunload warning during active redo
+function onBeforeUnload(e) {
+  if (stage.value === 'inProgress' && mode.value === 'redo') {
+    e.preventDefault()
+    e.returnValue = ''
+  }
 }
 
 function showFeedbackMessage(text, type) {
@@ -524,7 +476,6 @@ function recordWrong() {
       word: currentQuestion.value?.word,
       meaning: currentQuestion.value?.meaning,
       type: currentQuestion.value?.type,
-      graduatedDate: currentQuestion.value?.graduatedDate || null,
     })
     wrongQueue.value.push({ ...currentQuestion.value })
   } else {
@@ -534,15 +485,8 @@ function recordWrong() {
   }
 }
 
-async function selectOption(idx) {
-  if (showAnswer.value) return
-  selectedOption.value = idx
+function handleAnswer({ correct }) {
   showAnswer.value = true
-
-  const options = currentQuestion.value?.options || []
-  const chosen = options[idx]
-  const correct = (chosen || '').toLowerCase() === (currentQuestion.value?.word || '').toLowerCase()
-
   if (correct) {
     isCorrect.value = true
     playSfx('correct')
@@ -555,94 +499,6 @@ async function selectOption(idx) {
     onWrong()
     recordWrong()
     showFeedbackMessage('错误，记住正确答案哦！', 'wrong')
-  }
-}
-
-function onBlankInput(idx) {
-  const val = fillBlankInputs.value[idx]
-  if (val && val.length === 1) {
-    const blanks = hintLetters.value
-      .map((l, i) => ({ l, i }))
-      .filter(x => x.l.isBlank)
-      .map(x => x.i)
-      .sort((a, b) => a - b)
-
-    const currentPos = blanks.indexOf(idx)
-    if (currentPos < blanks.length - 1) {
-      const nextIdx = blanks[currentPos + 1]
-      blankInputRefs.value[nextIdx]?.focus()
-    }
-  }
-}
-
-function onBlankKeydown(e, idx) {
-  if (e.key === 'Backspace' && !fillBlankInputs.value[idx]) {
-    const blanks = hintLetters.value
-      .map((l, i) => ({ l, i }))
-      .filter(x => x.l.isBlank)
-      .map(x => x.i)
-      .sort((a, b) => a - b)
-
-    const currentPos = blanks.indexOf(idx)
-    if (currentPos > 0) {
-      const prevIdx = blanks[currentPos - 1]
-      blankInputRefs.value[prevIdx]?.focus()
-    }
-  } else if (e.key === 'Enter') {
-    if (allBlanksFilled.value) checkFillBlank()
-  }
-}
-
-async function checkFillBlank() {
-  if (showAnswer.value) return
-  if (!allBlanksFilled.value) return
-  showAnswer.value = true
-
-  const blanks = hintLetters.value
-    .map((l, idx) => ({ ...l, idx }))
-    .filter(l => l.isBlank)
-
-  const allCorrect = blanks.every(l => {
-    const user = (fillBlankInputs.value[l.idx] || '').toLowerCase()
-    const correct = (l.char || '').toLowerCase()
-    return user === correct
-  })
-
-  if (allCorrect) {
-    isCorrect.value = true
-    playSfx('correct')
-    onCorrect()
-    recordCorrect()
-    showFeedbackMessage('拼写正确！', 'correct')
-  } else {
-    isCorrect.value = false
-    playSfx('wrong')
-    onWrong()
-    recordWrong()
-    showFeedbackMessage('拼写错误，看看正确答案', 'wrong')
-  }
-}
-
-async function checkSpelling() {
-  if (showAnswer.value) return
-  if (!spellingInput.value.trim()) return
-  showAnswer.value = true
-
-  const userAnswer = spellingInput.value.trim().toLowerCase()
-  const correctAnswer = (currentQuestion.value?.word || '').toLowerCase()
-
-  if (userAnswer === correctAnswer) {
-    isCorrect.value = true
-    playSfx('correct')
-    onCorrect()
-    recordCorrect()
-    showFeedbackMessage('拼写正确！', 'correct')
-  } else {
-    isCorrect.value = false
-    playSfx('wrong')
-    onWrong()
-    recordWrong()
-    showFeedbackMessage('拼写错误，看看正确答案', 'wrong')
   }
 }
 
@@ -698,11 +554,13 @@ async function endRound() {
     nextWrongQueue.value = []
     currentRoundWrongWords.value = []
     resetQuestionState()
+    saveRedoState()
     stage.value = 'inProgress'
     return
   }
 
   // redo 全部正确：complete
+  clearRedoStorage()
   try {
     await weeklyExamApi.complete({
       generatedDate: exam.value?.generatedDate,
@@ -715,7 +573,29 @@ async function endRound() {
   stage.value = 'completed'
 }
 
-onMounted(fetchExam)
+onMounted(() => {
+  window.addEventListener('beforeunload', onBeforeUnload)
+  fetchExam().then(() => {
+    // Try to restore redo state if exam matches
+    if (exam.value && !exam.value.completed && exam.value.firstRoundRecorded) {
+      const restored = restoreRedoState(exam.value.generatedDate)
+      if (restored) {
+        // Resume redo from where we left off
+        mode.value = 'redo'
+        currentQuestions.value = [...wrongQueue.value]
+        currentIndex.value = 0
+        nextWrongQueue.value = []
+        currentRoundWrongWords.value = []
+        resetQuestionState()
+        stage.value = 'inProgress'
+      }
+    }
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('beforeunload', onBeforeUnload)
+})
 </script>
 
 <style scoped>
@@ -931,129 +811,7 @@ onMounted(fetchExam)
   opacity: 0;
 }
 
-/* question blocks (reuse QuizMode styling idea) */
-.choice-question,
-.spelling-question {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.question-meaning {
-  font-size: 28px;
-  font-weight: bold;
-  color: #FF8C69;
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-
-.question-hint {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  margin-bottom: 20px;
-  text-shadow: 1px 1px 2px rgba(30, 58, 95, 0.25);
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.option-btn {
-  width: 100%;
-  height: 50px;
-  font-size: 16px;
-  border-radius: 25px;
-  transition: all 0.3s;
-}
-
-.option-btn.selected {
-  border-color: #409eff;
-  background: #ecf5ff;
-}
-
-.option-btn.correct {
-  background: #67c23a !important;
-  border-color: #67c23a !important;
-  color: white !important;
-}
-
-.option-btn.wrong {
-  background: #f56c6c !important;
-  border-color: #f56c6c !important;
-  color: white !important;
-}
-
-.spelling-input {
-  margin: 18px 0;
-}
-
-.spelling-input :deep(.el-input__inner) {
-  text-align: center;
-  font-size: 20px;
-  height: 50px;
-}
-
-.correct-answer {
-  color: #fff;
-  font-size: 16px;
-  font-weight: 800;
-  margin: 12px 0;
-  text-shadow: 2px 2px 4px rgba(30, 58, 95, 0.35);
-}
-
-.fill-blank-letters {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  margin: 22px 0;
-  flex-wrap: wrap;
-}
-
-.letter-fixed {
-  width: 36px;
-  height: 44px;
-  line-height: 44px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--ocean-pale);
-  font-family: 'Courier New', monospace;
-  text-shadow: 2px 2px 4px rgba(30, 58, 95, 0.25);
-}
-
-.letter-input {
-  width: 36px;
-  height: 44px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  border: 2px solid var(--ocean-pale);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--ocean-deep);
-  font-family: 'Courier New', monospace;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.letter-input:focus {
-  border-color: var(--coral);
-  box-shadow: 0 0 8px rgba(255, 127, 80, 0.35);
-}
-
-.letter-input.correct {
-  background: #d4edda;
-  border-color: #28a745;
-  color: #28a745;
-}
-
-.letter-input.wrong {
-  background: #f8d7da;
-  border-color: #dc3545;
-  color: #dc3545;
-}
+/* question blocks - styles now in sub-components */
 
 .next-btn {
   width: 100%;

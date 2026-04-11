@@ -10,6 +10,9 @@ const { buildCefrMap } = require('./petVocab');
 const { getTodayDateCST } = require('../utils/date');
 const slackService = require('./slack');
 
+// Simple tagged logger for consistent prefix
+const log = (level, msg, data) => console[level](`[weekly-exam] ${msg}`, data || '');
+
 // Read config fresh each time (so ParentView changes take effect without restart)
 function getQuizConfig() {
   return JSON.parse(
@@ -123,9 +126,8 @@ function fisherYatesShuffle(arr, rng) {
  * @param {string} word
  * @param {function} rng - seeded random number generator
  */
-function generateHintMask(word, rng) {
+function generateHintMask(word, rng, hideRatio = 0.5) {
   if (word.length <= 1) return word;
-  const hideRatio = getFillBlankHideRatio();
   const chars = word.split('');
   const result = [chars[0]]; // always show first letter
   for (let i = 1; i < chars.length; i++) {
@@ -222,6 +224,7 @@ function generateExam(cycleDate) {
   const sampleRates = cfg.sampleRates;
   const questionTypes = cfg.questionTypes;
   const rng = seededRng(cycleDate);
+  const hideRatio = getFillBlankHideRatio();
 
   // 1. Get all learned words within window
   const allLearned = getLearnedWords();
@@ -285,7 +288,7 @@ function generateExam(cycleDate) {
     if (type === 'choice') {
       question.options = generateChoiceOptions(w, windowWords, allLearned, rng);
     } else if (type === 'fillBlank') {
-      question.hint = generateHintMask(w.word, rng);
+      question.hint = generateHintMask(w.word, rng, hideRatio);
     }
 
     return question;
@@ -379,7 +382,7 @@ function ensureCurrentExam({ sendSlackReady = false } = {}) {
         windowWeeks: newStatus.windowWeeks,
       });
     } catch (e) {
-      console.error('[weekly-exam] sendWeeklyExamReady failed:', e.message);
+      log('error', 'sendWeeklyExamReady failed:', e.message);
     }
   }
 
@@ -392,6 +395,18 @@ function ensureCurrentExam({ sendSlackReady = false } = {}) {
 function recordFirstRound(correct, total, wrongWords) {
   const status = readStatus();
   if (!status) throw new Error('No active exam');
+
+  // Prevent double recording on network retry
+  if (status.firstRoundRecorded) {
+    const existingRound = status.rounds[0];
+    return {
+      correct: existingRound?.correct ?? correct,
+      total: existingRound?.total ?? total,
+      score: existingRound?.score ?? 0,
+      wrongCount: existingRound?.wrongWords?.length ?? 0,
+      alreadyRecorded: true
+    };
+  }
 
   // Build a lookup of graduation dates from current exam questions (preferred)
   const qGradMap = new Map(
@@ -474,6 +489,14 @@ function markComplete(roundsSummary) {
   }
   writeStatus(status);
 
+  // Prune wrong pool to prevent unbounded growth
+  try {
+    const cfg = getWeeklyExamConfig();
+    pruneWrongPool(status.generatedDate, cfg.windowWeeks);
+  } catch (e) {
+    log('error', 'pruneWrongPool failed:', e.message);
+  }
+
   // Slack notify (only on first completion)
   if (!wasCompleted) {
     try {
@@ -491,11 +514,34 @@ function markComplete(roundsSummary) {
         wrongWords,
       });
     } catch (e) {
-      console.error('[weekly-exam] sendWeeklyExamComplete failed:', e.message);
+      log('error', 'sendWeeklyExamComplete failed:', e.message);
     }
   }
 
   return status;
+}
+
+/**
+ * Prune wrong pool to remove stale entries.
+ * Keep only entries where graduatedDate is within windowWeeks + 2 of cycleDate.
+ */
+function pruneWrongPool(cycleDate, windowWeeks) {
+  try {
+    if (!fs.existsSync(WRONG_POOL_FILE)) return;
+    const pool = JSON.parse(fs.readFileSync(WRONG_POOL_FILE, 'utf-8')) || [];
+    const before = pool.length;
+    const pruned = pool.filter(entry => {
+      const gd = entry.graduatedDate;
+      if (!gd) return true; // keep entries without graduation date (can't determine staleness)
+      return isWithinWindow(gd, cycleDate, windowWeeks + 2);
+    });
+    if (pruned.length < before) {
+      writeWrongPool(pruned);
+      log('log', `Pruned wrong pool: ${before} → ${pruned.length} entries`);
+    }
+  } catch (e) {
+    log('error', 'pruneWrongPool error:', e.message);
+  }
 }
 
 module.exports = {

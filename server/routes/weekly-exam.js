@@ -25,6 +25,13 @@ router.post('/first-round', (req, res) => {
     if (!generatedDate) {
       return res.status(400).json({ success: false, error: 'generatedDate is required' });
     }
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(generatedDate)) {
+      return res.status(400).json({
+        success: false,
+        error: 'generatedDate must be YYYY-MM-DD format',
+      });
+    }
     if (typeof total !== 'number' || typeof correct !== 'number') {
       return res.status(400).json({
         success: false,
@@ -64,6 +71,15 @@ router.post('/first-round', (req, res) => {
 router.post('/complete', (req, res) => {
   try {
     const { generatedDate, rounds } = req.body;
+
+    // Validate date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (generatedDate && !dateRegex.test(generatedDate)) {
+      return res.status(400).json({
+        success: false,
+        error: 'generatedDate must be YYYY-MM-DD format',
+      });
+    }
 
     // Validate generatedDate matches current exam
     const status = weeklyExamService.readStatus();

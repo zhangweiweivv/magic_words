@@ -54,5 +54,6 @@
       "B1+": { "choice": 10, "fillBlank": 30, "spelling": 60 },
       "wrong": { "choice": 0, "fillBlank": 0, "spelling": 100 }
     }
-  }
+  },
+  "slackChannelId": "C0AL4DAQ02U"
 }

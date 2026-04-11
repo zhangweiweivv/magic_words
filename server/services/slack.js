@@ -4,20 +4,31 @@
  */
 
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
-// Slack 频道配置
-const CHANNEL_ID = 'C0AL4DAQ02U'; // #可可pet 频道
+// Simple tagged logger for consistent prefix
+const log = (level, msg, data) => console[level](`[slack] ${msg}`, data || '');
+
+// Read Slack channel ID from quiz config
+function getSlackChannelId() {
+  try {
+    const configPath = path.join(__dirname, '..', 'config', 'quiz-config.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    return config.slackChannelId || 'C0AL4DAQ02U';
+  } catch {
+    return 'C0AL4DAQ02U';
+  }
+}
 
 // 从 openclaw 配置读取 bot token
 function getBotToken() {
   try {
-    const fs = require('fs');
-    const path = require('path');
     const configPath = path.join(process.env.HOME || '/Users/vvhome', '.openclaw', 'openclaw.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     return config.channels?.slack?.botToken;
   } catch (e) {
-    console.error('[Slack] 读取 bot token 失败:', e.message);
+    log('error', '读取 bot token 失败:', e.message);
     return null;
   }
 }
@@ -31,13 +42,13 @@ function sendMessage(message) {
   return new Promise((resolve) => {
     const token = getBotToken();
     if (!token) {
-      console.error('[Slack] 没有找到 bot token');
+      log('error', '没有找到 bot token');
       resolve(false);
       return;
     }
 
     const payload = JSON.stringify({
-      channel: CHANNEL_ID,
+      channel: getSlackChannelId(),
       text: message,
     });
 
@@ -60,26 +71,26 @@ function sendMessage(message) {
         try {
           const result = JSON.parse(data);
           if (result.ok) {
-            console.log('[Slack] 消息发送成功');
+            log('log', '消息发送成功');
             resolve(true);
           } else {
-            console.error('[Slack] API 错误:', result.error);
+            log('error', 'API 错误:', result.error);
             resolve(false);
           }
         } catch (e) {
-          console.error('[Slack] 解析响应失败:', e.message);
+          log('error', '解析响应失败:', e.message);
           resolve(false);
         }
       });
     });
 
     req.on('error', (e) => {
-      console.error('[Slack] 请求失败:', e.message);
+      log('error', '请求失败:', e.message);
       resolve(false);
     });
 
     req.setTimeout(15000, () => {
-      console.error('[Slack] 请求超时');
+      log('error', '请求超时');
       req.destroy();
       resolve(false);
     });
