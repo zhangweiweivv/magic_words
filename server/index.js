@@ -10,6 +10,7 @@ const translateRouter = require('./routes/translate');
 const backupRouter = require('./routes/backup');
 const gardenRouter = require('./routes/garden');
 const expansionRouter = require('./routes/expansion');
+const weeklyExamRouter = require('./routes/weekly-exam');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -79,6 +80,9 @@ app.use('/api/garden', gardenRouter);
 
 // 扩展 API 路由
 app.use('/api/expansion', expansionRouter);
+
+// 周考 API 路由
+app.use('/api/weekly-exam', weeklyExamRouter);
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🐬 可可单词服务运行在 http://localhost:${PORT}`);
