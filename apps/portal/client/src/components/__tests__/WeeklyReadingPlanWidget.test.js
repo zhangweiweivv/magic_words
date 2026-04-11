@@ -9,24 +9,23 @@ describe('WeeklyReadingPlanWidget', () => {
     expect(wrapper.text()).toContain('07:15–07:35')
   })
 
-  it('starts in collapsed state (plan rows not visible)', () => {
+  it('starts in expanded state (plan rows visible)', () => {
     const wrapper = mount(WeeklyReadingPlanWidget)
-    expect(wrapper.find('.plan-grid').exists()).toBe(false)
-  })
-
-  it('expands to show 7 day rows when expand button is clicked', async () => {
-    const wrapper = mount(WeeklyReadingPlanWidget)
-    await wrapper.find('.expand-btn').trigger('click')
-
     expect(wrapper.find('.plan-grid').exists()).toBe(true)
 
     const rows = wrapper.findAll('.plan-row')
     expect(rows).toHaveLength(7)
   })
 
-  it('shows correct day labels when expanded', async () => {
+  it('collapses when expand button is clicked (toggle)', async () => {
     const wrapper = mount(WeeklyReadingPlanWidget)
     await wrapper.find('.expand-btn').trigger('click')
+
+    expect(wrapper.find('.plan-grid').exists()).toBe(false)
+  })
+
+  it('shows correct day labels when expanded (default)', async () => {
+    const wrapper = mount(WeeklyReadingPlanWidget)
 
     const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
     for (const day of days) {
@@ -34,9 +33,8 @@ describe('WeeklyReadingPlanWidget', () => {
     }
   })
 
-  it('shows correct activities per day when expanded', async () => {
+  it('shows correct activities per day when expanded (default)', async () => {
     const wrapper = mount(WeeklyReadingPlanWidget)
-    await wrapper.find('.expand-btn').trigger('click')
 
     const text = wrapper.text()
     // 周一/周五: 语文美文
@@ -47,10 +45,8 @@ describe('WeeklyReadingPlanWidget', () => {
     expect(text).toContain('RAZ 英语阅读')
   })
 
-  it('hides widget when close button is clicked', async () => {
+  it('does not provide a close button (cannot be closed)', async () => {
     const wrapper = mount(WeeklyReadingPlanWidget)
-    await wrapper.find('.close-btn').trigger('click')
-
-    expect(wrapper.find('.weekly-plan-widget').exists()).toBe(false)
+    expect(wrapper.find('.close-btn').exists()).toBe(false)
   })
 })
