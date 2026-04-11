@@ -56,6 +56,22 @@
         <div class="review-arrow"><span>→</span></div>
       </div>
 
+      <div class="exam-card" v-if="weeklyExam && weeklyExam.total > 0" @click="$router.push('/weekly-exam')">
+        <div class="exam-decoration"><span class="decoration-star">🌟</span><span class="decoration-star">🌟</span></div>
+        <div class="exam-main">
+          <div class="exam-icon">{{ weeklyExam.completed ? '🏆' : '📝' }}</div>
+          <div class="exam-content">
+            <h3>{{ weeklyExam.completed ? '本周考试已完成' : '本周考试' }}</h3>
+            <div v-if="!weeklyExam.completed" class="exam-info">
+              <span class="exam-count">{{ weeklyExam.total }}</span>
+              <span class="exam-text">道题 · 最近{{ weeklyExam.windowWeeks }}周单词</span>
+            </div>
+            <div v-else class="exam-done">点击查看成绩 🎉</div>
+          </div>
+        </div>
+        <div class="exam-arrow"><span>→</span></div>
+      </div>
+
       <div class="quick-actions">
         <OceanButton variant="primary" size="large" icon="🐬" @click="$router.push('/cards')">开始探险</OceanButton>
         <OceanButton variant="secondary" size="large" icon="📜" @click="$router.push('/words')">我的宝藏</OceanButton>
@@ -69,6 +85,7 @@ import { ref, computed, onMounted } from 'vue'
 import { wordsApi } from '../api/words'
 import { getReviewStats } from '../api/review'
 import { pointsApi } from '../api/points'
+import { weeklyExamApi } from '../api/weeklyExam'
 import Dolphin from '../components/Dolphin.vue'
 import BubbleBackground from '../components/ocean/BubbleBackground.vue'
 import WaveDecoration from '../components/ocean/WaveDecoration.vue'
@@ -82,6 +99,7 @@ const reviewCount = ref(0)
 const dolphinMood = ref('happy')
 const dolphinRef = ref(null)
 const pointsData = ref(null)
+const weeklyExam = ref(null)
 
 const welcomeMessages = ['今天的海洋冒险开始啦！🌊', '多多陪你一起寻找宝藏！💎', '每个单词都是一颗珍珠！🦪', '准备好潜入知识的海洋了吗？🤿', '可可是最棒的小探险家！🏆', '让我们一起探索神秘海域！🐠', '今天想收集几个新单词呢？✨', '海底的宝藏在等着你哦！🗺️']
 const welcomeMessage = ref('')
@@ -113,6 +131,14 @@ onMounted(async () => {
       pointsData.value = pointsResult.data
     }
   } catch (e) { console.error('获取积分数据失败:', e) }
+
+  try {
+    const examRes = await weeklyExamApi.getCurrent()
+    const examData = examRes.data?.data || examRes.data
+    if (examData && examData.total > 0) {
+      weeklyExam.value = examData
+    }
+  } catch (e) { console.error('获取周考数据失败:', e) }
 })
 </script>
 
@@ -165,6 +191,19 @@ onMounted(async () => {
 .review-done { color: white; font-size: 18px; }
 .review-arrow { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; transition: transform var(--transition-normal); }
 .review-card:hover .review-arrow { transform: translateX(5px); }
+
+.exam-card { background: linear-gradient(135deg, #E67E22 0%, #F39C12 100%); border-radius: var(--radius-lg); padding: 20px; margin: 20px auto; max-width: 500px; display: flex; align-items: center; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); position: relative; overflow: hidden; }
+.exam-card:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4); }
+.exam-decoration { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+.exam-main { display: flex; align-items: center; flex: 1; }
+.exam-icon { font-size: 48px; margin-right: 16px; animation: float 3s ease-in-out infinite; }
+.exam-content h3 { color: white; font-size: 18px; font-family: var(--font-display); margin: 0 0 8px 0; }
+.exam-info { color: white; }
+.exam-count { font-size: 36px; font-weight: bold; font-family: var(--font-display); }
+.exam-text { font-size: 14px; margin-left: 4px; }
+.exam-done { color: white; font-size: 16px; }
+.exam-arrow { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; transition: transform var(--transition-normal); }
+.exam-card:hover .exam-arrow { transform: translateX(5px); }
 
 .quick-actions { display: flex; justify-content: center; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
 
