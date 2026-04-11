@@ -40,6 +40,11 @@ const routes = [
     path: '/garden',
     name: 'garden',
     component: () => import('../views/GardenView.vue')
+  },
+  {
+    path: '/weekly-exam',
+    name: 'weeklyExam',
+    component: () => import('../views/WeeklyExamView.vue')
   }
 ]
 
