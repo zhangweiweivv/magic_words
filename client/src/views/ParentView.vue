@@ -278,6 +278,86 @@
         </div>
       </section>
 
+      <!-- 周考设置 -->
+      <section class="section">
+        <h2 class="section-title">📝 周考设置</h2>
+        <div v-if="weeklyExamLoading" class="empty-state small"><p>加载中...</p></div>
+        <div v-else>
+          <!-- 基本参数 -->
+          <h3 class="config-subtitle">🎛️ 基本参数</h3>
+          <div class="config-params">
+            <div class="config-param-row">
+              <label>考试窗口（周数）</label>
+              <div class="param-input-group">
+                <input type="number" v-model.number="weeklyExamForm.windowWeeks" min="1" max="8" class="config-input wide" />
+                <span class="unit">周</span>
+              </div>
+            </div>
+            <div class="config-param-row">
+              <label>考试日</label>
+              <div class="param-input-group">
+                <select v-model.number="weeklyExamForm.examDay" class="config-select">
+                  <option v-for="(label, idx) in examDayLabels" :key="idx" :value="idx">{{ label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 抽样比例 -->
+          <h3 class="config-subtitle">📊 各级别抽样比例</h3>
+          <div class="config-params">
+            <div class="config-param-row" v-for="level in sampleRateLevels" :key="level">
+              <label>{{ level }}</label>
+              <div class="param-input-group">
+                <input type="range" v-model.number="weeklyExamForm.sampleRates[level]" min="0" max="100" step="5" class="config-slider" />
+                <span class="param-value">{{ weeklyExamForm.sampleRates[level] }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 题型配比 -->
+          <h3 class="config-subtitle">📋 题型配比</h3>
+          <div v-for="group in questionTypeGroups" :key="group.key" class="qt-group">
+            <div class="qt-group-title">{{ group.label }}</div>
+            <div class="config-params">
+              <div class="config-param-row">
+                <label>选择题</label>
+                <div class="param-input-group">
+                  <input type="range" v-model.number="weeklyExamForm.questionTypes[group.key].choice" min="0" max="100" step="5" class="config-slider" />
+                  <span class="param-value">{{ weeklyExamForm.questionTypes[group.key].choice }}%</span>
+                </div>
+              </div>
+              <div class="config-param-row">
+                <label>填空题</label>
+                <div class="param-input-group">
+                  <input type="range" v-model.number="weeklyExamForm.questionTypes[group.key].fillBlank" min="0" max="100" step="5" class="config-slider" />
+                  <span class="param-value">{{ weeklyExamForm.questionTypes[group.key].fillBlank }}%</span>
+                </div>
+              </div>
+              <div class="config-param-row">
+                <label>拼写题</label>
+                <div class="param-input-group">
+                  <input type="range" v-model.number="weeklyExamForm.questionTypes[group.key].spelling" min="0" max="100" step="5" class="config-slider" />
+                  <span class="param-value">{{ weeklyExamForm.questionTypes[group.key].spelling }}%</span>
+                </div>
+              </div>
+              <div class="ratio-total" :class="{ 'ratio-error': qtGroupSum(group.key) !== 100 }">
+                合计: {{ qtGroupSum(group.key) }}%
+                <span v-if="qtGroupSum(group.key) !== 100" class="ratio-warning">⚠️ 三项之和必须等于 100%</span>
+                <span v-else class="ratio-ok">✅</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-actions">
+            <button class="btn btn-primary" @click="saveWeeklyExamConfig" :disabled="weeklyExamSaving || !weeklyExamValid">
+              {{ weeklyExamSaving ? '保存中...' : '💾 保存周考设置' }}
+            </button>
+            <span v-if="weeklyExamSaveMsg" class="config-save-msg" :class="weeklyExamSaveMsgType">{{ weeklyExamSaveMsg }}</span>
+          </div>
+        </div>
+      </section>
+
       <!-- 撤销今日学习 -->
       <section class="section">
         <h2 class="section-title">🔄 撤销今日学习</h2>
@@ -409,6 +489,40 @@ const expansionStatus = ref({
 
 const ratioTotal = computed(() => ratioA1.value + ratioA2.value + ratioB1.value)
 
+// 周考配置
+const weeklyExamLoading = ref(false)
+const weeklyExamSaving = ref(false)
+const weeklyExamSaveMsg = ref('')
+const weeklyExamSaveMsgType = ref('success')
+const weeklyExamForm = ref({
+  examDay: 6,
+  windowWeeks: 1,
+  sampleRates: { A1: 20, A2: 40, 'B1+': 60 },
+  questionTypes: {
+    A1: { choice: 60, fillBlank: 30, spelling: 10 },
+    A2: { choice: 30, fillBlank: 40, spelling: 30 },
+    'B1+': { choice: 10, fillBlank: 30, spelling: 60 },
+    wrong: { choice: 0, fillBlank: 0, spelling: 100 }
+  }
+})
+const examDayLabels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+const sampleRateLevels = ['A1', 'A2', 'B1+']
+const questionTypeGroups = [
+  { key: 'A1', label: 'A1 基础词' },
+  { key: 'A2', label: 'A2 进阶词' },
+  { key: 'B1+', label: 'B1+ 高级词' },
+  { key: 'wrong', label: '错题' }
+]
+
+function qtGroupSum(key) {
+  const g = weeklyExamForm.value.questionTypes[key]
+  return (g.choice || 0) + (g.fillBlank || 0) + (g.spelling || 0)
+}
+
+const weeklyExamValid = computed(() => {
+  return questionTypeGroups.every(g => qtGroupSum(g.key) === 100)
+})
+
 // 计算属性
 const currentPoints = computed(() => pointsData.value.points || 0)
 const pointsHistory = computed(() => pointsData.value.history || [])
@@ -480,6 +594,9 @@ async function loadData() {
     
     // 加载扩充配置
     loadExpansionConfig()
+    
+    // 加载周考配置
+    loadWeeklyExamConfig()
     
     // 加载日历数据
     const calRes = await statsApi.getCalendar()
@@ -660,6 +777,68 @@ async function saveConfig() {
     configSaveMsgType.value = 'error'
   } finally {
     configSaving.value = false
+  }
+}
+
+async function loadWeeklyExamConfig() {
+  weeklyExamLoading.value = true
+  try {
+    const res = await axios.get('/api/config')
+    const cfg = res.data.data || res.data
+    if (cfg.weeklyExamConfig) {
+      const wc = cfg.weeklyExamConfig
+      weeklyExamForm.value.examDay = wc.examDay ?? 6
+      weeklyExamForm.value.windowWeeks = wc.windowWeeks ?? 1
+      // sampleRates: stored as 0-1 decimal, display as 0-100
+      if (wc.sampleRates) {
+        weeklyExamForm.value.sampleRates = {
+          A1: Math.round((wc.sampleRates.A1 ?? 0.2) * 100),
+          A2: Math.round((wc.sampleRates.A2 ?? 0.4) * 100),
+          'B1+': Math.round((wc.sampleRates['B1+'] ?? 0.6) * 100)
+        }
+      }
+      // questionTypes: stored as raw percentages 0-100
+      if (wc.questionTypes) {
+        for (const key of ['A1', 'A2', 'B1+', 'wrong']) {
+          if (wc.questionTypes[key]) {
+            weeklyExamForm.value.questionTypes[key] = { ...wc.questionTypes[key] }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('加载周考配置失败:', e)
+  } finally {
+    weeklyExamLoading.value = false
+  }
+}
+
+async function saveWeeklyExamConfig() {
+  if (!weeklyExamValid.value) return
+  weeklyExamSaving.value = true
+  weeklyExamSaveMsg.value = ''
+  try {
+    const sr = weeklyExamForm.value.sampleRates
+    await axios.put('/api/config', {
+      weeklyExamConfig: {
+        examDay: weeklyExamForm.value.examDay,
+        windowWeeks: weeklyExamForm.value.windowWeeks,
+        sampleRates: {
+          A1: sr.A1 / 100,
+          A2: sr.A2 / 100,
+          'B1+': sr['B1+'] / 100
+        },
+        questionTypes: weeklyExamForm.value.questionTypes
+      }
+    })
+    weeklyExamSaveMsg.value = '✅ 保存成功'
+    weeklyExamSaveMsgType.value = 'success'
+    setTimeout(() => { weeklyExamSaveMsg.value = '' }, 3000)
+  } catch (e) {
+    weeklyExamSaveMsg.value = '❌ 保存失败: ' + e.message
+    weeklyExamSaveMsgType.value = 'error'
+  } finally {
+    weeklyExamSaving.value = false
   }
 }
 
@@ -1509,6 +1688,30 @@ async function saveExpansionConfig() {
   flex-direction: column;
   gap: 12px;
   margin-bottom: 20px;
+}
+
+/* Weekly exam question type group */
+.qt-group {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.qt-group-title {
+  font-weight: 600;
+  color: #1E3A5F;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.config-select {
+  padding: 6px 12px;
+  border: 1.5px solid #e0e6ed;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #1E3A5F;
 }
 
 .ratio-row {
