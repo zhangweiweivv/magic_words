@@ -301,6 +301,43 @@ Add build + static serving by poetry server (like portal).
 
 Commit.
 
+### Task 11.5: Frontend key-interaction automated tests (required)
+
+**Goal:** Ensure *key user flows* are covered by automated tests (in addition to build + manual checks).
+
+**Approach:** Use `vitest` + `@vue/test-utils` (unit/component-level). Optionally add one lightweight e2e smoke with Playwright later if needed.
+
+**Files:**
+- Modify: `apps/poetry/client/package.json` (add `test` script)
+- Create: `apps/poetry/client/vitest.config.js`
+- Create: `apps/poetry/client/src/test/setup.js`
+- Create: `apps/poetry/client/src/test/__mocks__/api.js`
+- Create: `apps/poetry/client/src/views/__tests__/HomeView.test.js`
+- Create: `apps/poetry/client/src/views/__tests__/ArticleView.test.js`
+
+**Key tests (minimum):**
+1) Home due list renders items returned by `/api/state/due` (mocked)
+2) Clicking a due item navigates to article page (router push asserted)
+3) Article page "✅ 今日已学完" triggers the correct API call and updates UI state
+
+**Step 1: Write failing tests**
+- Start with `HomeView.test.js` expecting due items to render.
+
+**Step 2: Run tests to verify failing**
+- Run: `cd apps/poetry/client && npm test`
+- Expected: FAIL (test runner not configured / components missing)
+
+**Step 3: Implement minimal test setup**
+- Add vitest config + setup + API mocks
+
+**Step 4: Run tests to verify passing**
+- Run: `cd apps/poetry/client && npm test`
+- Expected: PASS
+
+**Step 5: Commit**
+- `git add apps/poetry/client`
+- `git commit -m "test(poetry): add frontend tests for key interactions"`
+
 ---
 
 ## Phase 5 — Slack notifications
