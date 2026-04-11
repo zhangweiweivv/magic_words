@@ -6,7 +6,7 @@
       <button class="expand-btn" @click="expanded = !expanded">
         {{ expanded ? '▲' : '▼' }}
       </button>
-      <button class="close-btn" @click="visible = false">✕</button>
+
     </div>
     <div v-if="expanded" class="plan-grid">
       <div v-for="item in schedule" :key="item.day" class="plan-row">
@@ -21,7 +21,8 @@
 import { ref } from 'vue'
 
 const visible = ref(true)
-const expanded = ref(false)
+// Default expanded (owner request)
+const expanded = ref(true)
 
 const schedule = [
   { day: '周一', activity: '语文美文', icon: '📖', category: 'chinese' },
@@ -37,8 +38,8 @@ const schedule = [
 <style scoped>
 .weekly-plan-widget {
   position: fixed;
+  top: 16px;
   right: 16px;
-  bottom: 16px;
   z-index: 1000;
   min-width: 280px;
   max-width: 320px;
@@ -72,8 +73,7 @@ const schedule = [
   margin-right: auto;
 }
 
-.expand-btn,
-.close-btn {
+.expand-btn {
   background: none;
   border: none;
   color: #e0e0e0;
@@ -84,8 +84,7 @@ const schedule = [
   transition: background 0.2s;
 }
 
-.expand-btn:hover,
-.close-btn:hover {
+.expand-btn:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
