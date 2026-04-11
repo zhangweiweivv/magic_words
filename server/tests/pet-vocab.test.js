@@ -1,40 +1,48 @@
+const { describe, test } = require('node:test');
+const assert = require('node:assert/strict');
 const { buildCefrMap } = require('../services/petVocab');
 
 describe('buildCefrMap', () => {
   let map;
 
-  beforeAll(() => {
-    map = buildCefrMap();
-  });
-
   test('returns a Map', () => {
-    expect(map).toBeInstanceOf(Map);
+    map = buildCefrMap();
+    assert.ok(map instanceof Map);
   });
 
   test('maps "the" to A1', () => {
-    expect(map.get('the')).toBe('A1');
+    map = buildCefrMap();
+    assert.strictEqual(map.get('the'), 'A1');
   });
 
   test('keys are lowercase', () => {
+    map = buildCefrMap();
     for (const key of map.keys()) {
-      expect(key).toBe(key.toLowerCase());
+      assert.strictEqual(key, key.toLowerCase());
     }
   });
 
-  test('has A1, A2, B1 level words', () => {
+  test('has A1, A2, B1+ level words', () => {
+    map = buildCefrMap();
     const levels = new Set(map.values());
-    expect(levels.has('A1')).toBe(true);
-    expect(levels.has('A2')).toBe(true);
+    assert.ok(levels.has('A1'));
+    assert.ok(levels.has('A2'));
+    assert.ok(levels.has('B1+'));
   });
 
-  test('B2 words are merged into B1+', () => {
+  test('map values contain only A1|A2|B1+', () => {
+    map = buildCefrMap();
     const levels = new Set(map.values());
-    expect(levels.has('B2')).toBe(false);
-    // B1+ should exist if there are B2 words in the source
-    expect(levels.has('B1+') || levels.has('B1')).toBe(true);
+    assert.ok(!levels.has('B1'), 'should not contain raw B1');
+    assert.ok(!levels.has('B2'), 'should not contain raw B2');
+    assert.ok(!levels.has('B2+'), 'should not contain B2+');
+    for (const v of levels) {
+      assert.ok(['A1', 'A2', 'B1+'].includes(v), `unexpected level: ${v}`);
+    }
   });
 
   test('map has substantial entries', () => {
-    expect(map.size).toBeGreaterThan(2000);
+    map = buildCefrMap();
+    assert.ok(map.size > 2000, `expected >2000 entries, got ${map.size}`);
   });
 });

@@ -9,8 +9,8 @@ const VOCAB_PATH = path.join(
 let cachedMap = null;
 
 /**
- * Parse PET官方单词库.md and build a Map<string, 'A1'|'A2'|'B1'|'B1+'>
- * with lowercase word keys. B2/B2+ levels are merged into 'B1+'.
+ * Parse PET官方单词库.md and build a Map<string, 'A1'|'A2'|'B1+'>
+ * with lowercase word keys. B1/B2/B2+ levels are all merged into 'B1+'.
  * Result is cached in module scope.
  */
 function buildCefrMap() {
@@ -27,7 +27,7 @@ function buildCefrMap() {
     const headerMatch = line.match(/^## 🏷️\s+(A1|A2|B1|B2)\s+级别/);
     if (headerMatch) {
       const raw = headerMatch[1];
-      currentLevel = (raw === 'B2') ? 'B1+' : raw;
+      currentLevel = (raw === 'B1' || raw === 'B2') ? 'B1+' : raw;
       continue;
     }
 
