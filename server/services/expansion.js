@@ -2,6 +2,7 @@
 const fs = require('fs').promises
 const path = require('path')
 const { lookupTranslation, lookupWordDetails } = require('./translate')
+const EXCLUDED_WORDS = require('../config/excluded-basic-words')
 
 const EXPANSION_STATE_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/expansion-state.json'
 const QUIZ_CONFIG_FILE = path.join(__dirname, '..', 'config', 'quiz-config.json')
@@ -208,7 +209,7 @@ async function expandWords(force = false) {
   // 3. Filter out existing words and get available words per level
   const available = {}
   for (const level of ['A1', 'A2', 'B1']) {
-    available[level] = petVocab[level].filter(item => !existingWords.has(item.word))
+    available[level] = petVocab[level].filter(item => !existingWords.has(item.word) && !EXCLUDED_WORDS.has(item.word.toLowerCase()))
   }
 
   // 4. Select words by ratio
