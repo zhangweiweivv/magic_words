@@ -245,7 +245,7 @@ onMounted(() => {
   border: none;
   color: var(--accent-red);
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-family: inherit;
   margin-bottom: 0.5rem;
 }
@@ -271,7 +271,7 @@ onMounted(() => {
   border: 1px solid var(--border-subtle);
   background: var(--paper-white);
   color: var(--ink-dark);
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 
 .badge-muted {
@@ -383,12 +383,13 @@ onMounted(() => {
 
 .content-block h3 {
   margin: 0 0 0.5rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--accent-red);
 }
 
 .content-text {
-  line-height: 1.7;
+  line-height: 1.8;
+  font-size: 1.15rem;
   color: var(--ink-black);
 }
 
@@ -466,7 +467,7 @@ onMounted(() => {
 .detail-link {
   color: var(--accent-red);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 .detail-link:hover {
