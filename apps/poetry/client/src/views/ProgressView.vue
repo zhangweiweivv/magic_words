@@ -109,9 +109,9 @@ function toggleCollection(name) {
 }
 
 function goToArticle(article) {
-  if (article.status !== 'not_started') {
-    router.push({ name: 'article', params: { articleId: article.articleId } })
-  }
+  // Allow browsing not-started articles too. ArticleView supports browse mode
+  // (no state yet -> Start button).
+  router.push({ name: 'article', params: { articleId: article.articleId } })
 }
 
 async function loadData() {
@@ -293,7 +293,7 @@ onMounted(loadData)
 
 .article-row.status-not_started {
   opacity: 0.6;
-  cursor: default;
+  cursor: pointer;
 }
 
 .article-title {
