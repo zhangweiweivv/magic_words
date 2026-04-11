@@ -69,8 +69,11 @@ router.post('/record', (req, res) => {
 // GET /api/review/stats - 获取复习统计
 router.get('/stats', (req, res) => {
   try {
-    const allWords = obsidian.getAllWords();
-    const stats = review.getReviewStats(allWords);
+    const unlearnedWords = obsidian.getUnlearnedWords();
+    const stats = review.getReviewStats(unlearnedWords);
+    // Override todayRemaining with actual batch size from getTodayReviewWords
+    const todayWords = review.getTodayReviewWords(unlearnedWords);
+    stats.todayRemaining = stats.quizCompleted ? 0 : todayWords.length;
     
     success(res, stats);
   } catch (err) {
