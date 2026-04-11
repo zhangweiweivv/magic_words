@@ -16,6 +16,8 @@
       </div>
     </header>
 
+    <div class="ornament-divider" aria-hidden="true"></div>
+
     <nav v-if="chipItems.length" class="section-chips">
       <button
         v-for="item in chipItems"
@@ -285,6 +287,19 @@ onMounted(() => {
   color: var(--success-green);
 }
 
+.ornament-divider {
+  height: 14px;
+  margin: 0.6rem 0 0.2rem;
+  opacity: 0.75;
+  background:
+    radial-gradient(circle at 7px 7px, rgba(192, 57, 43, 0.25) 0 1px, transparent 1px),
+    radial-gradient(circle at 21px 7px, rgba(212, 168, 67, 0.22) 0 1px, transparent 1px),
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.08) 15%, rgba(0, 0, 0, 0.08) 85%, transparent 100%);
+  background-size: 28px 14px, 28px 14px, 100% 1px;
+  background-repeat: repeat-x, repeat-x, no-repeat;
+  background-position: 0 0, 0 0, 0 50%;
+}
+
 .section-chips {
   display: flex;
   gap: 0.5rem;
@@ -294,27 +309,64 @@ onMounted(() => {
 
 .chip {
   padding: 0.35rem 0.7rem;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 999px;
-  background: var(--paper-white);
+  background: rgba(255, 252, 245, 0.85);
   color: var(--ink-dark);
   cursor: pointer;
   font-family: inherit;
   font-size: 0.9rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .chip:hover {
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .article-content {
+  position: relative;
+  overflow: hidden;
   min-height: 200px;
-  padding: 1.75rem;
+  padding: 2rem 1.9rem 2.1rem;
   background: var(--paper-white);
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+
+/* 装订线（极淡） */
+.article-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.12) 10%, rgba(0, 0, 0, 0.08) 90%, transparent 100%);
+  opacity: 0.35;
+}
+
+/* 纸张轻纹理（正文页内部） */
+.article-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(rgba(0, 0, 0, 0.02) 0.5px, transparent 0.5px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.015) 0 1px, transparent 1px 14px);
+  background-size: 26px 26px, 100% 100%;
+  opacity: 0.35;
+}
+
+/* 确保内容在纹理层之上 */
+.article-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .placeholder-text {
