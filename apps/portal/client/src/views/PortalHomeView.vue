@@ -4,13 +4,13 @@
     <p class="subtitle">欢迎来到可可的学习城堡！选择一个房间开始探索吧 ✨</p>
 
     <div class="rooms">
-      <a class="room-card vocab" href="http://localhost:3000" target="_blank">
+      <a class="room-card vocab" :href="vocabUrl" target="_blank">
         <div class="room-icon">🌊</div>
         <h2>可可的单词魔法屋</h2>
         <p>英语单词冒险之旅</p>
       </a>
 
-      <a class="room-card poetry" href="http://localhost:3002" target="_blank">
+      <a class="room-card poetry" :href="poetryUrl" target="_blank">
         <div class="room-icon">📜</div>
         <h2>可可古诗文</h2>
         <p>小红本 · 诗词古文背诵</p>
@@ -20,6 +20,24 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
+/**
+ * Build service URL using same host as current page (LAN-friendly).
+ * Falls back to localhost if window.location is unavailable (SSR/test).
+ */
+function serviceUrl(port) {
+  try {
+    const host = window.location.hostname || 'localhost'
+    const protocol = window.location.protocol || 'http:'
+    return `${protocol}//${host}:${port}`
+  } catch {
+    return `http://localhost:${port}`
+  }
+}
+
+const vocabUrl = computed(() => serviceUrl(3000))
+const poetryUrl = computed(() => serviceUrl(3002))
 </script>
 
 <style scoped>
