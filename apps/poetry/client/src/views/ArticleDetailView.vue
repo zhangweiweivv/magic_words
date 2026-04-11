@@ -1,5 +1,6 @@
 <template>
   <div class="detail-view">
+    <PlumRainCanvas />
     <header class="detail-header">
       <button class="back-btn" @click="router.back()">← 返回</button>
       <h1>{{ state?.title || articleId }} — 学习记录</h1>
@@ -47,6 +48,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchArticleState } from '../api/index.js'
+import PlumRainCanvas from '../components/PlumRainCanvas.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -29,6 +29,50 @@ describe('HomeView', () => {
     vi.clearAllMocks()
   })
 
+  it('renders plum rain canvas overlay by default', async () => {
+    // default enabled (no localStorage flag)
+    localStorage.removeItem('poetry.effects.plumRain.enabled')
+
+    fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchCurrent.mockResolvedValue({ current: null })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
+
+    const router = createTestRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(HomeView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="plum-rain-canvas"]').exists()).toBe(true)
+  })
+
+  it('does not render plum rain overlay when disabled in localStorage', async () => {
+    localStorage.setItem('poetry.effects.plumRain.enabled', 'false')
+
+    fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchCurrent.mockResolvedValue({ current: null })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
+
+    const router = createTestRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(HomeView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="plum-rain-canvas"]').exists()).toBe(false)
+
+    // cleanup
+    localStorage.removeItem('poetry.effects.plumRain.enabled')
+  })
+
   it('renders current learning card when API returns one', async () => {
     fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
     fetchCurrent.mockResolvedValue({
