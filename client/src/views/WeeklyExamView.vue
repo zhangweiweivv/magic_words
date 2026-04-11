@@ -21,6 +21,17 @@
       </div>
     </div>
 
+    <!-- 本周暂无考试 -->
+    <div v-else-if="stage === 'noExam'" class="state intro-state">
+      <div class="state-icon">🌊</div>
+      <h2>本周还没有考试哦</h2>
+      <p class="subtitle">最近 {{ exam?.windowWeeks ?? '-' }} 周没有新毕业的单词，先去完成每日任务吧～</p>
+      <div class="state-actions">
+        <OceanButton variant="secondary" @click="goHome">返回港口</OceanButton>
+        <OceanButton variant="primary" @click="fetchExam">刷新看看</OceanButton>
+      </div>
+    </div>
+
     <!-- 已完成（后端告诉 completed=true） -->
     <div v-else-if="stage === 'alreadyCompleted'" class="state result-state">
       <div class="state-icon">🏆</div>
@@ -325,7 +336,8 @@ const currentQuestion = computed(() => currentQuestions.value[currentIndex.value
 const isLastQuestion = computed(() => currentIndex.value >= currentQuestions.value.length - 1)
 const progressPercent = computed(() => {
   if (!currentQuestions.value.length) return 0
-  return Math.round((currentIndex.value / currentQuestions.value.length) * 100)
+  // +1 so the last question can show 100%
+  return Math.round(((currentIndex.value + 1) / currentQuestions.value.length) * 100)
 })
 
 const firstRoundWrongCount = computed(() => Math.max(0, totalQuestions.value - firstRoundCorrect.value))
@@ -412,6 +424,12 @@ async function fetchExam() {
       return
     }
 
+    // 本周没有可考试的单词（比如最近N周没有毕业词）
+    if ((exam.value.total ?? 0) === 0 || !Array.isArray(exam.value.questions) || exam.value.questions.length === 0) {
+      stage.value = 'noExam'
+      return
+    }
+
     // 后端 completed 优先
     if (exam.value.completed) {
       stage.value = 'alreadyCompleted'
@@ -419,7 +437,7 @@ async function fetchExam() {
       stage.value = 'intro'
     }
   } catch (e) {
-    loadError.value = e?.response?.data?.message || e?.message || '网络错误'
+    loadError.value = e?.response?.data?.error || e?.response?.data?.message || e?.message || '网络错误'
   } finally {
     loading.value = false
   }
@@ -510,6 +528,7 @@ function recordWrong() {
 }
 
 async function selectOption(idx) {
+  if (showAnswer.value) return
   selectedOption.value = idx
   showAnswer.value = true
 
@@ -568,6 +587,7 @@ function onBlankKeydown(e, idx) {
 }
 
 async function checkFillBlank() {
+  if (showAnswer.value) return
   if (!allBlanksFilled.value) return
   showAnswer.value = true
 
@@ -597,6 +617,7 @@ async function checkFillBlank() {
 }
 
 async function checkSpelling() {
+  if (showAnswer.value) return
   if (!spellingInput.value.trim()) return
   showAnswer.value = true
 
