@@ -142,7 +142,44 @@ async function sendDailyComplete(stats = {}) {
   return sendMessage(text);
 }
 
+/**
+ * 发送周考准备通知
+ * @param {Object} info - 周考信息
+ * @returns {Promise<boolean>}
+ */
+async function sendWeeklyExamReady({ generatedDate, total, wrongCount, sampledCount, windowWeeks }) {
+  const text = `📝 可可的周考已生成！\n\n` +
+    `📅 考试周期：${generatedDate}（最近${windowWeeks}周）\n` +
+    `📊 共 ${total} 题\n` +
+    `  - 错题池：${wrongCount} 题（必考）\n` +
+    `  - 抽样新词：${sampledCount} 题\n\n` +
+    `💪 加油，可可！`;
+  return sendMessage(text);
+}
+
+/**
+ * 发送周考完成通知
+ * @param {Object} info - 周考完成信息
+ * @returns {Promise<boolean>}
+ */
+async function sendWeeklyExamComplete({ generatedDate, score, total, rounds, wrongWords }) {
+  const scorePercent = total > 0 ? Math.round((score / total) * 100) : 0;
+  let text = `🎉 可可完成了 ${generatedDate} 的周考！\n\n` +
+    `📊 成绩：${score}/${total} (${scorePercent}%)\n` +
+    `🔄 共 ${rounds} 轮`;
+
+  if (wrongWords && wrongWords.length > 0) {
+    text += `\n❌ 错误单词：${wrongWords.join('、')}`;
+  } else {
+    text += `\n✅ 全部正确！太棒了！`;
+  }
+
+  return sendMessage(text);
+}
+
 module.exports = {
   sendMessage,
-  sendDailyComplete
+  sendDailyComplete,
+  sendWeeklyExamReady,
+  sendWeeklyExamComplete
 };
