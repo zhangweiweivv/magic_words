@@ -139,6 +139,7 @@ describe('POST /api/state/:articleId/complete', () => {
     assert.equal(body.state.articleId, articleId);
     assert.equal(body.state.status, 'active');
     assert.equal(body.state.stage, 0);
+    assert.equal(body.state.currentStage, 1); // stage + 1
     assert.ok(body.state.nextDueDate);
 
     // Verify persisted to disk
@@ -159,6 +160,7 @@ describe('POST /api/state/:articleId/complete', () => {
     const { status, body } = await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`);
     assert.equal(status, 200);
     assert.equal(body.state.stage, 1);
+    assert.equal(body.state.currentStage, 2); // stage + 1
   });
 
   it('returns 400 when starting without required meta', async () => {
@@ -284,6 +286,43 @@ describe('PUT /api/config/article/:articleId', () => {
     const { status } = await request('PUT', `/api/config/article/${encodeURIComponent(articleId)}`, {
       intervals: 'not-an-array',
     });
+    assert.equal(status, 400);
+  });
+});
+
+// ── Path traversal validation ──────────────────────────────────────────
+describe('articleId validation (path traversal prevention)', () => {
+  it('rejects articleId with ..', async () => {
+    const { status } = await request('GET', `/api/state/${encodeURIComponent('../etc/passwd')}`);
+    assert.equal(status, 400);
+  });
+
+  it('rejects articleId with /', async () => {
+    const { status } = await request('POST', `/api/state/${encodeURIComponent('foo/bar')}/complete`, {});
+    assert.equal(status, 400);
+  });
+
+  it('rejects articleId with backslash', async () => {
+    const { status } = await request('GET', `/api/state/${encodeURIComponent('foo\\bar')}`);
+    assert.equal(status, 400);
+  });
+});
+
+// ── Auto catalog lookup ────────────────────────────────────────────
+describe('POST /api/state/:articleId/complete (auto catalog lookup)', () => {
+  it('starts article without body by looking up catalog', async () => {
+    const articleId = '寅集-07';
+    const { status, body } = await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {});
+    assert.equal(status, 200);
+    assert.equal(body.state.articleId, articleId);
+    assert.equal(body.state.collection, '寅集');
+    assert.equal(body.state.title, '《战国策》一则 — 邹忌修八尺有余');
+    assert.equal(body.state.status, 'active');
+  });
+
+  it('returns 400 for unknown articleId without body', async () => {
+    const articleId = '不存在集-99';
+    const { status } = await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {});
     assert.equal(status, 400);
   });
 });

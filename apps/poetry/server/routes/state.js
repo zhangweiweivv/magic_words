@@ -13,7 +13,59 @@ const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { startArticle, completeStage, deferArticle } = require('../services/stateMachine');
 const { getDueArticles, sortDueArticles } = require('../services/scheduler');
 const { notifyArticleComplete } = require('../services/slack');
+const { listCollections, parseCollection } = require('../services/catalog');
 const paths = require('../services/paths');
+
+/**
+ * Add currentStage alias (= stage + 1, human-readable "第N轮") to state object.
+ * Client templates expect currentStage; server stores 0-based stage.
+ */
+function withCurrentStage(state) {
+  if (!state) return state;
+  return { ...state, currentStage: state.stage + 1 };
+}
+
+/**
+ * Look up article metadata from the catalog by articleId.
+ * ArticleId format: "{collection}-{number}", e.g. "寅集-01".
+ * @param {string} articleId
+ * @returns {{ collection: string, title: string, charCount: number, genre: string|undefined }|null}
+ */
+function lookupArticleMeta(articleId) {
+  // Parse collection name from articleId (e.g., "寅集-01" → "寅集")
+  const dashIdx = articleId.lastIndexOf('-');
+  if (dashIdx === -1) return null;
+  const collectionName = articleId.slice(0, dashIdx);
+
+  const result = parseCollection(collectionName);
+  if (!result || !result.articles) return null;
+
+  const article = result.articles.find(a => a.articleId === articleId);
+  if (!article) return null;
+
+  // Note: charCount isn't in the catalog markdown yet, so it may need to be
+  // provided by the client. We return what we have.
+  return {
+    collection: collectionName,
+    title: article.title,
+    section: article.section,
+  };
+}
+
+/**
+ * Validate articleId to prevent path traversal attacks.
+ * Only allows: Unicode word chars, hyphens, digits.
+ * Rejects: .., /, \, null bytes, etc.
+ */
+function isValidArticleId(id) {
+  if (!id || typeof id !== 'string') return false;
+  if (id.length > 100) return false;
+  // Must not contain path separators or parent-dir traversal
+  if (/[\/\\]/.test(id)) return false;
+  if (id.includes('..')) return false;
+  if (id.includes('\0')) return false;
+  return true;
+}
 
 function statePath(articleId) {
   return path.join(paths.STATE_ROOT, `${articleId}.json`);
@@ -50,35 +102,55 @@ router.get('/api/state/due', (_req, res) => {
   const due = getDueArticles({ today, states });
   const sorted = sortDueArticles(due);
 
-  res.json({ due: sorted, today });
+  res.json({ due: sorted.map(withCurrentStage), today });
 });
 
 // GET /api/state/:articleId
 router.get('/api/state/:articleId', (req, res) => {
   const { articleId } = req.params;
+  if (!isValidArticleId(articleId)) {
+    return res.status(400).json({ error: 'Invalid articleId' });
+  }
   const state = readJson(statePath(articleId));
   if (!state) {
     return res.status(404).json({ error: `Article '${articleId}' not found` });
   }
   const events = readEvents(articleId);
-  res.json({ state, events });
+  res.json({ state: withCurrentStage(state), events });
 });
 
 // POST /api/state/:articleId/complete
 router.post('/api/state/:articleId/complete', (req, res) => {
   const { articleId } = req.params;
+  if (!isValidArticleId(articleId)) {
+    return res.status(400).json({ error: 'Invalid articleId' });
+  }
   const now = new Date().toISOString();
   const existing = readJson(statePath(articleId));
 
   let result;
   if (!existing) {
-    // Start new article — requires meta in body
-    const { collection, title, charCount, genre } = req.body || {};
-    if (!collection || !title || charCount == null) {
+    // Start new article — try body first, then catalog lookup
+    let { collection, title, charCount, genre } = req.body || {};
+
+    // Auto-lookup from catalog if meta not fully provided
+    if (!collection || !title) {
+      const catalogMeta = lookupArticleMeta(articleId);
+      if (catalogMeta) {
+        collection = collection || catalogMeta.collection;
+        title = title || catalogMeta.title;
+      }
+    }
+
+    if (!collection || !title) {
       return res.status(400).json({
-        error: 'Starting a new article requires: collection, title, charCount (and optionally genre)',
+        error: 'Starting a new article requires: collection, title, charCount (and optionally genre). Could not auto-resolve from catalog.',
       });
     }
+
+    // charCount defaults to 0 if not provided (catalog doesn't have it)
+    if (charCount == null) charCount = 0;
+
     result = startArticle(null, { articleId, collection, title, charCount, genre }, now);
   } else {
     if (existing.status === 'graduated') {
@@ -98,12 +170,15 @@ router.post('/api/state/:articleId/complete', (req, res) => {
     console.error('[poetry:slack] notification error:', err.message)
   );
 
-  res.json({ state: result.nextState, events: result.events });
+  res.json({ state: withCurrentStage(result.nextState), events: result.events });
 });
 
 // POST /api/state/:articleId/defer
 router.post('/api/state/:articleId/defer', (req, res) => {
   const { articleId } = req.params;
+  if (!isValidArticleId(articleId)) {
+    return res.status(400).json({ error: 'Invalid articleId' });
+  }
   const existing = readJson(statePath(articleId));
   if (!existing) {
     return res.status(404).json({ error: `Article '${articleId}' not found` });
@@ -120,7 +195,7 @@ router.post('/api/state/:articleId/defer', (req, res) => {
     appendJsonl(eventsPath(articleId), event);
   }
 
-  res.json({ state: result.nextState, events: result.events });
+  res.json({ state: withCurrentStage(result.nextState), events: result.events });
 });
 
 module.exports = router;

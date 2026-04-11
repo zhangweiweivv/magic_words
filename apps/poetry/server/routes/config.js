@@ -9,6 +9,26 @@ const { readJson, writeJson, appendJsonl } = require('../services/storage');
 const { applyConfigChange } = require('../services/stateMachine');
 const paths = require('../services/paths');
 
+/**
+ * Add currentStage alias (= stage + 1) to state object for client compatibility.
+ */
+function withCurrentStage(state) {
+  if (!state) return state;
+  return { ...state, currentStage: state.stage + 1 };
+}
+
+/**
+ * Validate articleId to prevent path traversal.
+ */
+function isValidArticleId(id) {
+  if (!id || typeof id !== 'string') return false;
+  if (id.length > 100) return false;
+  if (/[\/\\]/.test(id)) return false;
+  if (id.includes('..')) return false;
+  if (id.includes('\0')) return false;
+  return true;
+}
+
 function statePath(articleId) {
   return path.join(paths.STATE_ROOT, `${articleId}.json`);
 }
@@ -20,6 +40,9 @@ function eventsPath(articleId) {
 // PUT /api/config/article/:articleId
 router.put('/api/config/article/:articleId', (req, res) => {
   const { articleId } = req.params;
+  if (!isValidArticleId(articleId)) {
+    return res.status(400).json({ error: 'Invalid articleId' });
+  }
   const existing = readJson(statePath(articleId));
   if (!existing) {
     return res.status(404).json({ error: `Article '${articleId}' not found` });
@@ -41,7 +64,7 @@ router.put('/api/config/article/:articleId', (req, res) => {
     appendJsonl(eventsPath(articleId), event);
   }
 
-  res.json({ state: result.nextState, events: result.events });
+  res.json({ state: withCurrentStage(result.nextState), events: result.events });
 });
 
 module.exports = router;
