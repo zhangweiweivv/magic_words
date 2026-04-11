@@ -3,29 +3,49 @@
     <header class="article-header">
       <button class="back-btn" @click="router.push('/')">← 返回</button>
       <h1>{{ contentTitle || state?.title || articleId }}</h1>
-      <p v-if="state" class="article-meta">
-        {{ state.collection }} · 第{{ state.currentStage }}/{{ state.totalStages }}轮
-      </p>
-      <p v-else class="article-meta">（浏览模式：还未开始学习）</p>
+
+      <div v-if="state" class="meta-badges">
+        <span class="badge">{{ state.collection }}</span>
+        <span class="badge badge-accent">第{{ state.currentStage }}/{{ state.totalStages }}轮</span>
+        <span v-if="state.status === 'graduated'" class="badge badge-success">已毕业</span>
+        <span v-else class="badge">学习中</span>
+      </div>
+      <div v-else class="meta-badges">
+        <span class="badge">浏览模式</span>
+        <span class="badge badge-muted">还未开始学习</span>
+      </div>
     </header>
+
+    <nav v-if="chipItems.length" class="section-chips">
+      <button
+        v-for="item in chipItems"
+        :key="item.key"
+        class="chip"
+        type="button"
+        :data-chip="item.key"
+        @click="scrollToSection(item.targetId)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
 
     <section class="article-content">
       <div v-if="loadingContent" class="placeholder-text">内容加载中…</div>
       <div v-else-if="contentError" class="placeholder-text">{{ contentError }}</div>
       <div v-else>
-        <div v-if="sections.original" class="content-block">
+        <div v-if="sections.original" id="section-original" class="content-block">
           <h3>原文</h3>
           <div class="content-text">{{ sections.original }}</div>
         </div>
-        <div v-if="sections.notes" class="content-block">
+        <div v-if="sections.notes" id="section-notes" class="content-block">
           <h3>注释</h3>
           <div class="content-text">{{ sections.notes }}</div>
         </div>
-        <div v-if="sections.translation" class="content-block">
+        <div v-if="sections.translation" id="section-translation" class="content-block">
           <h3>译文</h3>
           <div class="content-text">{{ sections.translation }}</div>
         </div>
-        <div v-if="sections.appreciation" class="content-block">
+        <div v-if="sections.appreciation" id="section-appreciation" class="content-block">
           <h3>赏析</h3>
           <div class="content-text">{{ sections.appreciation }}</div>
         </div>
@@ -82,6 +102,24 @@ const sections = ref({ original: '', notes: '', translation: '', appreciation: '
 const loadingContent = ref(true)
 const contentError = ref('')
 
+const chipItems = ref([])
+
+function rebuildChips() {
+  const s = sections.value || {}
+  const items = []
+  if ((s.original || '').trim()) items.push({ key: 'original', label: '原文', targetId: 'section-original' })
+  if ((s.notes || '').trim()) items.push({ key: 'notes', label: '注释', targetId: 'section-notes' })
+  if ((s.translation || '').trim()) items.push({ key: 'translation', label: '译文', targetId: 'section-translation' })
+  if ((s.appreciation || '').trim()) items.push({ key: 'appreciation', label: '赏析', targetId: 'section-appreciation' })
+  chipItems.value = items
+}
+
+function scrollToSection(targetId) {
+  const el = document.getElementById(targetId)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 async function loadState() {
   try {
     const data = await fetchArticleState(articleId)
@@ -99,7 +137,8 @@ async function loadContent() {
     const data = await fetchArticleContent(articleId)
     contentTitle.value = data.title
     sections.value = data.sections || { original: '', notes: '', translation: '', appreciation: '' }
-  } catch (e) {
+    rebuildChips()
+  } catch (e) {  
     contentError.value = `未找到正文内容（${e.message}）`
   } finally {
     loadingContent.value = false
@@ -135,10 +174,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.article-view {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem 2.5rem;
+}
+
 .article-header {
   padding: 1.5rem 0 1rem;
   border-bottom: 2px solid var(--border-subtle);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .back-btn {
@@ -157,19 +202,69 @@ onMounted(() => {
   letter-spacing: 0.05em;
 }
 
-.article-meta {
-  margin-top: 0.3rem;
+.meta-badges {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--paper-white);
+  color: var(--ink-dark);
+  font-size: 0.85rem;
+}
+
+.badge-muted {
   color: var(--ink-light);
+}
+
+.badge-accent {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(192, 57, 43, 0.06);
+  color: var(--accent-red);
+}
+
+.badge-success {
+  background: rgba(39, 174, 96, 0.08);
+  color: var(--success-green);
+}
+
+.section-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 1rem;
+}
+
+.chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--paper-white);
+  color: var(--ink-dark);
+  cursor: pointer;
+  font-family: inherit;
   font-size: 0.9rem;
+}
+
+.chip:hover {
+  background: var(--paper-light);
 }
 
 .article-content {
   min-height: 200px;
-  padding: 1.5rem;
+  padding: 1.75rem;
   background: var(--paper-white);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .placeholder-text {

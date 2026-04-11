@@ -91,6 +91,68 @@ describe('ArticleView', () => {
     expect(btn.text()).toContain('今日第1轮完成')
   })
 
+  it('renders section chips only for non-empty sections', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: 'poem-2',
+      title: '测试篇章',
+      sections: {
+        original: '原文有内容',
+        notes: '',
+        translation: '译文有内容',
+        appreciation: '赏析有内容'
+      }
+    })
+    fetchArticleState.mockRejectedValue(new Error('404'))
+
+    const router = createTestRouter()
+    await router.push('/article/poem-2')
+    await router.isReady()
+
+    const wrapper = mount(ArticleView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    const chips = wrapper.find('.section-chips')
+    expect(chips.exists()).toBe(true)
+    expect(chips.text()).toContain('原文')
+    expect(chips.text()).toContain('译文')
+    expect(chips.text()).toContain('赏析')
+    expect(chips.text()).not.toContain('注释')
+  })
+
+  it('scrolls to section when clicking a chip', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: 'poem-3',
+      title: '测试跳转',
+      sections: { original: '原文', notes: '注释', translation: '译文', appreciation: '赏析' }
+    })
+    fetchArticleState.mockRejectedValue(new Error('404'))
+
+    // mock scrollIntoView
+    const spy = vi.fn()
+    Element.prototype.scrollIntoView = spy
+
+    const router = createTestRouter()
+    await router.push('/article/poem-3')
+    await router.isReady()
+
+    const wrapper = mount(ArticleView, {
+      attachTo: document.body,
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    // click translation chip
+    const translationChip = wrapper.find('[data-chip="translation"]')
+    expect(translationChip.exists()).toBe(true)
+    await translationChip.trigger('click')
+
+    expect(spy).toHaveBeenCalled()
+  })
+
   it('calls API and updates UI when clicking Start button in browse mode', async () => {
     fetchArticleContent.mockResolvedValue({
       articleId: '寅集-01',
