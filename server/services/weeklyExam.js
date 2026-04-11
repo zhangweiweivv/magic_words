@@ -258,12 +258,15 @@ function generateExam(cycleDate) {
   }
 
   const sampled = [];
+  const samplingLog = {};
   for (const [level, words] of Object.entries(byLevel)) {
     const rate = sampleRates[level] || 0.4;
     // Shuffle with seeded rng (Fisher-Yates)
     const shuffled = fisherYatesShuffle(words, rng);
     const count = Math.ceil(shuffled.length * rate);
-    sampled.push(...shuffled.slice(0, count));
+    const picked = shuffled.slice(0, count);
+    sampled.push(...picked);
+    samplingLog[level] = { total: words.length, rate, picked: picked.length, words: picked.map(w => w.word) };
   }
 
   // 6. Combine: all wrong words + sampled regular words
@@ -283,6 +286,9 @@ function generateExam(cycleDate) {
       type,
       level,
       isFromWrongPool: isWrong,
+      selectionReason: isWrong
+        ? `错题池（窗口内历史错题，100%必考）`
+        : `${level}级采样（${byLevel[level]?.length || 0}词中按${Math.round((sampleRates[level] || 0.4) * 100)}%抽样命中）`,
     };
 
     if (type === 'choice') {
@@ -303,6 +309,16 @@ function generateExam(cycleDate) {
   // Shuffle questions (Fisher-Yates)
   const shuffledQuestions = fisherYatesShuffle(questions, rng);
 
+  // Log selection details
+  log('info', `周考生成完成`, {
+    cycleDate,
+    windowWeeks,
+    wrongCount: wrongWordsInWindow.length,
+    wrongWords: wrongWordsInWindow.map(w => w.word),
+    sampling: samplingLog,
+    totalQuestions: shuffledQuestions.length,
+  });
+
   return {
     cycleDate,
     generatedDate: cycleDate,
@@ -310,6 +326,7 @@ function generateExam(cycleDate) {
     total: shuffledQuestions.length,
     wrongCount: wrongWordsInWindow.length,
     sampledCount: sampled.length,
+    samplingLog,
     questions: shuffledQuestions,
   };
 }
