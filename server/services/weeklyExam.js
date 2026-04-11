@@ -9,12 +9,18 @@ const { OBSIDIAN_PATH, getLearnedWords } = require('./obsidian');
 const { buildCefrMap } = require('./petVocab');
 const { getTodayDateCST } = require('../utils/date');
 
-// Load config
-const quizConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'config', 'quiz-config.json'), 'utf-8')
-);
-const config = quizConfig.weeklyExamConfig;
-const fillBlankHideRatio = quizConfig.fillBlankHideRatio || 0.5;
+// Read config fresh each time (so ParentView changes take effect without restart)
+function getQuizConfig() {
+  return JSON.parse(
+    fs.readFileSync(path.join(__dirname, '..', 'config', 'quiz-config.json'), 'utf-8')
+  );
+}
+function getWeeklyExamConfig() {
+  return getQuizConfig().weeklyExamConfig;
+}
+function getFillBlankHideRatio() {
+  return getQuizConfig().fillBlankHideRatio || 0.5;
+}
 
 // Persistence paths
 const STATUS_FILE = path.join(OBSIDIAN_PATH, '.weekly-exam-status.json');
@@ -99,15 +105,30 @@ function pickQuestionType(ratios, rng) {
 }
 
 /**
+ * Unbiased Fisher-Yates shuffle using provided rng.
+ */
+function fisherYatesShuffle(arr, rng) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
  * Generate hint mask for fillBlank questions.
  * Shows first letter, hides ~50% of remaining.
+ * @param {string} word
+ * @param {function} rng - seeded random number generator
  */
-function generateHintMask(word) {
+function generateHintMask(word, rng) {
   if (word.length <= 1) return word;
+  const hideRatio = getFillBlankHideRatio();
   const chars = word.split('');
   const result = [chars[0]]; // always show first letter
   for (let i = 1; i < chars.length; i++) {
-    result.push(Math.random() < fillBlankHideRatio ? '_' : chars[i]);
+    result.push(rng() < hideRatio ? '_' : chars[i]);
   }
   // Ensure at least one underscore for words > 1 char
   if (!result.slice(1).includes('_')) {
@@ -162,10 +183,11 @@ function writeStatus(status) {
  * Generate exam questions for a cycle.
  */
 function generateExam(cycleDate) {
-  const examDay = config.examDay;
-  const windowWeeks = config.windowWeeks;
-  const sampleRates = config.sampleRates;
-  const questionTypes = config.questionTypes;
+  const cfg = getWeeklyExamConfig();
+  const examDay = cfg.examDay;
+  const windowWeeks = cfg.windowWeeks;
+  const sampleRates = cfg.sampleRates;
+  const questionTypes = cfg.questionTypes;
   const rng = seededRng(cycleDate);
 
   // 1. Get all learned words within window
@@ -202,8 +224,8 @@ function generateExam(cycleDate) {
   const sampled = [];
   for (const [level, words] of Object.entries(byLevel)) {
     const rate = sampleRates[level] || 0.4;
-    // Shuffle with seeded rng
-    const shuffled = [...words].sort(() => rng() - 0.5);
+    // Shuffle with seeded rng (Fisher-Yates)
+    const shuffled = fisherYatesShuffle(words, rng);
     const count = Math.ceil(shuffled.length * rate);
     sampled.push(...shuffled.slice(0, count));
   }
@@ -229,23 +251,23 @@ function generateExam(cycleDate) {
     if (type === 'choice') {
       question.options = generateChoiceOptions(w, windowWords, allLearned, rng);
     } else if (type === 'fillBlank') {
-      question.hint = generateHintMask(w.word);
+      question.hint = generateHintMask(w.word, rng);
     }
 
     return question;
   });
 
-  // Shuffle questions
-  questions.sort(() => rng() - 0.5);
+  // Shuffle questions (Fisher-Yates)
+  const shuffledQuestions = fisherYatesShuffle(questions, rng);
 
   return {
     cycleDate,
     generatedDate: cycleDate,
     windowWeeks,
-    total: questions.length,
+    total: shuffledQuestions.length,
     wrongCount: wrongWordsInWindow.length,
     sampledCount: sampled.length,
-    questions,
+    questions: shuffledQuestions,
   };
 }
 
@@ -269,12 +291,12 @@ function generateChoiceOptions(targetWord, windowWords, allLearned, rng) {
     }
   }
 
-  // Pick 3 random distractors
-  const shuffled = [...candidates].sort(() => rng() - 0.5);
+  // Pick 3 random distractors (Fisher-Yates)
+  const shuffled = fisherYatesShuffle(candidates, rng);
   const distractors = shuffled.slice(0, 3);
 
-  // Combine and shuffle
-  const options = [correct, ...distractors].sort(() => rng() - 0.5);
+  // Combine and shuffle (Fisher-Yates)
+  const options = fisherYatesShuffle([correct, ...distractors], rng);
   return options;
 }
 
@@ -284,7 +306,8 @@ function generateChoiceOptions(targetWord, windowWords, allLearned, rng) {
  */
 function getOrGenerateExam() {
   const now = new Date();
-  const cycleDate = getExamCycleDate(now, config.examDay);
+  const cfg = getWeeklyExamConfig();
+  const cycleDate = getExamCycleDate(now, cfg.examDay);
   const status = readStatus();
 
   // If status exists and matches current cycle, return cached exam
@@ -292,7 +315,7 @@ function getOrGenerateExam() {
     return status;
   }
 
-  // Generate new exam
+  // Generate new exam (config read fresh inside generateExam)
   const exam = generateExam(cycleDate);
   const newStatus = {
     ...exam,
@@ -386,6 +409,7 @@ module.exports = {
   seededRng,
   pickQuestionType,
   generateHintMask,
+  fisherYatesShuffle,
   // Service functions
   getOrGenerateExam,
   generateExam,

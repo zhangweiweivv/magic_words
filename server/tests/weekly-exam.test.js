@@ -8,6 +8,7 @@ const {
   pickQuestionType,
   seededRng,
   generateHintMask,
+  fisherYatesShuffle,
 } = require('../services/weeklyExam');
 
 describe('getExamCycleDate', () => {
@@ -125,8 +126,9 @@ describe('pickQuestionType', () => {
 });
 
 describe('generateHintMask', () => {
-  it('shows first letter and hides roughly 50%', () => {
-    const mask = generateHintMask('apple');
+  it('shows first letter and hides some chars deterministically', () => {
+    const rng = seededRng('hint-test');
+    const mask = generateHintMask('apple', rng);
     // First char visible
     assert.strictEqual(mask[0], 'a');
     // Contains underscores
@@ -135,14 +137,61 @@ describe('generateHintMask', () => {
     assert.strictEqual(mask.length, 'apple'.length);
   });
 
+  it('is deterministic with same rng seed', () => {
+    const rng1 = seededRng('hint-det');
+    const rng2 = seededRng('hint-det');
+    const mask1 = generateHintMask('apple', rng1);
+    const mask2 = generateHintMask('apple', rng2);
+    assert.strictEqual(mask1, mask2);
+  });
+
   it('handles single character', () => {
-    const mask = generateHintMask('a');
+    const rng = seededRng('single');
+    const mask = generateHintMask('a', rng);
     assert.strictEqual(mask, 'a');
   });
 
   it('handles two characters', () => {
-    const mask = generateHintMask('go');
+    const rng = seededRng('two');
+    const mask = generateHintMask('go', rng);
     assert.strictEqual(mask[0], 'g');
     assert.strictEqual(mask.length, 2);
+  });
+});
+
+describe('fisherYatesShuffle', () => {
+  it('returns array of same length with same elements', () => {
+    const rng = seededRng('shuffle');
+    const input = [1, 2, 3, 4, 5];
+    const result = fisherYatesShuffle(input, rng);
+    assert.strictEqual(result.length, input.length);
+    assert.deepStrictEqual([...result].sort(), [...input].sort());
+  });
+
+  it('does not mutate the original array', () => {
+    const rng = seededRng('shuffle-no-mutate');
+    const input = [1, 2, 3, 4, 5];
+    const copy = [...input];
+    fisherYatesShuffle(input, rng);
+    assert.deepStrictEqual(input, copy);
+  });
+
+  it('is deterministic with same rng seed', () => {
+    const rng1 = seededRng('shuffle-det');
+    const rng2 = seededRng('shuffle-det');
+    const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const result1 = fisherYatesShuffle(input, rng1);
+    const result2 = fisherYatesShuffle(input, rng2);
+    assert.deepStrictEqual(result1, result2);
+  });
+
+  it('handles empty array', () => {
+    const rng = seededRng('empty');
+    assert.deepStrictEqual(fisherYatesShuffle([], rng), []);
+  });
+
+  it('handles single element', () => {
+    const rng = seededRng('single');
+    assert.deepStrictEqual(fisherYatesShuffle([42], rng), [42]);
   });
 });
