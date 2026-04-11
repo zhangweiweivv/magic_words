@@ -2,7 +2,7 @@
   <div class="article-view">
     <header class="article-header">
       <button class="back-btn" @click="router.push('/')">← 返回</button>
-      <h1>{{ contentTitle || state?.title || articleId }}</h1>
+      <h1 class="article-title">{{ contentTitle || state?.title || articleId }}</h1>
 
       <div v-if="state" class="meta-badges">
         <span class="badge">{{ state.collection }}</span>
@@ -34,7 +34,7 @@
       <div v-else-if="contentError" class="placeholder-text">{{ contentError }}</div>
       <div v-else>
         <div v-if="sections.original" id="section-original" class="content-block">
-          <h3>原文</h3>
+          <h3 class="section-title">原文</h3>
           <div class="content-text">
             <template v-for="(line, idx) in formatSection(sections.original)" :key="`o-${idx}`">
               <div v-if="line.type === 'divider'" class="content-divider" />
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div v-if="sections.notes" id="section-notes" class="content-block">
-          <h3>注释</h3>
+          <h3 class="section-title">注释</h3>
           <div class="content-text">
             <template v-for="(line, idx) in formatSection(sections.notes)" :key="`n-${idx}`">
               <div v-if="line.type === 'divider'" class="content-divider" />
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div v-if="sections.translation" id="section-translation" class="content-block">
-          <h3>译文</h3>
+          <h3 class="section-title">译文</h3>
           <div class="content-text">
             <template v-for="(line, idx) in formatSection(sections.translation)" :key="`t-${idx}`">
               <div v-if="line.type === 'divider'" class="content-divider" />
@@ -64,7 +64,7 @@
           </div>
         </div>
         <div v-if="sections.appreciation" id="section-appreciation" class="content-block">
-          <h3>赏析</h3>
+          <h3 class="section-title">赏析</h3>
           <div class="content-text">
             <template v-for="(line, idx) in formatSection(sections.appreciation)" :key="`a-${idx}`">
               <div v-if="line.type === 'divider'" class="content-divider" />

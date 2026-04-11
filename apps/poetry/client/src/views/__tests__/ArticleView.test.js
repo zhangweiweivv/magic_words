@@ -28,6 +28,35 @@ describe('ArticleView', () => {
     vi.clearAllMocks()
   })
 
+  it('applies typography hooks for bookish headings (classes)', async () => {
+    fetchArticleContent.mockResolvedValue({
+      articleId: 'poem-font-1',
+      title: '字体测试',
+      sections: { original: '原文', notes: '注释', translation: '译文', appreciation: '赏析' }
+    })
+    fetchArticleState.mockRejectedValue(new Error('404'))
+
+    const router = createTestRouter()
+    await router.push('/article/poem-font-1')
+    await router.isReady()
+
+    const wrapper = mount(ArticleView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    const title = wrapper.find('.article-header h1')
+    expect(title.exists()).toBe(true)
+    expect(title.classes()).toContain('article-title')
+
+    const sectionTitles = wrapper.findAll('.content-block h3')
+    expect(sectionTitles.length).toBeGreaterThan(0)
+    for (const h3 of sectionTitles) {
+      expect(h3.classes()).toContain('section-title')
+    }
+  })
+
   it('shows a Start button when browsing an article that has no state yet', async () => {
     fetchArticleContent.mockResolvedValue({
       articleId: '寅集-01',
