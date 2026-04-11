@@ -15,6 +15,7 @@
         :key="item.key"
         class="chip"
         type="button"
+        :data-chip="item.key"
         @click="scrollToSection(item.targetId)"
       >
         {{ item.label }}
