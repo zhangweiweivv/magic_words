@@ -53,7 +53,7 @@ describe('ArticleView', () => {
 
     const startBtn = wrapper.find('.start-learning-btn')
     expect(startBtn.exists()).toBe(true)
-    expect(startBtn.text()).toContain('开始学习')
+    expect(startBtn.text()).toContain('今日首学完成')
     // Should render some content
     expect(wrapper.text()).toContain('原文行1')
   })
@@ -88,7 +88,7 @@ describe('ArticleView', () => {
 
     const btn = wrapper.find('.complete-btn')
     expect(btn.exists()).toBe(true)
-    expect(btn.text()).toContain('今日已学完')
+    expect(btn.text()).toContain('今日第1轮完成')
   })
 
   it('calls API and updates UI when clicking Start button in browse mode', async () => {

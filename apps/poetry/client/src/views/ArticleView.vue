@@ -39,7 +39,7 @@
         :disabled="completed"
         @click="handleStart"
       >
-        {{ completed ? '✅ 已开始' : '开始学习' }}
+        {{ completed ? '✅ 已完成' : '今日首学完成' }}
       </button>
 
       <button
@@ -48,7 +48,7 @@
         :disabled="completed || state?.status === 'graduated'"
         @click="handleComplete"
       >
-        {{ completed ? '✅ 已完成' : '✅ 今日已学完' }}
+        {{ completed ? '✅ 已完成' : `✅ 今日第${state.currentStage}轮完成` }}
       </button>
 
       <router-link
