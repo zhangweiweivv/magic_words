@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const backup = require('../services/backup');
+const { success, error: errRes } = require('../utils/response');
 
 // POST /api/backup/create - 创建今日快照
 router.post('/create', (req, res) => {
   try {
     const result = backup.createDailyBackup();
-    res.json({ success: true, data: result });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    success(res, result);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -16,9 +17,9 @@ router.post('/create', (req, res) => {
 router.post('/restore', (req, res) => {
   try {
     const result = backup.restoreDailyBackup();
-    res.json({ success: true, data: result });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    success(res, result);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -26,9 +27,9 @@ router.post('/restore', (req, res) => {
 router.get('/status', (req, res) => {
   try {
     const has = backup.hasBackup();
-    res.json({ success: true, data: { hasBackup: has } });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    success(res, { hasBackup: has });
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 

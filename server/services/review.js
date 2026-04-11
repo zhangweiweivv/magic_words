@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getTodayDateCST, getNowTimeCST, getDateAfterDaysCST } = require('../utils/date');
+const { withFileLock } = require('../utils/fileLock');
 
 const OBSIDIAN_PATH = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本';
 const REVIEW_FILE = path.join(OBSIDIAN_PATH, '复习记录.md');
@@ -283,6 +284,7 @@ function getTodayReviewWords(allWords) {
  * 记录复习结果
  */
 function recordReview(word, remembered) {
+  return withFileLock(REVIEW_FILE, () => {
   const progress = parseReviewFile();
   const today = getTodayDateCST();
   const time = getNowTimeCST();
@@ -325,6 +327,7 @@ function recordReview(word, remembered) {
     nextReviewDate: data.nextReviewDate,
     completed: data.reviewCount >= cfgIntervals.length
   };
+  }); // end withFileLock
 }
 
 /**

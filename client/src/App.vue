@@ -38,9 +38,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { createApp, h } from 'vue'
+import { createApp } from 'vue'
 import BottomNav from './components/BottomNav.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
 import EffectsContainer from './components/effects/EffectsContainer.vue'
@@ -51,15 +51,30 @@ const route = useRoute()
 const isCardsPage = computed(() => route.path.startsWith('/cards'))
 const { equipped, loadConfig } = useShopConfig()
 
+let fishApp = null
+let fishContainer = null
+
 onMounted(() => {
   // 加载商店配置
   loadConfig()
 
   // 把 SwimmingFish 挂载到 body 上，避免被 #app 的 overflow 裁剪
-  const fishContainer = document.createElement('div')
+  fishContainer = document.createElement('div')
   fishContainer.id = 'swimming-fish-root'
   document.body.appendChild(fishContainer)
-  createApp(SwimmingFish).mount(fishContainer)
+  fishApp = createApp(SwimmingFish)
+  fishApp.mount(fishContainer)
+})
+
+onUnmounted(() => {
+  if (fishApp) {
+    fishApp.unmount()
+    fishApp = null
+  }
+  if (fishContainer && fishContainer.parentNode) {
+    fishContainer.parentNode.removeChild(fishContainer)
+    fishContainer = null
+  }
 })
 </script>
 

@@ -1,0 +1,367 @@
+{
+  "happy": [
+    "joyful",
+    "cheerful",
+    "glad",
+    "pleased"
+  ],
+  "sad": [
+    "unhappy",
+    "sorrowful",
+    "gloomy",
+    "melancholy"
+  ],
+  "big": [
+    "large",
+    "huge",
+    "enormous",
+    "giant"
+  ],
+  "small": [
+    "little",
+    "tiny",
+    "miniature",
+    "petite"
+  ],
+  "good": [
+    "excellent",
+    "great",
+    "fine",
+    "wonderful"
+  ],
+  "bad": [
+    "poor",
+    "terrible",
+    "awful",
+    "dreadful"
+  ],
+  "fast": [
+    "quick",
+    "rapid",
+    "swift",
+    "speedy"
+  ],
+  "slow": [
+    "sluggish",
+    "leisurely",
+    "unhurried"
+  ],
+  "beautiful": [
+    "pretty",
+    "lovely",
+    "gorgeous",
+    "stunning"
+  ],
+  "ugly": [
+    "unattractive",
+    "hideous",
+    "unsightly"
+  ],
+  "smart": [
+    "intelligent",
+    "clever",
+    "bright",
+    "wise"
+  ],
+  "stupid": [
+    "foolish",
+    "dumb",
+    "silly"
+  ],
+  "easy": [
+    "simple",
+    "effortless",
+    "straightforward"
+  ],
+  "hard": [
+    "difficult",
+    "tough",
+    "challenging"
+  ],
+  "hot": [
+    "warm",
+    "heated",
+    "burning",
+    "scorching"
+  ],
+  "cold": [
+    "cool",
+    "chilly",
+    "freezing",
+    "icy"
+  ],
+  "old": [
+    "ancient",
+    "aged",
+    "elderly"
+  ],
+  "new": [
+    "fresh",
+    "modern",
+    "recent",
+    "novel"
+  ],
+  "rich": [
+    "wealthy",
+    "affluent",
+    "prosperous"
+  ],
+  "poor": [
+    "needy",
+    "impoverished",
+    "destitute"
+  ],
+  "strong": [
+    "powerful",
+    "mighty",
+    "sturdy",
+    "robust"
+  ],
+  "weak": [
+    "feeble",
+    "frail",
+    "fragile"
+  ],
+  "tall": [
+    "high",
+    "towering",
+    "lofty"
+  ],
+  "short": [
+    "brief",
+    "little",
+    "low"
+  ],
+  "long": [
+    "lengthy",
+    "extended",
+    "prolonged"
+  ],
+  "clean": [
+    "tidy",
+    "neat",
+    "spotless",
+    "pure"
+  ],
+  "dirty": [
+    "filthy",
+    "messy",
+    "grimy",
+    "unclean"
+  ],
+  "bright": [
+    "brilliant",
+    "radiant",
+    "shining",
+    "luminous"
+  ],
+  "dark": [
+    "dim",
+    "gloomy",
+    "shadowy",
+    "murky"
+  ],
+  "loud": [
+    "noisy",
+    "booming",
+    "thunderous"
+  ],
+  "quiet": [
+    "silent",
+    "peaceful",
+    "calm",
+    "hushed"
+  ],
+  "begin": [
+    "start",
+    "commence",
+    "initiate"
+  ],
+  "end": [
+    "finish",
+    "conclude",
+    "terminate"
+  ],
+  "buy": [
+    "purchase",
+    "acquire",
+    "obtain"
+  ],
+  "sell": [
+    "vend",
+    "trade",
+    "market"
+  ],
+  "love": [
+    "adore",
+    "cherish",
+    "treasure"
+  ],
+  "hate": [
+    "detest",
+    "loathe",
+    "despise"
+  ],
+  "like": [
+    "enjoy",
+    "appreciate",
+    "fancy"
+  ],
+  "help": [
+    "assist",
+    "aid",
+    "support"
+  ],
+  "hurt": [
+    "harm",
+    "injure",
+    "damage"
+  ],
+  "make": [
+    "create",
+    "produce",
+    "build"
+  ],
+  "break": [
+    "shatter",
+    "smash",
+    "destroy"
+  ],
+  "find": [
+    "discover",
+    "locate",
+    "uncover"
+  ],
+  "lose": [
+    "misplace",
+    "forfeit"
+  ],
+  "give": [
+    "donate",
+    "provide",
+    "offer"
+  ],
+  "take": [
+    "grab",
+    "seize",
+    "obtain"
+  ],
+  "run": [
+    "sprint",
+    "dash",
+    "race",
+    "jog"
+  ],
+  "walk": [
+    "stroll",
+    "amble",
+    "wander"
+  ],
+  "eat": [
+    "consume",
+    "devour",
+    "dine"
+  ],
+  "drink": [
+    "sip",
+    "gulp",
+    "swallow"
+  ],
+  "speak": [
+    "talk",
+    "say",
+    "tell",
+    "communicate"
+  ],
+  "listen": [
+    "hear",
+    "attend",
+    "heed"
+  ],
+  "see": [
+    "view",
+    "observe",
+    "watch",
+    "notice"
+  ],
+  "look": [
+    "gaze",
+    "stare",
+    "glance",
+    "peer"
+  ],
+  "think": [
+    "consider",
+    "ponder",
+    "contemplate"
+  ],
+  "know": [
+    "understand",
+    "comprehend",
+    "realize"
+  ],
+  "want": [
+    "desire",
+    "wish",
+    "crave"
+  ],
+  "need": [
+    "require",
+    "demand",
+    "necessitate"
+  ],
+  "important": [
+    "significant",
+    "crucial",
+    "vital",
+    "essential"
+  ],
+  "interesting": [
+    "fascinating",
+    "intriguing",
+    "engaging"
+  ],
+  "boring": [
+    "dull",
+    "tedious",
+    "monotonous"
+  ],
+  "angry": [
+    "furious",
+    "mad",
+    "irritated",
+    "annoyed"
+  ],
+  "afraid": [
+    "scared",
+    "frightened",
+    "terrified"
+  ],
+  "brave": [
+    "courageous",
+    "fearless",
+    "bold"
+  ],
+  "kind": [
+    "nice",
+    "gentle",
+    "caring",
+    "generous"
+  ],
+  "mean": [
+    "cruel",
+    "unkind",
+    "nasty"
+  ],
+  "funny": [
+    "humorous",
+    "amusing",
+    "comical",
+    "hilarious"
+  ],
+  "serious": [
+    "grave",
+    "solemn",
+    "earnest"
+  ]
+}

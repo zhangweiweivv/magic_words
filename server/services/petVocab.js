@@ -5,6 +5,7 @@ const { OBSIDIAN_PATH } = require('./obsidian');
 const VOCAB_PATH = path.join(OBSIDIAN_PATH, 'PET官方单词库.md');
 
 let cachedMap = null;
+let cachedMtime = null;
 
 /**
  * Parse PET官方单词库.md and build a Map<string, 'A1'|'A2'|'B1+'>
@@ -12,7 +13,20 @@ let cachedMap = null;
  * Result is cached in module scope.
  */
 function buildCefrMap() {
-  if (cachedMap) return cachedMap;
+  // Check file mtime for cache invalidation
+  try {
+    const stat = fs.statSync(VOCAB_PATH);
+    const currentMtime = stat.mtimeMs;
+    if (cachedMap && cachedMtime === currentMtime) {
+      return cachedMap;
+    }
+    cachedMtime = currentMtime;
+  } catch (err) {
+    throw new Error(
+      `无法读取 PET 单词库文件: ${VOCAB_PATH}\n` +
+      `请确认文件存在且可读。原始错误: ${err.message}`
+    );
+  }
 
   let content;
   try {

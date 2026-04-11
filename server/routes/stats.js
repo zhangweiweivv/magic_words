@@ -2,14 +2,15 @@
 const express = require('express')
 const router = express.Router()
 const statsService = require('../services/stats')
+const { success, error: errRes } = require('../utils/response')
 
 // 获取学习摘要
 router.get('/summary', async (req, res) => {
   try {
     const data = await statsService.getSummary()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -17,9 +18,9 @@ router.get('/summary', async (req, res) => {
 router.get('/daily', async (req, res) => {
   try {
     const data = await statsService.getDailyStats()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -27,9 +28,9 @@ router.get('/daily', async (req, res) => {
 router.get('/calendar', async (req, res) => {
   try {
     const data = await statsService.getStudyCalendar()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -37,9 +38,9 @@ router.get('/calendar', async (req, res) => {
 router.get('/weak-words', async (req, res) => {
   try {
     const data = await statsService.getWeakWords()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -47,10 +48,13 @@ router.get('/weak-words', async (req, res) => {
 router.post('/daily', async (req, res) => {
   try {
     const { date, wordsReviewed, accuracy } = req.body
+    if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return errRes(res, 'date must be a valid ISO date string (YYYY-MM-DD)', 400)
+    }
     const result = await statsService.recordDailyStats(date, wordsReviewed, accuracy, 0)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -59,9 +63,9 @@ router.post('/word-error', async (req, res) => {
   try {
     const { word } = req.body
     const result = await statsService.recordWordError(word)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 

@@ -1,30 +1,30 @@
-import axios from 'axios'
+import api from './index'
 
-const API_BASE = '/api/shop'
+const SHOP_BASE = '/shop'
 
 export const shopApi = {
   async getShopData() {
-    const res = await axios.get(API_BASE)
+    const res = await api.get(SHOP_BASE)
     return res.data
   },
   async purchaseItem(category, itemId) {
-    const res = await axios.post(`${API_BASE}/purchase`, { category, itemId })
+    const res = await api.post(`${SHOP_BASE}/purchase`, { category, itemId })
     return res.data
   },
   async equipItem(category, itemId) {
-    const res = await axios.post(`${API_BASE}/equip`, { category, itemId })
+    const res = await api.post(`${SHOP_BASE}/equip`, { category, itemId })
     return res.data
   },
   async verifyParent(password) {
-    const res = await axios.post(`${API_BASE}/verify-parent`, { password })
+    const res = await api.post(`${SHOP_BASE}/verify-parent`, { password })
     return res.data
   },
   async addRealReward(name, price, password) {
-    const res = await axios.post(`${API_BASE}/rewards/add`, { name, price, password })
+    const res = await api.post(`${SHOP_BASE}/rewards/add`, { name, price, password })
     return res.data
   },
   async redeemRealReward(rewardName, password) {
-    const res = await axios.post(`${API_BASE}/rewards/redeem`, { rewardName, password })
+    const res = await api.post(`${SHOP_BASE}/rewards/redeem`, { rewardName, password })
     return res.data
   }
 }

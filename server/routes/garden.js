@@ -5,14 +5,15 @@
 const express = require('express');
 const router = express.Router();
 const gardenService = require('../services/garden');
+const { success, error: errRes } = require('../utils/response');
 
 // GET /api/garden/status — 获取花园状态
 router.get('/status', (req, res) => {
   try {
     const status = gardenService.getGardenStatus();
-    res.json(status);
+    success(res, status);
   } catch (err) {
-    res.status(500).json({ error: '获取花园状态失败', detail: err.message });
+    errRes(res, '获取花园状态失败', 500, err.message);
   }
 });
 
@@ -20,9 +21,9 @@ router.get('/status', (req, res) => {
 router.post('/water', (req, res) => {
   try {
     const result = gardenService.water();
-    res.json(result);
+    success(res, result);
   } catch (err) {
-    res.status(500).json({ error: '浇水失败', detail: err.message });
+    errRes(res, '浇水失败', 500, err.message);
   }
 });
 
@@ -30,9 +31,9 @@ router.post('/water', (req, res) => {
 router.post('/use-sunshine', (req, res) => {
   try {
     const result = gardenService.useSunshine();
-    res.json(result);
+    success(res, result);
   } catch (err) {
-    res.status(500).json({ error: '使用阳光失败', detail: err.message });
+    errRes(res, '使用阳光失败', 500, err.message);
   }
 });
 
@@ -40,9 +41,9 @@ router.post('/use-sunshine', (req, res) => {
 router.post('/use-fertilizer', (req, res) => {
   try {
     const result = gardenService.useFertilizer();
-    res.json(result);
+    success(res, result);
   } catch (err) {
-    res.status(500).json({ error: '使用肥料失败', detail: err.message });
+    errRes(res, '使用肥料失败', 500, err.message);
   }
 });
 
@@ -50,10 +51,17 @@ router.post('/use-fertilizer', (req, res) => {
 router.post('/add-resources', (req, res) => {
   try {
     const { type, amount } = req.body;
+    const validTypes = ['water', 'sunshine', 'fertilizer'];
+    if (!type || typeof type !== 'string' || !validTypes.includes(type)) {
+      return errRes(res, `type must be one of: ${validTypes.join(', ')}`, 400);
+    }
+    if (typeof amount !== 'number' || amount <= 0 || !Number.isFinite(amount)) {
+      return errRes(res, 'amount must be a positive number', 400);
+    }
     const result = gardenService.addResources(type, amount);
-    res.json(result);
+    success(res, result);
   } catch (err) {
-    res.status(500).json({ error: '添加资源失败', detail: err.message });
+    errRes(res, '添加资源失败', 500, err.message);
   }
 });
 
@@ -61,9 +69,9 @@ router.post('/add-resources', (req, res) => {
 router.get('/fruits', (req, res) => {
   try {
     const fruits = gardenService.getFruits();
-    res.json({ fruits, count: fruits.length });
+    success(res, { fruits, count: fruits.length });
   } catch (err) {
-    res.status(500).json({ error: '获取果实失败', detail: err.message });
+    errRes(res, '获取果实失败', 500, err.message);
   }
 });
 

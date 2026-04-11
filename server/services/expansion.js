@@ -1,7 +1,7 @@
 // server/services/expansion.js
 const fs = require('fs').promises
-
 const path = require('path')
+const { lookupTranslation } = require('./translate')
 
 const EXPANSION_STATE_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/expansion-state.json'
 const QUIZ_CONFIG_FILE = path.join(__dirname, '..', 'config', 'quiz-config.json')
@@ -112,16 +112,13 @@ async function extractExistingWords(filePath) {
 }
 
 /**
- * Fetch Chinese translation for a word via the local translate API
+ * Fetch Chinese translation for a word via the translate service (direct call)
  */
 async function fetchTranslation(word) {
   try {
-    const response = await fetch(`http://localhost:${process.env.PORT || 3001}/api/translate/${encodeURIComponent(word)}`)
-    if (response.ok) {
-      const data = await response.json()
-      if (data.success && data.data && data.data.translation) {
-        return data.data.translation
-      }
+    const translation = await lookupTranslation(word)
+    if (translation) {
+      return translation
     }
   } catch (e) {
     console.log(`[expansion] Translation failed for "${word}":`, e.message)

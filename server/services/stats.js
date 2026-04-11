@@ -1,6 +1,15 @@
 // server/services/stats.js
 const fs = require('fs').promises
+const path = require('path')
 const { getTodayDateCST, getDateBeforeDaysCST, toDateStrCST } = require('../utils/date')
+const { withFileLock } = require('../utils/fileLock')
+
+// Atomic write: write to temp file then rename
+async function safeWriteFile(filePath, content) {
+  const tempFile = filePath + '.tmp'
+  await fs.writeFile(tempFile, content, 'utf-8')
+  await fs.rename(tempFile, filePath)
+}
 
 const STATS_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/学习统计.md'
 
@@ -80,6 +89,7 @@ async function getWeakWords() {
 }
 
 async function recordDailyStats(date, wordsReviewed, accuracy, points) {
+  return withFileLock(STATS_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(STATS_FILE, 'utf-8')
   
@@ -107,11 +117,13 @@ async function recordDailyStats(date, wordsReviewed, accuracy, points) {
     content = lines.join('\n')
   }
   
-  await fs.writeFile(STATS_FILE, content, 'utf-8')
+  await safeWriteFile(STATS_FILE, content)
   return { success: true }
+  }) // end withFileLock
 }
 
 async function recordWordError(word) {
+  return withFileLock(STATS_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(STATS_FILE, 'utf-8')
   const date = getTodayDateCST()
@@ -135,8 +147,9 @@ async function recordWordError(word) {
     content = lines.join('\n')
   }
   
-  await fs.writeFile(STATS_FILE, content, 'utf-8')
+  await safeWriteFile(STATS_FILE, content)
   return { success: true }
+  }) // end withFileLock
 }
 
 async function getStudyCalendar() {

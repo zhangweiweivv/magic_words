@@ -5,15 +5,16 @@
 const express = require('express');
 const router = express.Router();
 const weeklyExamService = require('../services/weeklyExam');
+const { success, error: errRes } = require('../utils/response');
 
 // GET /api/weekly-exam/current - 获取当前周考
 router.get('/current', (req, res) => {
   try {
     const exam = weeklyExamService.getOrGenerateExam();
-    res.json({ success: true, data: exam });
+    success(res, exam);
   } catch (e) {
     console.error('[weekly-exam] getOrGenerateExam error:', e);
-    res.status(500).json({ success: false, error: e.message });
+    errRes(res, e.message);
   }
 });
 
@@ -23,47 +24,35 @@ router.post('/first-round', (req, res) => {
     const { generatedDate, total, correct, wrongDetails } = req.body;
 
     if (!generatedDate) {
-      return res.status(400).json({ success: false, error: 'generatedDate is required' });
+      return errRes(res, 'generatedDate is required', 400);
     }
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(generatedDate)) {
-      return res.status(400).json({
-        success: false,
-        error: 'generatedDate must be YYYY-MM-DD format',
-      });
+      return errRes(res, 'generatedDate must be YYYY-MM-DD format', 400);
     }
     if (typeof total !== 'number' || typeof correct !== 'number') {
-      return res.status(400).json({
-        success: false,
-        error: 'total and correct must be numbers',
-      });
+      return errRes(res, 'total and correct must be numbers', 400);
     }
     if (total < 0 || correct < 0 || correct > total) {
-      return res.status(400).json({
-        success: false,
-        error: 'invalid total/correct values',
-      });
+      return errRes(res, 'invalid total/correct values', 400);
     }
 
     // Validate generatedDate matches current exam
     const status = weeklyExamService.readStatus();
     if (!status) {
-      return res.status(400).json({ success: false, error: 'No active exam' });
+      return errRes(res, 'No active exam', 400);
     }
     if (status.generatedDate !== generatedDate) {
-      return res.status(400).json({
-        success: false,
-        error: `generatedDate mismatch: expected ${status.generatedDate}, got ${generatedDate}`,
-      });
+      return errRes(res, `generatedDate mismatch: expected ${status.generatedDate}, got ${generatedDate}`, 400);
     }
 
     // wrongDetails: array of { word, meaning } → maps to wrongWords param
     const wrongWords = Array.isArray(wrongDetails) ? wrongDetails : [];
     const result = weeklyExamService.recordFirstRound(correct, total, wrongWords);
-    res.json({ success: true, data: result });
+    success(res, result);
   } catch (e) {
     console.error('[weekly-exam] recordFirstRound error:', e);
-    res.status(500).json({ success: false, error: e.message });
+    errRes(res, e.message);
   }
 });
 
@@ -75,29 +64,23 @@ router.post('/complete', (req, res) => {
     // Validate date format
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (generatedDate && !dateRegex.test(generatedDate)) {
-      return res.status(400).json({
-        success: false,
-        error: 'generatedDate must be YYYY-MM-DD format',
-      });
+      return errRes(res, 'generatedDate must be YYYY-MM-DD format', 400);
     }
 
     // Validate generatedDate matches current exam
     const status = weeklyExamService.readStatus();
     if (!status) {
-      return res.status(400).json({ success: false, error: 'No active exam' });
+      return errRes(res, 'No active exam', 400);
     }
     if (status.generatedDate !== generatedDate) {
-      return res.status(400).json({
-        success: false,
-        error: `generatedDate mismatch: expected ${status.generatedDate}, got ${generatedDate}`,
-      });
+      return errRes(res, `generatedDate mismatch: expected ${status.generatedDate}, got ${generatedDate}`, 400);
     }
 
     const result = weeklyExamService.markComplete(rounds);
-    res.json({ success: true, data: result });
+    success(res, result);
   } catch (e) {
     console.error('[weekly-exam] markComplete error:', e);
-    res.status(500).json({ success: false, error: e.message });
+    errRes(res, e.message);
   }
 });
 

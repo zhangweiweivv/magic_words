@@ -1,6 +1,8 @@
 // server/services/points.js
 const fs = require('fs').promises
+const path = require('path')
 const { getTodayDateCST, getNowTimeCST } = require('../utils/date')
+const { withFileLock } = require('../utils/fileLock')
 
 const POINTS_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/积分记录.md'
 
@@ -58,8 +60,15 @@ async function ensureFile() {
 | 日期 | 时间 | 行为 | 积分 | 备注 |
 |------|------|------|------|------|
 `
-    await fs.writeFile(POINTS_FILE, initial, 'utf-8')
+    await safeWriteFile(POINTS_FILE, initial)
   }
+}
+
+// Atomic write: write to temp file then rename
+async function safeWriteFile(filePath, content) {
+  const tempFile = filePath + '.tmp'
+  await fs.writeFile(tempFile, content, 'utf-8')
+  await fs.rename(tempFile, filePath)
 }
 
 async function getPointsData() {
@@ -119,6 +128,7 @@ async function updateHeader(content, total, available) {
 }
 
 async function addPoints(action, points, note = '') {
+  return withFileLock(POINTS_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(POINTS_FILE, 'utf-8')
   
@@ -151,7 +161,7 @@ async function addPoints(action, points, note = '') {
   }
   const levelInfo = LEVELS.find(l => l.level === newLevel)
   
-  await fs.writeFile(POINTS_FILE, content, 'utf-8')
+  await safeWriteFile(POINTS_FILE, content)
   
   return {
     totalPoints: total,
@@ -160,9 +170,11 @@ async function addPoints(action, points, note = '') {
     levelName: levelInfo.name,
     pointsAdded: points
   }
+  }) // end withFileLock
 }
 
 async function spendPoints(amount, item) {
+  return withFileLock(POINTS_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(POINTS_FILE, 'utf-8')
   
@@ -194,9 +206,10 @@ async function spendPoints(amount, item) {
   const calc = calcPointsFromHistory(content)
   content = await updateHeader(content, calc.total, calc.available)
   
-  await fs.writeFile(POINTS_FILE, content, 'utf-8')
+  await safeWriteFile(POINTS_FILE, content)
   
   return { success: true, availablePoints: calc.available }
+  }) // end withFileLock
 }
 
 module.exports = {

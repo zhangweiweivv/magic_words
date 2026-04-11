@@ -1,0 +1,287 @@
+{
+  "happy": [
+    "sad",
+    "unhappy"
+  ],
+  "sad": [
+    "happy",
+    "joyful"
+  ],
+  "big": [
+    "small",
+    "little"
+  ],
+  "small": [
+    "big",
+    "large"
+  ],
+  "good": [
+    "bad",
+    "poor"
+  ],
+  "bad": [
+    "good",
+    "excellent"
+  ],
+  "fast": [
+    "slow"
+  ],
+  "slow": [
+    "fast",
+    "quick"
+  ],
+  "beautiful": [
+    "ugly"
+  ],
+  "ugly": [
+    "beautiful",
+    "pretty"
+  ],
+  "smart": [
+    "stupid",
+    "dumb"
+  ],
+  "stupid": [
+    "smart",
+    "intelligent"
+  ],
+  "easy": [
+    "hard",
+    "difficult"
+  ],
+  "hard": [
+    "easy",
+    "simple"
+  ],
+  "hot": [
+    "cold",
+    "cool"
+  ],
+  "cold": [
+    "hot",
+    "warm"
+  ],
+  "old": [
+    "new",
+    "young"
+  ],
+  "new": [
+    "old",
+    "ancient"
+  ],
+  "young": [
+    "old",
+    "elderly"
+  ],
+  "rich": [
+    "poor"
+  ],
+  "poor": [
+    "rich",
+    "wealthy"
+  ],
+  "strong": [
+    "weak"
+  ],
+  "weak": [
+    "strong",
+    "powerful"
+  ],
+  "tall": [
+    "short"
+  ],
+  "short": [
+    "tall",
+    "long"
+  ],
+  "long": [
+    "short",
+    "brief"
+  ],
+  "clean": [
+    "dirty"
+  ],
+  "dirty": [
+    "clean"
+  ],
+  "bright": [
+    "dark",
+    "dim"
+  ],
+  "dark": [
+    "bright",
+    "light"
+  ],
+  "loud": [
+    "quiet",
+    "silent"
+  ],
+  "quiet": [
+    "loud",
+    "noisy"
+  ],
+  "begin": [
+    "end",
+    "finish"
+  ],
+  "end": [
+    "begin",
+    "start"
+  ],
+  "start": [
+    "end",
+    "finish"
+  ],
+  "buy": [
+    "sell"
+  ],
+  "sell": [
+    "buy"
+  ],
+  "love": [
+    "hate"
+  ],
+  "hate": [
+    "love"
+  ],
+  "like": [
+    "dislike",
+    "hate"
+  ],
+  "find": [
+    "lose"
+  ],
+  "lose": [
+    "find",
+    "win"
+  ],
+  "win": [
+    "lose"
+  ],
+  "give": [
+    "take",
+    "receive"
+  ],
+  "take": [
+    "give"
+  ],
+  "open": [
+    "close",
+    "shut"
+  ],
+  "close": [
+    "open"
+  ],
+  "come": [
+    "go",
+    "leave"
+  ],
+  "go": [
+    "come",
+    "stay"
+  ],
+  "up": [
+    "down"
+  ],
+  "down": [
+    "up"
+  ],
+  "in": [
+    "out"
+  ],
+  "out": [
+    "in"
+  ],
+  "yes": [
+    "no"
+  ],
+  "no": [
+    "yes"
+  ],
+  "true": [
+    "false"
+  ],
+  "false": [
+    "true"
+  ],
+  "right": [
+    "wrong",
+    "left"
+  ],
+  "wrong": [
+    "right",
+    "correct"
+  ],
+  "day": [
+    "night"
+  ],
+  "night": [
+    "day"
+  ],
+  "early": [
+    "late"
+  ],
+  "late": [
+    "early"
+  ],
+  "first": [
+    "last"
+  ],
+  "last": [
+    "first"
+  ],
+  "full": [
+    "empty"
+  ],
+  "empty": [
+    "full"
+  ],
+  "heavy": [
+    "light"
+  ],
+  "light": [
+    "heavy",
+    "dark"
+  ],
+  "wet": [
+    "dry"
+  ],
+  "dry": [
+    "wet"
+  ],
+  "safe": [
+    "dangerous"
+  ],
+  "dangerous": [
+    "safe"
+  ],
+  "important": [
+    "unimportant"
+  ],
+  "interesting": [
+    "boring"
+  ],
+  "boring": [
+    "interesting"
+  ],
+  "angry": [
+    "calm",
+    "happy"
+  ],
+  "afraid": [
+    "brave",
+    "fearless"
+  ],
+  "brave": [
+    "afraid",
+    "cowardly"
+  ],
+  "kind": [
+    "mean",
+    "cruel"
+  ],
+  "mean": [
+    "kind",
+    "nice"
+  ]
+}

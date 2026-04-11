@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const obsidian = require('../services/obsidian');
 const { parseReviewFile } = require('../services/review');
+const { success, error: errRes } = require('../utils/response');
 
 const STAGE_NAMES = ['Day 0 首学', 'Day 1 复习1', 'Day 3 毕业考'];
 
@@ -44,15 +45,9 @@ function attachReviewProgress(words) {
 router.get('/', (req, res) => {
   try {
     const words = obsidian.getAllWords();
-    res.json({
-      success: true,
-      data: attachReviewProgress(words)
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, attachReviewProgress(words));
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -61,16 +56,9 @@ router.get('/unlearned', (req, res) => {
   try {
     const words = obsidian.getUnlearnedWords();
     const enriched = attachReviewProgress(words);
-    res.json({
-      success: true,
-      count: enriched.length,
-      data: enriched
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, enriched);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -79,16 +67,9 @@ router.get('/learned', (req, res) => {
   try {
     const words = obsidian.getLearnedWords();
     const enriched = attachReviewProgress(words);
-    res.json({
-      success: true,
-      count: enriched.length,
-      data: enriched
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, enriched);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -96,15 +77,9 @@ router.get('/learned', (req, res) => {
 router.get('/stats', (req, res) => {
   try {
     const stats = obsidian.getStats();
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, stats);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -113,19 +88,13 @@ router.post('/move-to-learned', (req, res) => {
   try {
     const { words } = req.body;
     if (!words || !Array.isArray(words)) {
-      return res.status(400).json({
-        success: false,
-        error: '请提供单词列表'
-      });
+      return errRes(res, '请提供单词列表', 400);
     }
     
     const result = obsidian.moveToLearned(words);
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, result);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 

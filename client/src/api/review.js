@@ -2,15 +2,15 @@
  * 复习 API 封装
  */
 
-import axios from 'axios';
+import api from './index';
 
-const API_BASE = '/api/review';
+const REVIEW_BASE = '/review';
 
 /**
  * 获取今日待复习单词
  */
 export async function getTodayReview() {
-  const response = await axios.get(`${API_BASE}/today`);
+  const response = await api.get(`${REVIEW_BASE}/today`);
   return response.data;
 }
 
@@ -20,7 +20,7 @@ export async function getTodayReview() {
  * @param {boolean} remembered - 是否记住了
  */
 export async function recordReview(word, remembered) {
-  const response = await axios.post(`${API_BASE}/record`, {
+  const response = await api.post(`${REVIEW_BASE}/record`, {
     word,
     remembered
   });
@@ -31,7 +31,7 @@ export async function recordReview(word, remembered) {
  * 获取复习统计
  */
 export async function getReviewStats() {
-  const response = await axios.get(`${API_BASE}/stats`);
+  const response = await api.get(`${REVIEW_BASE}/stats`);
   return response.data;
 }
 
@@ -42,7 +42,7 @@ export async function getReviewStats() {
  * @param {number} stage - 复习阶段（可选）
  */
 export async function completeQuiz(points, rounds = [], stage = 0) {
-  const response = await axios.post(`${API_BASE}/complete-quiz`, { points, rounds, stage });
+  const response = await api.post(`${REVIEW_BASE}/complete-quiz`, { points, rounds, stage });
   return response.data;
 }
 

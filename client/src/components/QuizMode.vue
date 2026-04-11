@@ -195,10 +195,10 @@ const QUIZ_CONFIG = ref(DEFAULT_QUIZ_CONFIG)
 const fillBlankHideRatio = ref(DEFAULT_FILL_BLANK_RATIO)
 
 // 从后端加载配置
-import axios from 'axios'
+import api from '../api/index'
 async function loadConfig() {
   try {
-    const { data } = await axios.get('/api/config')
+    const { data } = await api.get('/config')
     if (data.success && data.data) {
       if (data.data.quizConfig) QUIZ_CONFIG.value = data.data.quizConfig
       if (data.data.fillBlankHideRatio != null) fillBlankHideRatio.value = data.data.fillBlankHideRatio
@@ -378,13 +378,14 @@ const generateFillBlankData = (word) => {
   }
 }
 
-// 打乱数组
+// 打乱数组（不修改原数组）
 const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
+  const arr = [...array]
+  for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]
+    [arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return array
+  return arr
 }
 
 // 选择选项

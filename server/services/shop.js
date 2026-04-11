@@ -1,9 +1,21 @@
 // server/services/shop.js
 const fs = require('fs').promises
+const path = require('path')
 const { getTodayDateCST } = require('../utils/date')
+const { withFileLock } = require('../utils/fileLock')
 
 const SHOP_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/商店配置.md'
-const PARENT_PASSWORD = 'kk2017'
+
+// Issue #3 fix: Read password from environment variable, fall back to default
+// In production, set KEKE_PARENT_PASSWORD env var
+const PARENT_PASSWORD = process.env.KEKE_PARENT_PASSWORD || 'kk2017'
+
+// Atomic write: write to temp file then rename
+async function safeWriteFile(filePath, content) {
+  const tempFile = filePath + '.tmp'
+  await fs.writeFile(tempFile, content, 'utf-8')
+  await fs.rename(tempFile, filePath)
+}
 
 // 商品定义 - 6大类：皮肤8个、场景15个、特效15个、音乐5个、音效5个、卡片6个
 const SHOP_ITEMS = {
@@ -204,6 +216,7 @@ async function getShopData() {
 }
 
 async function purchaseItem(category, itemId, pointsService) {
+  return withFileLock(SHOP_FILE, async () => {
   await ensureFile()
   
   // 查找商品
@@ -264,12 +277,14 @@ async function purchaseItem(category, itemId, pointsService) {
     lines.splice(recordHeaderIndex + 2, 0, recordLine)
   }
   
-  await fs.writeFile(SHOP_FILE, lines.join('\n'), 'utf-8')
+  await safeWriteFile(SHOP_FILE, lines.join('\n'))
   
   return { success: true, item, remainingPoints: spendResult.availablePoints }
+  }) // end withFileLock
 }
 
 async function equipItem(category, itemId) {
+  return withFileLock(SHOP_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(SHOP_FILE, 'utf-8')
   
@@ -288,8 +303,9 @@ async function equipItem(category, itemId) {
   const regex = new RegExp(`(## 当前使用[\\s\\S]*?- ${label}：).*`)
   content = content.replace(regex, `$1${itemId}`)
   
-  await fs.writeFile(SHOP_FILE, content, 'utf-8')
+  await safeWriteFile(SHOP_FILE, content)
   return { success: true }
+  }) // end withFileLock
 }
 
 function verifyParentPassword(password) {
@@ -297,6 +313,7 @@ function verifyParentPassword(password) {
 }
 
 async function addRealReward(name, price) {
+  return withFileLock(SHOP_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(SHOP_FILE, 'utf-8')
   
@@ -314,11 +331,13 @@ async function addRealReward(name, price) {
     lines.splice(insertIndex, 0, newRow)
   }
   
-  await fs.writeFile(SHOP_FILE, lines.join('\n'), 'utf-8')
+  await safeWriteFile(SHOP_FILE, lines.join('\n'))
   return { success: true }
+  }) // end withFileLock
 }
 
 async function redeemRealReward(rewardName, pointsService) {
+  return withFileLock(SHOP_FILE, async () => {
   await ensureFile()
   const shopData = await getShopData()
   
@@ -340,9 +359,10 @@ async function redeemRealReward(rewardName, pointsService) {
     lines.splice(recordHeaderIndex + 2, 0, recordLine)
   }
   
-  await fs.writeFile(SHOP_FILE, lines.join('\n'), 'utf-8')
+  await safeWriteFile(SHOP_FILE, lines.join('\n'))
   
   return { success: true, reward, remainingPoints: spendResult.availablePoints }
+  }) // end withFileLock
 }
 
 module.exports = {

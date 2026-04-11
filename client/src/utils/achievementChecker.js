@@ -66,18 +66,14 @@ export async function checkAndUnlockAchievements(context = {}) {
   if (purchaseCount >= 1) toCheck.push('first_purchase')
   if (dolphinSkins >= 3) toCheck.push('skins_3')
 
-  // 尝试解锁（服务端会检查是否已解锁）
-  const unlocked = []
-  for (const id of toCheck) {
-    try {
-      const result = await achievementsApi.unlockAchievement(id)
-      if (result.success && result.achievement) {
-        unlocked.push(result.achievement)
-      }
-    } catch (e) {
-      // 忽略错误（可能已解锁）
-    }
+  // Batch unlock all at once instead of N+1 individual calls
+  if (toCheck.length === 0) return []
+  
+  try {
+    const result = await achievementsApi.unlockBatch(toCheck)
+    return result.unlocked || []
+  } catch (e) {
+    console.warn('批量解锁成就失败:', e)
+    return []
   }
-
-  return unlocked
 }

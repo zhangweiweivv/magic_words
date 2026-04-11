@@ -2,14 +2,29 @@
 const express = require('express')
 const router = express.Router()
 const achievementsService = require('../services/achievements')
+const { success, error: errRes } = require('../utils/response')
 
 // 获取所有成就
 router.get('/', async (req, res) => {
   try {
     const data = await achievementsService.getAchievements()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
+  }
+})
+
+// 批量解锁成就
+router.post('/unlock-batch', async (req, res) => {
+  try {
+    const { ids } = req.body
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return success(res, { unlocked: [] })
+    }
+    const result = await achievementsService.unlockBatch(ids)
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -18,9 +33,9 @@ router.post('/unlock', async (req, res) => {
   try {
     const { achievementId } = req.body
     const result = await achievementsService.unlockAchievement(achievementId)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -29,9 +44,9 @@ router.post('/progress', async (req, res) => {
   try {
     const { field, value } = req.body
     const result = await achievementsService.updateProgress(field, value)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 

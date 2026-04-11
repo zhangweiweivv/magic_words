@@ -1,15 +1,15 @@
-import axios from 'axios'
+import api from './index'
 
-const API_BASE = '/api/expansion'
+const EXPANSION_BASE = '/expansion'
 
 export const expansionApi = {
   async getStatus() {
-    const res = await axios.get(`${API_BASE}/status`)
+    const res = await api.get(`${EXPANSION_BASE}/status`)
     return res.data
   },
 
   async expand(force = false) {
-    const res = await axios.post(`${API_BASE}/expand`, { force })
+    const res = await api.post(`${EXPANSION_BASE}/expand`, { force })
     return res.data
   }
 }

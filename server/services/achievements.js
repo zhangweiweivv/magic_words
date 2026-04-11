@@ -1,6 +1,15 @@
 // server/services/achievements.js
 const fs = require('fs').promises
+const path = require('path')
 const { getTodayDateCST, getDateBeforeDaysCST, toDateStrCST } = require('../utils/date')
+const { withFileLock } = require('../utils/fileLock')
+
+// Atomic write: write to temp file then rename
+async function safeWriteFile(filePath, content) {
+  const tempFile = filePath + '.tmp'
+  await fs.writeFile(tempFile, content, 'utf-8')
+  await fs.rename(tempFile, filePath)
+}
 
 const ACHIEVEMENTS_FILE = '/Users/vvhome/vv_obsidian/vv_obsidian/可可pet/可可单词本/成就记录.md'
 
@@ -159,7 +168,9 @@ async function getAchievements() {
   updatedContent = updatedContent.replace(/- 总购买商品数：.+/, `- 总购买商品数：${totalPurchases}`)
   updatedContent = updatedContent.replace(/- 多多皮肤数量：.+/, `- 多多皮肤数量：${dolphinSkins}`)
   if (updatedContent !== content) {
-    await fs.writeFile(ACHIEVEMENTS_FILE, updatedContent, 'utf-8')
+    await withFileLock(ACHIEVEMENTS_FILE, async () => {
+      await safeWriteFile(ACHIEVEMENTS_FILE, updatedContent)
+    })
   }
   
   // 构建完整列表（已解锁 + 未解锁）
@@ -175,7 +186,38 @@ async function getAchievements() {
   return { achievements: all, progress, unlockedCount: unlocked.length, totalCount: ACHIEVEMENTS.length }
 }
 
+async function unlockBatch(ids) {
+  await ensureFile()
+  let content = await fs.readFile(ACHIEVEMENTS_FILE, 'utf-8')
+  const date = getTodayDateCST()
+  const unlocked = []
+
+  for (const id of ids) {
+    const achievement = ACHIEVEMENTS.find(a => a.id === id)
+    if (!achievement) continue
+    // Skip already unlocked
+    if (content.includes(`| ${achievement.icon} | ${achievement.name} |`)) continue
+
+    const newRow = `| ${achievement.icon} | ${achievement.name} | ${date} |`
+    const lines = content.split('\n')
+    const headerIndex = lines.findIndex(l => l.includes('| 徽章 | 名称 | 获得日期 |'))
+    if (headerIndex >= 0) {
+      const separatorIndex = headerIndex + 1
+      lines.splice(separatorIndex + 1, 0, newRow)
+      content = lines.join('\n')
+      unlocked.push(achievement)
+    }
+  }
+
+  if (unlocked.length > 0) {
+    await fs.writeFile(ACHIEVEMENTS_FILE, content, 'utf-8')
+  }
+
+  return { success: true, unlocked }
+}
+
 async function unlockAchievement(achievementId) {
+  return withFileLock(ACHIEVEMENTS_FILE, async () => {
   await ensureFile()
   const achievement = ACHIEVEMENTS.find(a => a.id === achievementId)
   if (!achievement) return { success: false, error: '成就不存在' }
@@ -200,12 +242,14 @@ async function unlockAchievement(achievementId) {
     lines.splice(separatorIndex + 1, 0, newRow)
   }
   
-  await fs.writeFile(ACHIEVEMENTS_FILE, lines.join('\n'), 'utf-8')
+  await safeWriteFile(ACHIEVEMENTS_FILE, lines.join('\n'))
   
   return { success: true, achievement }
+  }) // end withFileLock
 }
 
 async function updateProgress(field, value) {
+  return withFileLock(ACHIEVEMENTS_FILE, async () => {
   await ensureFile()
   let content = await fs.readFile(ACHIEVEMENTS_FILE, 'utf-8')
   
@@ -224,13 +268,15 @@ async function updateProgress(field, value) {
   const regex = new RegExp(`- ${label}：.+`)
   content = content.replace(regex, `- ${label}：${value}`)
   
-  await fs.writeFile(ACHIEVEMENTS_FILE, content, 'utf-8')
+  await safeWriteFile(ACHIEVEMENTS_FILE, content)
   return { success: true }
+  }) // end withFileLock
 }
 
 module.exports = {
   ACHIEVEMENTS,
   getAchievements,
   unlockAchievement,
+  unlockBatch,
   updateProgress
 }

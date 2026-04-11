@@ -9,6 +9,7 @@ const obsidian = require('../services/obsidian');
 const slack = require('../services/slack');
 const backup = require('../services/backup');
 const expansion = require('../services/expansion');
+const { success, error: errRes } = require('../utils/response');
 
 // GET /api/review/today - 获取今日待复习单词
 router.get('/today', async (req, res) => {
@@ -29,31 +30,22 @@ router.get('/today', async (req, res) => {
     const quizCompleted = review.getTodayQuizStatus();
     if (quizCompleted) {
       // 今日任务已完成，不再加载新词
-      return res.json({
-        success: true,
-        data: {
-          count: 0,
-          words: [],
-          todayCompleted: true
-        }
+      return success(res, {
+        count: 0,
+        words: [],
+        todayCompleted: true
       });
     }
     
     const unlearnedWords = obsidian.getUnlearnedWords();
     const reviewWords = review.getTodayReviewWords(unlearnedWords);
     
-    res.json({
-      success: true,
-      data: {
-        count: reviewWords.length,
-        words: reviewWords
-      }
+    success(res, {
+      count: reviewWords.length,
+      words: reviewWords
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -63,23 +55,14 @@ router.post('/record', (req, res) => {
     const { word, remembered } = req.body;
     
     if (!word || typeof remembered !== 'boolean') {
-      return res.status(400).json({
-        success: false,
-        error: '缺少必要参数: word, remembered'
-      });
+      return errRes(res, '缺少必要参数: word, remembered', 400);
     }
     
     const result = review.recordReview(word, remembered);
     
-    res.json({
-      success: true,
-      data: result
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, result);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
@@ -89,24 +72,18 @@ router.get('/stats', (req, res) => {
     const allWords = obsidian.getAllWords();
     const stats = review.getReviewStats(allWords);
     
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, stats);
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 
 // POST /api/review/complete-quiz - 标记今日测试完成
 router.post('/complete-quiz', async (req, res) => {
   try {
-    const success = review.markTodayQuizComplete();
+    const quizSuccess = review.markTodayQuizComplete();
     
-    if (success) {
+    if (quizSuccess) {
       const { points = 0, rounds = [], stage } = req.body || {};
       
       // 发送 Slack 通知
@@ -134,15 +111,9 @@ router.post('/complete-quiz', async (req, res) => {
       });
     }
     
-    res.json({
-      success: true,
-      data: { completed: success }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    success(res, { completed: quizSuccess });
+  } catch (err) {
+    errRes(res, err.message);
   }
 });
 

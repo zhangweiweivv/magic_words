@@ -1,5 +1,5 @@
 // client/src/composables/useAudio.js
-import { ref, onUnmounted } from 'vue'
+import { ref, getCurrentInstance, onUnmounted } from 'vue'
 
 // 音效定义
 const SFX_FILES = {
@@ -203,15 +203,22 @@ export function useAudio() {
     }))
   }
 
-  preloadSfx()
+  // Only preload once across all component usages
+  if (!sfxCache._preloaded) {
+    preloadSfx()
+    sfxCache._preloaded = true
+  }
   loadPreferences()
 
-  onUnmounted(() => {
-    if (bgmAudio.value) {
-      bgmAudio.value.pause()
-      bgmAudio.value = null
-    }
-  })
+  // Only register onUnmounted when called within a component setup context
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      if (bgmAudio.value) {
+        bgmAudio.value.pause()
+        bgmAudio.value = null
+      }
+    })
+  }
 
   return {
     currentBgm,

@@ -2,6 +2,7 @@
 const express = require('express')
 const router = express.Router()
 const shopService = require('../services/shop')
+const { success, error: errRes } = require('../utils/response')
 
 // 延迟加载 pointsService，避免循环依赖
 let pointsService = null
@@ -16,9 +17,9 @@ function getPointsService() {
 router.get('/', async (req, res) => {
   try {
     const data = await shopService.getShopData()
-    res.json({ success: true, data })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, data)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -26,10 +27,16 @@ router.get('/', async (req, res) => {
 router.post('/purchase', async (req, res) => {
   try {
     const { category, itemId } = req.body
+    if (!category || typeof category !== 'string') {
+      return errRes(res, 'category must be a non-empty string', 400)
+    }
+    if (!itemId || typeof itemId !== 'string') {
+      return errRes(res, 'itemId must be a non-empty string', 400)
+    }
     const result = await shopService.purchaseItem(category, itemId, getPointsService())
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -38,9 +45,9 @@ router.post('/equip', async (req, res) => {
   try {
     const { category, itemId } = req.body
     const result = await shopService.equipItem(category, itemId)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -49,9 +56,9 @@ router.post('/verify-parent', async (req, res) => {
   try {
     const { password } = req.body
     const valid = shopService.verifyParentPassword(password)
-    res.json({ success: true, valid })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, { valid })
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -60,12 +67,12 @@ router.post('/rewards/add', async (req, res) => {
   try {
     const { name, price, password } = req.body
     const valid = shopService.verifyParentPassword(password)
-    if (!valid) return res.json({ success: false, error: '密码错误' })
+    if (!valid) return errRes(res, '密码错误', 403)
     
     const result = await shopService.addRealReward(name, price)
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 
@@ -74,12 +81,12 @@ router.post('/rewards/redeem', async (req, res) => {
   try {
     const { rewardName, password } = req.body
     const valid = shopService.verifyParentPassword(password)
-    if (!valid) return res.json({ success: false, error: '密码错误' })
+    if (!valid) return errRes(res, '密码错误', 403)
     
     const result = await shopService.redeemRealReward(rewardName, getPointsService())
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    success(res, result)
+  } catch (err) {
+    errRes(res, err.message)
   }
 })
 

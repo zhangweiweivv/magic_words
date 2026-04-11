@@ -1,0 +1,362 @@
+{
+  "un": {
+    "type": "prefix",
+    "meaning": "不、没有",
+    "examples": "unhappy, unkind, unable"
+  },
+  "re": {
+    "type": "prefix",
+    "meaning": "再、重新",
+    "examples": "redo, replay, return"
+  },
+  "pre": {
+    "type": "prefix",
+    "meaning": "在...之前",
+    "examples": "preview, prepare, preschool"
+  },
+  "mis": {
+    "type": "prefix",
+    "meaning": "错误地",
+    "examples": "mistake, misuse, misread"
+  },
+  "dis": {
+    "type": "prefix",
+    "meaning": "不、相反",
+    "examples": "dislike, disagree, disappear"
+  },
+  "over": {
+    "type": "prefix",
+    "meaning": "过度、在上方",
+    "examples": "overflow, overcome, overseas"
+  },
+  "under": {
+    "type": "prefix",
+    "meaning": "在下方、不足",
+    "examples": "understand, underwater, underline"
+  },
+  "out": {
+    "type": "prefix",
+    "meaning": "超过、外面",
+    "examples": "outside, outdoor, outstanding"
+  },
+  "super": {
+    "type": "prefix",
+    "meaning": "超级、上方",
+    "examples": "superman, supermarket, superstar"
+  },
+  "inter": {
+    "type": "prefix",
+    "meaning": "在...之间",
+    "examples": "international, internet, interview"
+  },
+  "trans": {
+    "type": "prefix",
+    "meaning": "穿过、转移",
+    "examples": "transport, translate, transform"
+  },
+  "sub": {
+    "type": "prefix",
+    "meaning": "在下面",
+    "examples": "subway, submarine, subject"
+  },
+  "im": {
+    "type": "prefix",
+    "meaning": "不、没有",
+    "examples": "impossible, impolite, impatient"
+  },
+  "in": {
+    "type": "prefix",
+    "meaning": "不、向内",
+    "examples": "inside, incorrect, invisible"
+  },
+  "non": {
+    "type": "prefix",
+    "meaning": "不、非",
+    "examples": "nonstop, nonsense, nonfiction"
+  },
+  "bi": {
+    "type": "prefix",
+    "meaning": "二、两",
+    "examples": "bicycle, bilingual, biweekly"
+  },
+  "tri": {
+    "type": "prefix",
+    "meaning": "三",
+    "examples": "triangle, tricycle, triple"
+  },
+  "mid": {
+    "type": "prefix",
+    "meaning": "中间",
+    "examples": "midnight, midday, middle"
+  },
+  "multi": {
+    "type": "prefix",
+    "meaning": "多",
+    "examples": "multiply, multicolor, multimedia"
+  },
+  "auto": {
+    "type": "prefix",
+    "meaning": "自己",
+    "examples": "automatic, automobile, autograph"
+  },
+  "tele": {
+    "type": "prefix",
+    "meaning": "远距离",
+    "examples": "telephone, television, telescope"
+  },
+  "micro": {
+    "type": "prefix",
+    "meaning": "微小",
+    "examples": "microscope, microphone, microwave"
+  },
+  "semi": {
+    "type": "prefix",
+    "meaning": "半",
+    "examples": "semicircle, semifinal, semiconductor"
+  },
+  "ful": {
+    "type": "suffix",
+    "meaning": "充满...的",
+    "examples": "beautiful, helpful, colorful"
+  },
+  "less": {
+    "type": "suffix",
+    "meaning": "没有...的",
+    "examples": "homeless, careless, endless"
+  },
+  "ness": {
+    "type": "suffix",
+    "meaning": "...的状态",
+    "examples": "happiness, kindness, darkness"
+  },
+  "ment": {
+    "type": "suffix",
+    "meaning": "行为/结果",
+    "examples": "movement, agreement, excitement"
+  },
+  "tion": {
+    "type": "suffix",
+    "meaning": "行为/状态",
+    "examples": "action, education, collection"
+  },
+  "sion": {
+    "type": "suffix",
+    "meaning": "行为/状态",
+    "examples": "decision, television, expression"
+  },
+  "able": {
+    "type": "suffix",
+    "meaning": "能够...的",
+    "examples": "comfortable, readable, washable"
+  },
+  "ible": {
+    "type": "suffix",
+    "meaning": "能够...的",
+    "examples": "possible, visible, terrible"
+  },
+  "ly": {
+    "type": "suffix",
+    "meaning": "...地（副词）",
+    "examples": "quickly, happily, carefully"
+  },
+  "er": {
+    "type": "suffix",
+    "meaning": "做...的人/更...",
+    "examples": "teacher, worker, bigger"
+  },
+  "or": {
+    "type": "suffix",
+    "meaning": "做...的人",
+    "examples": "actor, doctor, visitor"
+  },
+  "ist": {
+    "type": "suffix",
+    "meaning": "...的人",
+    "examples": "artist, scientist, tourist"
+  },
+  "ous": {
+    "type": "suffix",
+    "meaning": "充满...的",
+    "examples": "famous, dangerous, delicious"
+  },
+  "ive": {
+    "type": "suffix",
+    "meaning": "有...性质的",
+    "examples": "active, creative, expensive"
+  },
+  "al": {
+    "type": "suffix",
+    "meaning": "...的",
+    "examples": "national, musical, natural"
+  },
+  "ish": {
+    "type": "suffix",
+    "meaning": "有点...的",
+    "examples": "childish, selfish, foolish"
+  },
+  "ward": {
+    "type": "suffix",
+    "meaning": "向...方向",
+    "examples": "forward, backward, upward"
+  },
+  "dom": {
+    "type": "suffix",
+    "meaning": "...的领域/状态",
+    "examples": "freedom, kingdom, wisdom"
+  },
+  "ship": {
+    "type": "suffix",
+    "meaning": "...的关系/状态",
+    "examples": "friendship, leadership, membership"
+  },
+  "hood": {
+    "type": "suffix",
+    "meaning": "...的时期/状态",
+    "examples": "childhood, neighborhood, brotherhood"
+  },
+  "port": {
+    "type": "root",
+    "meaning": "搬运、携带",
+    "examples": "transport, airport, import, export"
+  },
+  "vis": {
+    "type": "root",
+    "meaning": "看",
+    "examples": "visit, visible, vision, television"
+  },
+  "vid": {
+    "type": "root",
+    "meaning": "看",
+    "examples": "video, evidence, provide"
+  },
+  "aud": {
+    "type": "root",
+    "meaning": "听",
+    "examples": "audience, audio, auditorium"
+  },
+  "scrib": {
+    "type": "root",
+    "meaning": "写",
+    "examples": "describe, subscribe, prescribe"
+  },
+  "script": {
+    "type": "root",
+    "meaning": "写",
+    "examples": "manuscript, scripture, transcript"
+  },
+  "dict": {
+    "type": "root",
+    "meaning": "说",
+    "examples": "dictionary, predict, contradict"
+  },
+  "graph": {
+    "type": "root",
+    "meaning": "写/画",
+    "examples": "photograph, autograph, paragraph"
+  },
+  "phon": {
+    "type": "root",
+    "meaning": "声音",
+    "examples": "phone, microphone, earphone"
+  },
+  "struct": {
+    "type": "root",
+    "meaning": "建造",
+    "examples": "construct, structure, instruct"
+  },
+  "ject": {
+    "type": "root",
+    "meaning": "投掷",
+    "examples": "project, reject, inject"
+  },
+  "duct": {
+    "type": "root",
+    "meaning": "引导",
+    "examples": "conduct, produce, educate"
+  },
+  "form": {
+    "type": "root",
+    "meaning": "形状",
+    "examples": "uniform, transform, inform"
+  },
+  "tract": {
+    "type": "root",
+    "meaning": "拉、拖",
+    "examples": "attract, subtract, tractor"
+  },
+  "spect": {
+    "type": "root",
+    "meaning": "看",
+    "examples": "inspect, respect, spectacle"
+  },
+  "mit": {
+    "type": "root",
+    "meaning": "发送",
+    "examples": "submit, permit, admit"
+  },
+  "mot": {
+    "type": "root",
+    "meaning": "移动",
+    "examples": "motion, motor, promote"
+  },
+  "mov": {
+    "type": "root",
+    "meaning": "移动",
+    "examples": "move, movie, remove"
+  },
+  "terra": {
+    "type": "root",
+    "meaning": "地球/土地",
+    "examples": "territory, terrace, terrain"
+  },
+  "aqua": {
+    "type": "root",
+    "meaning": "水",
+    "examples": "aquarium, aquatic, aqualung"
+  },
+  "bio": {
+    "type": "root",
+    "meaning": "生命",
+    "examples": "biology, biography, biome"
+  },
+  "geo": {
+    "type": "root",
+    "meaning": "地球",
+    "examples": "geography, geology, geometry"
+  },
+  "photo": {
+    "type": "root",
+    "meaning": "光",
+    "examples": "photograph, photon, photocopy"
+  },
+  "cycle": {
+    "type": "root",
+    "meaning": "圆/循环",
+    "examples": "bicycle, recycle, motorcycle"
+  },
+  "act": {
+    "type": "root",
+    "meaning": "行动",
+    "examples": "action, active, actor, react"
+  },
+  "cent": {
+    "type": "root",
+    "meaning": "百",
+    "examples": "century, percent, centimeter"
+  },
+  "cap": {
+    "type": "root",
+    "meaning": "头/抓",
+    "examples": "captain, capital, capture"
+  },
+  "man": {
+    "type": "root",
+    "meaning": "手",
+    "examples": "manual, manage, manufacture"
+  },
+  "ped": {
+    "type": "root",
+    "meaning": "脚",
+    "examples": "pedal, pedestrian, centipede"
+  }
+}

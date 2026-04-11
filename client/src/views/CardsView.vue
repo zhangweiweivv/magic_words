@@ -268,67 +268,6 @@ const prevWord = () => {
   }
 }
 
-const markRemembered = async () => {
-  const word = currentWord.value
-  if (!word) return
-  
-  correctCount.value++
-  streak.value++
-  
-  // 翻卡只加积分，不推进艾宾浩斯进度（测试通过后才推进）
-  try {
-    await pointsApi.addPoints('记住单词', 1, word.word)
-  } catch (e) {
-    console.error('记录失败:', e)
-  }
-  
-  if (streak.value >= 5) {
-    showFeedback(streakMessages[4].replace('{n}', streak.value), 'streak', '🌟')
-  } else if (streak.value >= 2) {
-    showFeedback(streakMessages[streak.value - 2], 'streak', '🔥')
-  } else {
-    showFeedback(getRandomMessage(correctMessages), 'correct', '😊')
-  }
-  
-  // 从列表移除已记住的单词
-  words.value.splice(currentIndex.value, 1)
-  
-  // 调整索引
-  if (currentIndex.value >= words.value.length && words.value.length > 0) {
-    currentIndex.value = words.value.length - 1
-  }
-  
-  cardRef.value?.reset()
-}
-
-const markCorrect = () => {
-  correctCount.value++
-  streak.value++
-  
-  if (streak.value >= 5) {
-    showFeedback(streakMessages[4].replace('{n}', streak.value), 'streak', '🌟')
-  } else if (streak.value >= 2) {
-    showFeedback(streakMessages[streak.value - 2], 'streak', '🔥')
-  } else {
-    showFeedback(getRandomMessage(correctMessages), 'correct', '😊')
-  }
-  
-  setTimeout(nextWord, 800)
-}
-
-const markWrong = () => {
-  wrongCount.value++
-  streak.value = 0
-  showFeedback(getRandomMessage(wrongMessages), 'wrong', '💪')
-  setTimeout(nextWord, 800)
-}
-
-const skip = () => {
-  skippedCount.value++
-  streak.value = 0
-  nextWord()
-}
-
 const restart = () => {
   words.value = shuffleArray(words.value)
   currentIndex.value = 0

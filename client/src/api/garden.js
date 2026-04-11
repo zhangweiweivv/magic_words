@@ -1,36 +1,33 @@
-import axios from 'axios'
+import api from './index'
 
-const api = axios.create({
-  baseURL: '/api/garden',
-  timeout: 5000
-})
+const GARDEN_BASE = '/garden'
 
 export async function getStatus() {
-  const res = await api.get('/status')
+  const res = await api.get(`${GARDEN_BASE}/status`)
   return res.data
 }
 
 export async function water() {
-  const res = await api.post('/water')
+  const res = await api.post(`${GARDEN_BASE}/water`)
   return res.data
 }
 
 export async function useSunshine() {
-  const res = await api.post('/use-sunshine')
+  const res = await api.post(`${GARDEN_BASE}/use-sunshine`)
   return res.data
 }
 
 export async function useFertilizer() {
-  const res = await api.post('/use-fertilizer')
+  const res = await api.post(`${GARDEN_BASE}/use-fertilizer`)
   return res.data
 }
 
 export async function getFruits() {
-  const res = await api.get('/fruits')
+  const res = await api.get(`${GARDEN_BASE}/fruits`)
   return res.data
 }
 
 export async function addResources(type, amount) {
-  const res = await api.post('/add-resources', { type, amount })
+  const res = await api.post(`${GARDEN_BASE}/add-resources`, { type, amount })
   return res.data
 }

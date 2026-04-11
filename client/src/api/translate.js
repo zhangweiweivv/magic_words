@@ -2,9 +2,9 @@
  * 翻译 API 封装
  */
 
-import axios from 'axios';
+import api from './index';
 
-const API_BASE = '/api/translate';
+const TRANSLATE_BASE = '/translate';
 
 // 本地缓存
 const cache = new Map();
@@ -23,7 +23,7 @@ export async function translate(word) {
   }
   
   try {
-    const response = await axios.get(`${API_BASE}/${encodeURIComponent(key)}`);
+    const response = await api.get(`${TRANSLATE_BASE}/${encodeURIComponent(key)}`);
     if (response.data.success) {
       cache.set(key, response.data.data);
       return response.data.data;
@@ -48,7 +48,7 @@ export async function getWordDetail(word) {
   }
   
   try {
-    const response = await axios.get(`${API_BASE}/${encodeURIComponent(key)}/detail`);
+    const response = await api.get(`${TRANSLATE_BASE}/${encodeURIComponent(key)}/detail`);
     if (response.data.success) {
       detailCache.set(key, response.data.data);
       return response.data.data;
