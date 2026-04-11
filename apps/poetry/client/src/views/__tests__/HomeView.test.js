@@ -5,10 +5,12 @@ import HomeView from '../HomeView.vue'
 
 // Mock the API module
 vi.mock('../../api/index.js', () => ({
-  fetchDueList: vi.fn()
+  fetchDueList: vi.fn(),
+  fetchRecommendation: vi.fn(),
+  completeArticle: vi.fn()
 }))
 
-import { fetchDueList } from '../../api/index.js'
+import { fetchDueList, fetchRecommendation, completeArticle } from '../../api/index.js'
 
 function createTestRouter() {
   return createRouter({
@@ -34,6 +36,7 @@ describe('HomeView', () => {
       ],
       today: '2026-04-11'
     })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
 
     const router = createTestRouter()
     await router.push('/')
@@ -55,6 +58,7 @@ describe('HomeView', () => {
 
   it('shows empty message when no due items', async () => {
     fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
 
     const router = createTestRouter()
     await router.push('/')
@@ -77,6 +81,7 @@ describe('HomeView', () => {
       ],
       today: '2026-04-11'
     })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
 
     const router = createTestRouter()
     const pushSpy = vi.spyOn(router, 'push')
@@ -95,5 +100,85 @@ describe('HomeView', () => {
       name: 'article',
       params: { articleId: 'poem-1' }
     })
+  })
+
+  it('renders recommendation card when API returns one', async () => {
+    fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchRecommendation.mockResolvedValue({
+      recommendation: {
+        articleId: '寅集-01',
+        title: '《论语》八章',
+        topic: '先秦诸子',
+        collection: '寅集'
+      }
+    })
+
+    const router = createTestRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(HomeView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    const card = wrapper.find('.recommend-card')
+    expect(card.exists()).toBe(true)
+    expect(card.text()).toContain('《论语》八章')
+    expect(card.text()).toContain('先秦诸子')
+    expect(wrapper.find('.start-btn').exists()).toBe(true)
+    expect(wrapper.find('.start-btn').text()).toBe('开始学习')
+  })
+
+  it('calls completeArticle and navigates when clicking start button', async () => {
+    fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchRecommendation.mockResolvedValue({
+      recommendation: {
+        articleId: '寅集-01',
+        title: '《论语》八章',
+        topic: '先秦诸子',
+        collection: '寅集'
+      }
+    })
+    completeArticle.mockResolvedValue({ state: {}, events: [] })
+
+    const router = createTestRouter()
+    const pushSpy = vi.spyOn(router, 'push')
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(HomeView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    await wrapper.find('.start-btn').trigger('click')
+    await flushPromises()
+
+    expect(completeArticle).toHaveBeenCalledWith('寅集-01')
+    expect(pushSpy).toHaveBeenCalledWith({
+      name: 'article',
+      params: { articleId: '寅集-01' }
+    })
+  })
+
+  it('shows empty message when no recommendation', async () => {
+    fetchDueList.mockResolvedValue({ due: [], today: '2026-04-11' })
+    fetchRecommendation.mockResolvedValue({ recommendation: null })
+
+    const router = createTestRouter()
+    await router.push('/')
+    await router.isReady()
+
+    const wrapper = mount(HomeView, {
+      global: { plugins: [router] }
+    })
+
+    await flushPromises()
+
+    expect(wrapper.find('.recommend-card').exists()).toBe(false)
+    expect(wrapper.find('.recommend-section').text()).toContain('当前没有新篇推荐')
   })
 })

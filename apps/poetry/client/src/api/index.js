@@ -42,3 +42,7 @@ export function updateArticleConfig(articleId, config) {
     body: JSON.stringify(config)
   })
 }
+
+export function fetchRecommendation() {
+  return request('/recommend/next')
+}

@@ -5,6 +5,7 @@ const healthRoutes = require('./routes/health');
 const articleRoutes = require('./routes/articles');
 const stateRoutes = require('./routes/state');
 const configRoutes = require('./routes/config');
+const recommendRoutes = require('./routes/recommend');
 
 const app = express();
 const PORT = process.env.POETRY_PORT || 3002;
@@ -17,6 +18,7 @@ app.use(healthRoutes);
 app.use(articleRoutes);
 app.use(stateRoutes);
 app.use(configRoutes);
+app.use(recommendRoutes);
 
 // Serve built SPA from client/dist
 const distPath = path.join(__dirname, '..', 'client', 'dist');

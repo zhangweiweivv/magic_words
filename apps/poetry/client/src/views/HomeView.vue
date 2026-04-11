@@ -23,8 +23,15 @@
     </section>
 
     <section class="recommend-section">
-      <h2>🌟 新篇推荐</h2>
-      <p class="stub">（敬请期待）</p>
+      <h2>🌟 推荐新学</h2>
+      <div v-if="!recommendation" class="empty">当前没有新篇推荐</div>
+      <div v-else class="recommend-card" @click="startNewArticle">
+        <div class="recommend-info">
+          <span class="recommend-title">{{ recommendation.title }}</span>
+          <span class="recommend-topic">{{ recommendation.topic }}</span>
+        </div>
+        <button class="start-btn" @click.stop="startNewArticle">开始学习</button>
+      </div>
     </section>
 
     <nav class="nav-links">
@@ -36,12 +43,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchDueList } from '../api/index.js'
+import { fetchDueList, fetchRecommendation, completeArticle } from '../api/index.js'
 
 const router = useRouter()
 const dueList = ref([])
 const collectionName = ref('')
 const loading = ref(true)
+const recommendation = ref(null)
 
 async function loadDue() {
   try {
@@ -58,11 +66,37 @@ async function loadDue() {
   }
 }
 
+async function loadRecommendation() {
+  try {
+    const data = await fetchRecommendation()
+    recommendation.value = data.recommendation || null
+    // If collection name wasn't set from due list, use recommendation
+    if (!collectionName.value && recommendation.value) {
+      collectionName.value = recommendation.value.collection
+    }
+  } catch (e) {
+    console.error('Failed to load recommendation:', e)
+  }
+}
+
+async function startNewArticle() {
+  if (!recommendation.value) return
+  try {
+    await completeArticle(recommendation.value.articleId)
+    router.push({ name: 'article', params: { articleId: recommendation.value.articleId } })
+  } catch (e) {
+    console.error('Failed to start article:', e)
+  }
+}
+
 function goToArticle(articleId) {
   router.push({ name: 'article', params: { articleId } })
 }
 
-onMounted(loadDue)
+onMounted(() => {
+  loadDue()
+  loadRecommendation()
+})
 </script>
 
 <style scoped>
@@ -141,6 +175,55 @@ onMounted(loadDue)
   text-align: center;
   color: var(--ink-light);
   padding: 1rem;
+}
+
+.recommend-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--paper-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.recommend-card:hover {
+  background: var(--paper-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.recommend-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.recommend-title {
+  font-size: 1.05rem;
+  color: var(--ink-black);
+}
+
+.recommend-topic {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+}
+
+.start-btn {
+  padding: 0.5rem 1rem;
+  background: var(--accent-red, #c0392b);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.start-btn:hover {
+  opacity: 0.9;
 }
 
 .nav-links {

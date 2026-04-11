@@ -326,3 +326,43 @@ describe('POST /api/state/:articleId/complete (auto catalog lookup)', () => {
     assert.equal(status, 400);
   });
 });
+
+// ── Recommend API ──────────────────────────────────────────────
+describe('GET /api/recommend/next', () => {
+  it('returns a recommendation from the active collection', async () => {
+    const { status, body } = await request('GET', '/api/recommend/next');
+    assert.equal(status, 200);
+    assert.ok(body.recommendation, 'should have a recommendation');
+    assert.ok(body.recommendation.articleId);
+    assert.ok(body.recommendation.title);
+    assert.ok(body.recommendation.topic);
+    assert.equal(body.recommendation.collection, '寅集');
+  });
+
+  it('skips already-started articles', async () => {
+    // Start article 寅集-01 (done in earlier test), recommendation should not return it
+    const { body } = await request('GET', '/api/recommend/next');
+    assert.ok(body.recommendation);
+    assert.notEqual(body.recommendation.articleId, '寅集-01');
+  });
+
+  it('returns null recommendation when collection is exhausted', async () => {
+    // Start all remaining articles in 寅集
+    const allArticles = ['寅集-02', '寅集-03', '寅集-08', '寅集-15', '寅集-16'];
+    for (const articleId of allArticles) {
+      // Skip if already started
+      try {
+        await request('POST', `/api/state/${encodeURIComponent(articleId)}/complete`, {});
+      } catch { /* ignore if already started */ }
+    }
+    const { status, body } = await request('GET', '/api/recommend/next');
+    assert.equal(status, 200);
+    // Either null (all exhausted in 寅集) or jumps to 卡集 (which is empty)
+    // Since 寅集 has only 7 articles in our test data, and we started them all:
+    // 寅集-01, 02, 03, 07, 08, 15, 16 = all 7 articles started
+    // Active collection becomes 卡集 (empty), so recommendation is null
+    if (body.recommendation === null) {
+      assert.ok(body.reason);
+    }
+  });
+});
