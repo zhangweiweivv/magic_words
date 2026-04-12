@@ -1244,5 +1244,21 @@
         "ipa": "/ɡɛt/"
       }
     ]
+  },
+  "least": {
+    "word": "least",
+    "phonetic": "/liːst/",
+    "pos": "adj.",
+    "translation": "一点儿；最少的（little 的最高级）；最微不足道的（little 的最高级形式）；用于极小动植物的名称，如least shrew（little 的最高级形式）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "least",
+        "ipa": "/list/"
+      }
+    ]
   }
 }

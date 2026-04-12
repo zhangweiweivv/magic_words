@@ -122,7 +122,7 @@
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
-        <OceanButton variant="ghost" size="large" @click="prevWord" :disabled="currentIndex === 0">
+        <OceanButton variant="ghost" size="large" @click="prevWord" :disabled="currentIndex === 0 && rememberedHistory.length === 0">
           ⬅️ Previous
         </OceanButton>
         <OceanButton variant="success" size="large" @click="handleRemembered">
@@ -169,6 +169,9 @@ const reviewedWords = ref([])
 const reviewCompleted = ref(false)
 const showQuiz = ref(false)
 const currentReviewStage = ref(0)
+
+// 已记住历史栈（用于 Previous 回退）
+const rememberedHistory = ref([])
 
 // 统计
 const correctCount = ref(0)
@@ -265,6 +268,18 @@ const prevWord = () => {
   if (currentIndex.value > 0) {
     cardRef.value?.reset()
     currentIndex.value--
+  } else if (rememberedHistory.value.length > 0) {
+    // 回退：把最近记住的单词放回列表开头
+    const last = rememberedHistory.value.pop()
+    words.value.splice(0, 0, last.word)
+    correctCount.value = Math.max(0, correctCount.value - 1)
+    // 如果是复习模式，也要从 reviewedWords 移除
+    if (isReviewMode.value && reviewedWords.value.length > 0) {
+      const idx = reviewedWords.value.findIndex(w => w.word === last.word.word)
+      if (idx >= 0) reviewedWords.value.splice(idx, 1)
+    }
+    cardRef.value?.reset()
+    // currentIndex 保持 0，显示刚恢复的单词
   }
 }
 
@@ -275,6 +290,7 @@ const restart = () => {
   wrongCount.value = 0
   skippedCount.value = 0
   streak.value = 0
+  rememberedHistory.value = []
 }
 
 const handleRemembered = async () => {
@@ -292,6 +308,9 @@ const handleRemembered = async () => {
       // 复习模式：记录已复习的单词，用于后续测试
       reviewedWords.value.push({ ...word })
     }
+    
+    // 记录到历史栈（用于 Previous 回退）
+    rememberedHistory.value.push({ word: { ...word }, index: currentIndex.value })
     
     // 从当前列表移除
     words.value.splice(currentIndex.value, 1)
@@ -341,6 +360,7 @@ const backToReview = () => {
   correctCount.value = 0
   wrongCount.value = 0
   streak.value = 0
+  rememberedHistory.value = []
 }
 
 const handleForgot = async () => {
