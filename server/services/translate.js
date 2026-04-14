@@ -29,13 +29,12 @@ async function lookupTranslation(word) {
 
       // ec.word.trs → Chinese definitions
       if (data.ec && data.ec.word && data.ec.word.trs) {
-        const returnedWord = data.simple?.word?.[0]?.['return-phrase']?.toLowerCase();
-        if (returnedWord === normalized || !returnedWord) {
-          const trs = data.ec.word.trs;
-          const translation = trs.slice(0, 2).map(t => `${t.pos} ${t.tran}`).join('；');
-          cache.set(normalized, translation);
-          return translation;
-        }
+        // Note: return-phrase can be unreliable for common words (e.g. "down" returns "s")
+        // so we skip the word-match check and trust ec.word.trs directly
+        const trs = data.ec.word.trs;
+        const translation = trs.slice(0, 2).map(t => `${t.pos} ${t.tran}`).join('；');
+        cache.set(normalized, translation);
+        return translation;
       }
 
       // web_trans fallback
