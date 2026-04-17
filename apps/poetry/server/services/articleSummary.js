@@ -45,8 +45,12 @@ function buildArticleSummary({ article, state }) {
   };
 
   // Add currentStage (human-readable stage + 1)
+  // For graduated articles, cap at totalStages to avoid showing e.g. "4/3轮"
   if (state.stage != null) {
-    enriched.currentStage = state.stage + 1;
+    const raw = state.stage + 1;
+    enriched.currentStage = (state.status === 'graduated' && enriched.totalStages)
+      ? Math.min(raw, enriched.totalStages)
+      : raw;
   } else {
     enriched.currentStage = null;
   }
