@@ -29,17 +29,21 @@ function sortCollections(names) {
 
 /**
  * Determine the active collection (first not fully graduated).
- * @param {{ collections: string[], articleStatesByCollection: Record<string, Array<{status:string}>> }} params
+ * @param {{ collections: string[], articleStatesByCollection: Record<string, Array<{status:string}>>, articleCountByCollection?: Record<string, number> }} params
  * @returns {string|null} active collection name, or null if all graduated
  */
-function getActiveCollection({ collections, articleStatesByCollection }) {
+function getActiveCollection({ collections, articleStatesByCollection, articleCountByCollection }) {
   for (const name of collections) {
     const states = articleStatesByCollection[name];
     // No states or empty array → not started → active
     if (!states || states.length === 0) return name;
+    const graduatedCount = states.filter(s => s.status === 'graduated').length;
     // If any article is not graduated → active
-    const allGraduated = states.every(s => s.status === 'graduated');
-    if (!allGraduated) return name;
+    if (states.some(s => s.status !== 'graduated')) return name;
+    // All state files show graduated, but check against catalog total:
+    // if catalog has more articles than graduated state files, collection is not done
+    const totalInCatalog = (articleCountByCollection && articleCountByCollection[name]) || 0;
+    if (totalInCatalog > graduatedCount) return name;
   }
   return null;
 }

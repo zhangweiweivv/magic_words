@@ -45,7 +45,16 @@ router.get('/api/recommend/next', (_req, res) => {
   }
 
   const articleStatesByCollection = getArticleStatesByCollection();
-  const activeCollection = getActiveCollection({ collections, articleStatesByCollection });
+
+  // Build catalog article counts so getActiveCollection can compare
+  // graduated-state-file count against actual total articles.
+  const articleCountByCollection = {};
+  for (const col of collections) {
+    const parsed = parseCollection(col);
+    articleCountByCollection[col] = (parsed && parsed.articles) ? parsed.articles.length : 0;
+  }
+
+  const activeCollection = getActiveCollection({ collections, articleStatesByCollection, articleCountByCollection });
 
   if (!activeCollection) {
     return res.json({ recommendation: null, reason: 'all_graduated' });
