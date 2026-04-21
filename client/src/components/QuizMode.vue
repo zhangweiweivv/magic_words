@@ -256,11 +256,11 @@ const isLastQuestion = computed(() => {
 
 // 生成题目
 const generateQuestions = () => {
-  const wordList = [...props.words]
+  let wordList = [...props.words]
   const result = []
   
   // 打乱单词顺序
-  shuffleArray(wordList)
+  wordList = shuffleArray(wordList)
   
   // 整个批次的 reviewCount 相同，用 reviewStage 决定配比
   const stage = Math.min(props.reviewStage, 2)
@@ -311,9 +311,9 @@ const generateQuestions = () => {
   }
   
   // 打乱题目顺序
-  shuffleArray(result)
+  const shuffledResult = shuffleArray(result)
   
-  questions.value = result
+  questions.value = shuffledResult
   totalQuestions.value = result.length
 }
 
@@ -323,9 +323,9 @@ const generateOptions = (correctWord, allWords) => {
   const otherWords = allWords.filter(w => w.word !== correctWord.word)
   
   // 随机选3个干扰项
-  shuffleArray(otherWords)
-  for (let i = 0; i < 3 && i < otherWords.length; i++) {
-    words.push(otherWords[i].word)
+  const shuffledOthers = shuffleArray(otherWords)
+  for (let i = 0; i < 3 && i < shuffledOthers.length; i++) {
+    words.push(shuffledOthers[i].word)
   }
   
   // 如果不够4个选项，用原有的
@@ -338,10 +338,10 @@ const generateOptions = (correctWord, allWords) => {
   
   // 打乱选项并记录正确答案位置
   const correctAnswer = correctWord.word
-  shuffleArray(words)
-  const correctIndex = words.indexOf(correctAnswer)
+  const shuffledWords = shuffleArray(words)
+  const correctIndex = shuffledWords.indexOf(correctAnswer)
   
-  return { options: words, correctIndex }
+  return { options: shuffledWords, correctIndex }
 }
 
 // 生成拼写补全数据（隐藏字母，比例从配置读取，保留首字母）
@@ -362,8 +362,8 @@ const generateFillBlankData = (word) => {
   }
   
   // 随机选择要隐藏的位置
-  shuffleArray(candidates)
-  const hidePositions = new Set(candidates.slice(0, Math.min(hideCount, candidates.length)))
+  const shuffledCandidates = shuffleArray(candidates)
+  const hidePositions = new Set(shuffledCandidates.slice(0, Math.min(hideCount, shuffledCandidates.length)))
   
   // 生成字母数组，每个位置标记是否为空
   const letterData = letters.map((ch, i) => ({
