@@ -157,7 +157,7 @@ defineExpose({ reset, flip })
 .card-front { justify-content: center; overflow: hidden; }
 .card-back { justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: 24px; }
 
-.card-front { background: var(--gradient-card-front, var(--duo-bg, #fff)); color: var(--duo-text, #4B4B4B); z-index: 2; transform: rotateY(0deg); -webkit-transform: rotateY(0deg); justify-content: center; }
+.card-front { background: var(--duo-bg, #fff); color: var(--duo-text, #4B4B4B); z-index: 2; transform: rotateY(0deg); -webkit-transform: rotateY(0deg); justify-content: center; }
 .card-front::before { content: ''; }
 
 .card-decoration { display: none; }
@@ -176,7 +176,7 @@ defineExpose({ reset, flip })
 .bubbles, .bubble { display: none; }
 @keyframes bubble-up { 0% { opacity: 0; } 100% { opacity: 0; } }
 
-.card-back { background: var(--gradient-card-back, var(--duo-bg, #fff)); color: var(--duo-text, #4B4B4B); transform: rotateY(180deg); -webkit-transform: rotateY(180deg); z-index: 1; }
+.card-back { background: var(--duo-bg, #fff); color: var(--duo-text, #4B4B4B); transform: rotateY(180deg); -webkit-transform: rotateY(180deg); z-index: 1; }
 .card-back::before { content: ''; }
 .scroll-decoration { position: absolute; top: 18px; right: 22px; font-size: 22px; opacity: 0.6; }
 .card-back .meaning { font-size: 24px; font-weight: 900; margin-bottom: 12px; line-height: 1.4; color: var(--duo-text, #4B4B4B); text-shadow: none; }
