@@ -1260,5 +1260,37 @@
         "ipa": "/list/"
       }
     ]
+  },
+  "offer": {
+    "word": "offer",
+    "phonetic": "/ˈɒfə(r)/",
+    "pos": "v.",
+    "translation": "提供，给予；提议，表示愿意（做某事）；出（价），开（价）；提出，作出；表示（爱、友谊等）；（向上帝或神）奉献（祈祷、赞美），祭献（牺牲）； 试图（使用暴力，进行抵抗）；<古>发动，挑起（战争）；把……摆好（或放到位）（以便检测或评估其外观或状况）；<旧>（机会）出现；求婚",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "offers",
+      "thirdPerson": "offers",
+      "presentParticiple": "offering",
+      "past": "offered",
+      "pastParticiple": "offered"
+    },
+    "roots": [
+      {
+        "part": "-er",
+        "type": "后缀",
+        "meaning": "做...的人/更..."
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "of",
+        "ipa": "/ˈɑ/"
+      },
+      {
+        "syllable": "fer",
+        "ipa": "/fɚ/"
+      }
+    ]
   }
 }
