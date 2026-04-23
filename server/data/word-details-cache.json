@@ -1325,5 +1325,36 @@
         "ipa": "/faɪ/"
       }
     ]
+  },
+  "reduce": {
+    "word": "reduce",
+    "phonetic": "/rɪˈdjuːs/",
+    "pos": "v.",
+    "translation": "减少，降低；（烹调中）使变浓稠，收汁；<美>节食减肥；使沦为，使陷入（不好的境地）；迫使，使不得不（做）；（通过破裂、燃烧等）使变成，使化为；归纳，简化；将分数约到（最小项）；（使）进行还原反应；减薄（底片或图片）；（语音）弱化；使（脱臼，断骨）复位；<古>攻克，征服（尤指围攻并占领城镇或要塞）",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "thirdPerson": "reduces",
+      "presentParticiple": "reducing",
+      "past": "reduced",
+      "pastParticiple": "reduced"
+    },
+    "roots": [
+      {
+        "part": "re-",
+        "type": "前缀",
+        "meaning": "再、重新"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "re",
+        "ipa": "/ɹɪˈd/"
+      },
+      {
+        "syllable": "duce",
+        "ipa": "/juːs/"
+      }
+    ]
   }
 }

@@ -9,6 +9,7 @@
 import { defineAsyncComponent } from 'vue'
 import { useEffects } from '../../composables/useEffects'
 const effectComponents = {
+  'confetti': defineAsyncComponent(() => import('./Confetti.vue')),
   'star-burst': defineAsyncComponent(() => import('./StarBurst.vue')),
   'fire-blast': defineAsyncComponent(() => import('./FireBlast.vue')),
   'fireworks': defineAsyncComponent(() => import('./Fireworks.vue')),
