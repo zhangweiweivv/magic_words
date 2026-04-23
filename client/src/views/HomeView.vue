@@ -191,7 +191,7 @@ onMounted(async () => {
 <style scoped>
 .home {
   min-height: 100vh;
-  background: var(--duo-bg-soft);
+  background: transparent;
   font-family: var(--duo-font-body);
   color: var(--duo-text);
 }
@@ -202,7 +202,9 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--duo-bg);
+  background: rgba(255, 248, 231, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 2px solid var(--duo-border);
   position: sticky;
   top: 0;

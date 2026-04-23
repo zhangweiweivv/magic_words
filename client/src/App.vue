@@ -1,5 +1,7 @@
 <template>
   <div id="app" :data-theme="equipped.theme !== 'default' ? equipped.theme : undefined">
+    <!-- 全局装饰背景（渐变 + 浮动小图标） -->
+    <DecorBackground />
     <!-- 全局音乐播放器 -->
     <MusicPlayer class="global-music-player" />
     <!-- 全局特效容器 -->
@@ -43,6 +45,7 @@ import { useRoute } from 'vue-router'
 import BottomNav from './components/BottomNav.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
 import EffectsContainer from './components/effects/EffectsContainer.vue'
+import DecorBackground from './components/DecorBackground.vue'
 import { useShopConfig } from './composables/useShopConfig'
 
 const route = useRoute()
@@ -90,7 +93,9 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background: var(--duo-bg, #fff);
+  background: rgba(255, 248, 231, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 2px solid var(--duo-border, #E5E5E5);
   position: sticky;
   top: 0;
@@ -155,9 +160,11 @@ html, body {
 /* 主内容 */
 .main-content {
   flex: 1;
-  background: var(--duo-bg-soft, #F7F9FA);
+  background: transparent;
   min-height: 100vh;
   color: var(--duo-text, #4B4B4B);
+  position: relative;
+  z-index: 1;
 }
 
 /* 全局音乐播放器 - 使用 !important 覆盖组件内部样式 */

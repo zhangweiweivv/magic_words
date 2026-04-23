@@ -455,7 +455,7 @@ onMounted(async () => {
   min-height: 100vh;
   padding: 20px;
   padding-bottom: 180px;
-  background: var(--duo-bg-soft);
+  background: transparent;
   color: var(--duo-text);
   font-family: var(--duo-font-body);
   position: relative;
