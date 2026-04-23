@@ -1292,5 +1292,38 @@
         "ipa": "/fɚ/"
       }
     ]
+  },
+  "identify": {
+    "word": "identify",
+    "phonetic": "/aɪˈdentɪfaɪ/",
+    "pos": "v.",
+    "translation": "认出，识别；查明，确认；发现；证明（身份），表明；认同，理解；认为……和……一致；和（某人）打成一片",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "thirdPerson": "identifies",
+      "presentParticiple": "identifying",
+      "past": "identified",
+      "pastParticiple": "identified"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "i",
+        "ipa": "/aɪ/"
+      },
+      {
+        "syllable": "den",
+        "ipa": "/ˈdɛn./"
+      },
+      {
+        "syllable": "ti",
+        "ipa": "/tɪ./"
+      },
+      {
+        "syllable": "fy",
+        "ipa": "/faɪ/"
+      }
+    ]
   }
 }

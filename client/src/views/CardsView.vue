@@ -1,13 +1,10 @@
 <!-- client/src/views/CardsView.vue -->
 <template>
   <div class="cards-page">
-    <!-- 海洋背景 -->
-    <BubbleBackground :count="5" />
-    
     <!-- 加载中状态 -->
     <div v-if="loading" class="loading-state">
-      <div class="loading-dolphin">🐬</div>
-      <p>正在潜入知识海洋...</p>
+      <KittyMascot :size="100" mood="thinking" />
+      <p>正在加载单词…</p>
     </div>
 
     <!-- 测试模式 -->
@@ -22,55 +19,54 @@
     <!-- 复习完成，准备测试 -->
     <div v-else-if="isReviewMode && reviewCompleted && !showQuiz" class="pre-quiz-state">
       <div class="celebration">
-        <div class="treasure-chest">🎁</div>
-        <h2>探险完成！</h2>
-        <p>现在来测试一下收获的宝藏吧！</p>
-        <OceanButton variant="coral" size="large" @click="startQuiz">
+        <KittyMascot :size="140" mood="excited" :showCrown="true" />
+        <h2>复习完成！</h2>
+        <p>现在来测试一下学会了多少吧！</p>
+        <DuoButton variant="primary" size="large" @click="startQuiz">
           开始测试
-        </OceanButton>
+        </DuoButton>
       </div>
     </div>
 
     <!-- 没有单词需要复习 -->
     <div v-else-if="words.length === 0" class="empty-state">
-      <div class="empty-icon">🏝️</div>
+      <div class="empty-icon">✨</div>
       <h2>太棒了！</h2>
-      <p>今天的海域已经探索完毕</p>
-      <OceanButton variant="primary" @click="$router.push('/')">
-        返回港口
-      </OceanButton>
+      <p>今天的任务已经完成了</p>
+      <DuoButton variant="primary" size="large" @click="$router.push('/')">
+        返回首页
+      </DuoButton>
     </div>
 
     <!-- 复习完毕庆祝界面 -->
     <div v-else-if="currentIndex >= words.length" class="complete-state">
       <div class="celebration">
-        <div class="fireworks">🎆✨🎇</div>
-        <div class="trophy">🏆</div>
-        <h2>探险大成功！</h2>
+        <KittyMascot :size="140" mood="excited" :showCrown="true" />
+        <h2>全部学完了！</h2>
         <div class="stats-summary">
           <div class="stat-item correct">
-            <span class="stat-icon">💎</span>
+            <span class="stat-icon">✅</span>
             <span class="number">{{ correctCount }}</span>
-            <span class="label">收集</span>
+            <span class="label">记住</span>
           </div>
           <div class="stat-item wrong">
-            <span class="stat-icon">🐚</span>
+            <span class="stat-icon">📝</span>
             <span class="number">{{ wrongCount }}</span>
             <span class="label">待复习</span>
           </div>
           <div class="stat-item skipped">
-            <span class="stat-icon">🌊</span>
+            <span class="stat-icon">⏭️</span>
             <span class="number">{{ skippedCount }}</span>
             <span class="label">跳过</span>
           </div>
         </div>
         <div class="complete-actions">
-          <OceanButton variant="primary" size="large" @click="restart">
-            再探险一次
-          </OceanButton>
-          <OceanButton variant="secondary" size="large" @click="$router.push('/')">
-            返回港口
-          </OceanButton>
+          <DuoButton variant="primary" size="large" @click="restart">
+            再来一轮
+          </DuoButton>
+          <DuoButton variant="secondary" size="large" @click="$router.push('/')">
+            返回首页
+          </DuoButton>
         </div>
       </div>
     </div>
@@ -80,9 +76,7 @@
       <!-- 顶部进度条 -->
       <div class="progress-section">
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: progressPercent + '%' }">
-            <span class="progress-fish">🐠</span>
-          </div>
+          <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
         </div>
         <div class="progress-text">{{ currentIndex + 1 }} / {{ words.length }}</div>
       </div>
@@ -95,7 +89,7 @@
         <span class="streak-count">连续 {{ streak }} 个！</span>
       </div>
 
-      <!-- 多多反馈区 -->
+      <!-- 反馈区 -->
       <transition name="feedback">
         <div v-if="feedback" class="feedback-bubble" :class="feedbackType">
           <span class="feedback-emoji">{{ feedbackEmoji }}</span>
@@ -127,21 +121,18 @@
           @click="prevWord"
           :disabled="currentIndex === 0 && rememberedHistory.length === 0"
           aria-label="上一个"
-        >⬅️</button>
-        <OceanButton variant="success" size="large" class="primary-action" @click="handleRemembered">
+        >←</button>
+        <DuoButton variant="primary" size="large" class="primary-action" @click="handleRemembered">
           ⭐ 记住了！
-        </OceanButton>
+        </DuoButton>
         <button
           class="nav-btn"
           @click="nextWord"
           :disabled="currentIndex >= words.length - 1"
           aria-label="下一个"
-        >➡️</button>
+        >→</button>
       </div>
     </div>
-    
-    <!-- 波浪装饰 -->
-    <WaveDecoration position="bottom" />
   </div>
 </template>
 
@@ -153,9 +144,8 @@ import { pointsApi } from '../api/points'
 import { useRoute } from 'vue-router'
 import WordCard from '../components/WordCard.vue'
 import QuizMode from '../components/QuizMode.vue'
-import BubbleBackground from '../components/ocean/BubbleBackground.vue'
-import WaveDecoration from '../components/ocean/WaveDecoration.vue'
-import OceanButton from '../components/ocean/OceanButton.vue'
+import DuoButton from '../components/duo/DuoButton.vue'
+import KittyMascot from '../components/duo/KittyMascot.vue'
 import { checkAndUnlockAchievements } from '../utils/achievementChecker'
 import { useShopConfig } from '../composables/useShopConfig'
 
@@ -447,7 +437,9 @@ onMounted(async () => {
   min-height: 100vh;
   padding: 20px;
   padding-bottom: 180px;
-  background: var(--bg-gradient, var(--gradient-deep));
+  background: var(--duo-bg-soft);
+  color: var(--duo-text);
+  font-family: var(--duo-font-body);
   position: relative;
 }
 
@@ -458,24 +450,14 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   height: 80vh;
-  color: white;
-}
-
-.loading-dolphin {
-  font-size: 64px;
-  animation: dolphin-swim 2s ease-in-out infinite;
-}
-
-@keyframes dolphin-swim {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-15px) rotate(-10deg); }
-  75% { transform: translateY(10px) rotate(10deg); }
+  color: var(--duo-text);
 }
 
 .loading-state p {
   margin-top: 20px;
-  font-size: 18px;
-  opacity: 0.8;
+  font-size: 16px;
+  color: var(--duo-text-soft);
+  font-weight: 700;
 }
 
 /* 空状态 */
@@ -485,7 +467,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   height: 80vh;
-  color: white;
+  color: var(--duo-text);
   text-align: center;
 }
 
@@ -495,14 +477,17 @@ onMounted(async () => {
 }
 
 .empty-state h2 {
-  font-family: var(--font-display);
-  font-size: 28px;
+  font-family: var(--duo-font-display);
+  font-size: 26px;
   margin-bottom: 10px;
+  color: var(--duo-text);
+  font-weight: 900;
 }
 
 .empty-state p {
-  opacity: 0.8;
-  margin-bottom: 30px;
+  color: var(--duo-text-soft);
+  margin-bottom: 24px;
+  font-weight: 600;
 }
 
 /* 完成状态 */
@@ -513,7 +498,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   min-height: 80vh;
-  color: white;
+  color: var(--duo-text);
 }
 
 .celebration {
@@ -522,42 +507,23 @@ onMounted(async () => {
   z-index: 2;
 }
 
-.fireworks {
-  font-size: 48px;
-  animation: fireworks-bounce 0.5s ease infinite alternate;
-}
-
-@keyframes fireworks-bounce {
-  from { transform: translateY(0) scale(1); }
-  to { transform: translateY(-15px) scale(1.1); }
-}
-
-.trophy,
-.treasure-chest {
-  font-size: 100px;
-  margin: 20px 0;
-  animation: trophy-glow 2s ease-in-out infinite;
-}
-
-@keyframes trophy-glow {
-  0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
-  50% { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)); }
-}
-
 .celebration h2 {
-  font-family: var(--font-display);
-  font-size: 32px;
-  margin-bottom: 10px;
+  font-family: var(--duo-font-display);
+  font-size: 28px;
+  margin: 16px 0 8px;
+  color: var(--duo-green-dark);
+  font-weight: 900;
 }
 
 .celebration p {
-  opacity: 0.9;
-  margin-bottom: 30px;
+  color: var(--duo-text-soft);
+  margin-bottom: 24px;
+  font-weight: 600;
 }
 
 .stats-summary {
   display: flex;
-  gap: 30px;
+  gap: 14px;
   margin: 30px 0;
   justify-content: center;
 }
@@ -566,33 +532,39 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 16px 24px;
-  border-radius: var(--radius-lg);
-  backdrop-filter: blur(10px);
+  background: var(--duo-bg);
+  border: 2px solid var(--duo-border);
+  box-shadow: 0 2px 0 var(--duo-border);
+  padding: 14px 18px;
+  border-radius: var(--duo-radius-lg);
+  min-width: 80px;
 }
 
 .stat-item .stat-icon {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 24px;
+  margin-bottom: 4px;
 }
 
 .stat-item .number {
-  font-size: 32px;
-  font-weight: bold;
-  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--duo-text);
+  font-family: var(--duo-font-display);
 }
 
 .stat-item .label {
-  font-size: 12px;
-  opacity: 0.8;
-  margin-top: 4px;
+  font-size: 11px;
+  color: var(--duo-text-muted);
+  margin-top: 2px;
+  font-weight: 700;
 }
 
 .complete-actions {
   display: flex;
-  gap: 16px;
-  margin-top: 30px;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* 复习区域 */
@@ -606,44 +578,33 @@ onMounted(async () => {
 /* 进度条 */
 .progress-section {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .progress-bar {
-  height: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-full);
-  overflow: visible;
+  flex: 1;
+  height: 16px;
+  background: var(--duo-bg);
+  border: 2px solid var(--duo-border);
+  border-radius: var(--duo-radius-full);
+  overflow: hidden;
   position: relative;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--gradient-seaweed);
-  border-radius: var(--radius-full);
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.progress-fish {
-  position: absolute;
-  right: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 24px;
-  animation: fish-swim 1s ease-in-out infinite;
-}
-
-@keyframes fish-swim {
-  0%, 100% { transform: translateY(-50%) scaleX(1); }
-  50% { transform: translateY(-50%) scaleX(-1); }
+  background: linear-gradient(90deg, var(--duo-green-light), var(--duo-green));
+  border-radius: var(--duo-radius-full);
+  transition: width 400ms ease;
 }
 
 .progress-text {
-  text-align: center;
-  margin-top: 8px;
-  color: white;
-  font-size: 14px;
-  opacity: 0.8;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--duo-text-soft);
+  white-space: nowrap;
 }
 
 /* 连击显示 */
@@ -694,17 +655,17 @@ onMounted(async () => {
 }
 
 .feedback-bubble.correct {
-  background: var(--gradient-seaweed);
+  background: var(--duo-green);
   color: white;
 }
 
 .feedback-bubble.wrong {
-  background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+  background: var(--duo-red);
   color: white;
 }
 
 .feedback-bubble.streak {
-  background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+  background: var(--duo-orange);
   color: white;
 }
 
@@ -736,22 +697,17 @@ onMounted(async () => {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: none;
-  background: var(--foam);
+  border: 2px solid var(--duo-border);
+  background: var(--duo-bg);
+  color: var(--duo-text);
   font-size: 24px;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-normal);
+  box-shadow: 0 4px 0 var(--duo-border);
+  transition: transform 80ms ease, box-shadow 80ms ease;
 }
 
-.speak-btn:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-lg);
-}
-
-.speak-btn:active {
-  transform: scale(0.95);
-}
+.speak-btn:hover { background: var(--duo-bg-soft); }
+.speak-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--duo-border); }
 
 /* 操作按钮 */
 .action-buttons {
@@ -773,31 +729,29 @@ onMounted(async () => {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
+  border: 2px solid var(--duo-border);
+  background: var(--duo-bg);
+  color: var(--duo-text);
   font-size: 24px;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
+  transition: transform 80ms ease, box-shadow 80ms ease, background 120ms ease;
+  box-shadow: 0 4px 0 var(--duo-border);
 }
 .nav-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 58, 95, 0.25);
+  background: var(--duo-bg-soft);
 }
 .nav-btn:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--duo-border);
 }
 .nav-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 @media (max-width: 420px) {
   .action-buttons { gap: 10px; padding: 16px 8px; }
