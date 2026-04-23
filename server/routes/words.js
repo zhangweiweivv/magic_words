@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const obsidian = require('../services/obsidian');
 const { parseReviewFile } = require('../services/review');
+const { applyExampleVersion } = require('../services/examples');
 const { success, error: errRes } = require('../utils/response');
 
 const STAGE_NAMES = ['Day 0 首学', 'Day 1 复习1', 'Day 3 毕业考'];
@@ -45,7 +46,7 @@ function attachReviewProgress(words) {
 router.get('/', (req, res) => {
   try {
     const words = obsidian.getAllWords();
-    success(res, attachReviewProgress(words));
+    success(res, applyExampleVersion(attachReviewProgress(words)));
   } catch (err) {
     errRes(res, err.message);
   }
@@ -56,7 +57,7 @@ router.get('/unlearned', (req, res) => {
   try {
     const words = obsidian.getUnlearnedWords();
     const enriched = attachReviewProgress(words);
-    success(res, enriched);
+    success(res, applyExampleVersion(enriched));
   } catch (err) {
     errRes(res, err.message);
   }
@@ -67,7 +68,7 @@ router.get('/learned', (req, res) => {
   try {
     const words = obsidian.getLearnedWords();
     const enriched = attachReviewProgress(words);
-    success(res, enriched);
+    success(res, applyExampleVersion(enriched));
   } catch (err) {
     errRes(res, err.message);
   }
