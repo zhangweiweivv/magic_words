@@ -122,15 +122,21 @@
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
-        <OceanButton variant="ghost" size="large" @click="prevWord" :disabled="currentIndex === 0 && rememberedHistory.length === 0">
-          ⬅️ Previous
+        <button
+          class="nav-btn"
+          @click="prevWord"
+          :disabled="currentIndex === 0 && rememberedHistory.length === 0"
+          aria-label="上一个"
+        >⬅️</button>
+        <OceanButton variant="success" size="large" class="primary-action" @click="handleRemembered">
+          ⭐ 记住了！
         </OceanButton>
-        <OceanButton variant="success" size="large" @click="handleRemembered">
-          ⭐ I remembered!
-        </OceanButton>
-        <OceanButton variant="ghost" size="large" @click="nextWord" :disabled="currentIndex >= words.length - 1">
-          Next ➡️
-        </OceanButton>
+        <button
+          class="nav-btn"
+          @click="nextWord"
+          :disabled="currentIndex >= words.length - 1"
+          aria-label="下一个"
+        >➡️</button>
       </div>
     </div>
     
@@ -751,7 +757,51 @@ onMounted(async () => {
 .action-buttons {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  padding: 20px 0;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 12px;
+  flex-wrap: nowrap;
+  max-width: 100%;
+}
+.action-buttons :deep(.primary-action) {
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.nav-btn {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
+}
+.nav-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 58, 95, 0.25);
+}
+.nav-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+}
+@media (max-width: 420px) {
+  .action-buttons { gap: 10px; padding: 16px 8px; }
+  .nav-btn { width: 48px; height: 48px; font-size: 20px; }
+  .action-buttons :deep(.ocean-button.large) { padding: 14px 22px; font-size: 16px; }
 }
 </style>
