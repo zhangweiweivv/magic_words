@@ -122,7 +122,7 @@
           :disabled="currentIndex === 0 && rememberedHistory.length === 0"
           aria-label="上一个"
         >←</button>
-        <DuoButton variant="primary" size="large" class="primary-action" @click="handleRemembered">
+        <DuoButton variant="primary" size="large" class="primary-action" @click="handleRememberedWithEffect">
           ⭐ 记住了！
         </DuoButton>
         <button
@@ -146,10 +146,12 @@ import WordCard from '../components/WordCard.vue'
 import QuizMode from '../components/QuizMode.vue'
 import DuoButton from '../components/duo/DuoButton.vue'
 import KittyMascot from '../components/duo/KittyMascot.vue'
+import { useEffects } from '../composables/useEffects'
 import { checkAndUnlockAchievements } from '../utils/achievementChecker'
 import { useShopConfig } from '../composables/useShopConfig'
 
 const { equipped } = useShopConfig()
+const { triggerEffect } = useEffects()
 
 const route = useRoute()
 
@@ -298,6 +300,22 @@ const restart = () => {
   skippedCount.value = 0
   streak.value = 0
   rememberedHistory.value = []
+}
+
+const handleRememberedWithEffect = (evt) => {
+  // 从点击位置撞出撞花（多个点错位让效果更丰满）
+  let cx = window.innerWidth / 2
+  let cy = window.innerHeight / 2
+  const target = evt && (evt.currentTarget || evt.target)
+  if (target && target.getBoundingClientRect) {
+    const r = target.getBoundingClientRect()
+    cx = r.left + r.width / 2
+    cy = r.top + r.height / 2
+  }
+  triggerEffect('confetti', { x: cx, y: cy, duration: 1800 })
+  // 再从卡片区中心同时撞一波，识读更强
+  triggerEffect('confetti', { x: window.innerWidth / 2, y: cy - 220, duration: 1800 })
+  return handleRemembered()
 }
 
 const handleRemembered = async () => {
