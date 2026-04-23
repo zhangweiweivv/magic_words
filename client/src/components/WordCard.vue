@@ -18,6 +18,10 @@
           </div>
         </div>
         <div class="card-decoration bottom-left">🐠</div>
+        <div class="front-example" v-if="frontExample">
+          <span class="front-example-icon">💬</span>
+          <span class="front-example-text"><HoverableText :text="frontExample" :highlightWord="word.word" /></span>
+        </div>
         <div class="hint"><span class="hint-icon">👆</span><span>点击翻转</span></div>
         <div class="bubbles"><span class="bubble" v-for="i in 3" :key="i" :style="{ animationDelay: `${i * 0.5}s` }"></span></div>
       </div>
@@ -124,6 +128,9 @@ const examples = computed(() => {
   return [text]
 })
 
+// 卡片正面只展示第一句例句（保持简洁）
+const frontExample = computed(() => examples.value[0] || '')
+
 const flip = () => { isFlipped.value = !isFlipped.value }
 const reset = () => { isFlipped.value = false; showSuccess.value = false; showError.value = false }
 
@@ -163,6 +170,9 @@ defineExpose({ reset, flip })
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 .card-front .word { font-size: 40px; font-weight: bold; font-family: var(--font-display); margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); letter-spacing: 1px; }
 .hint { position: absolute; bottom: 25px; display: flex; align-items: center; gap: 6px; font-size: 14px; opacity: 0.7; color: var(--ocean-pale, #AED6F1); }
+.front-example { margin: 12px 16px 0; padding: 10px 14px; background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md, 16px); display: flex; align-items: flex-start; gap: 8px; backdrop-filter: blur(5px); max-width: 320px; }
+.front-example-icon { font-size: 18px; flex-shrink: 0; }
+.front-example-text { font-size: 16px; line-height: 1.45; text-align: left; color: rgba(255, 255, 255, 0.95); }
 .hint-icon { animation: bounce 1s ease-in-out infinite; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
