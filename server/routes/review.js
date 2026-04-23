@@ -9,6 +9,7 @@ const obsidian = require('../services/obsidian');
 const slack = require('../services/slack');
 const backup = require('../services/backup');
 const expansion = require('../services/expansion');
+const { applyExampleVersion } = require('../services/examples');
 const { success, error: errRes } = require('../utils/response');
 
 // GET /api/review/today - 获取今日待复习单词
@@ -42,7 +43,7 @@ router.get('/today', async (req, res) => {
     
     success(res, {
       count: reviewWords.length,
-      words: reviewWords
+      words: applyExampleVersion(reviewWords)
     });
   } catch (err) {
     errRes(res, err.message);
