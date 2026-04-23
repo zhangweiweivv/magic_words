@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { wordsApi } from '../api/words'
 import { getTodayReview, recordReview } from '../api/review'
 import { pointsApi } from '../api/points'
@@ -256,6 +256,17 @@ const speakWord = () => {
     speechSynthesis.speak(utterance)
   })
 }
+
+// 切到新单词时自动播放发音（含 next/prev/remembered/forgot 触发的换词）
+watch(
+  () => currentWord.value && currentWord.value.word,
+  (newWord, oldWord) => {
+    if (!newWord) return
+    if (newWord === oldWord) return
+    // 等卡片渲染完成、reset 翻面动画结束后再朗读
+    nextTick(() => speakWord())
+  }
+)
 
 const nextWord = () => {
   if (currentIndex.value < words.value.length - 1) {
