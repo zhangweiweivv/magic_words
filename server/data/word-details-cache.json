@@ -1356,5 +1356,255 @@
         "ipa": "/juːs/"
       }
     ]
+  },
+  "press": {
+    "word": "press",
+    "phonetic": "",
+    "pos": "",
+    "translation": "",
+    "synonyms": [
+      "Vales",
+      "Welshy"
+    ],
+    "antonyms": [],
+    "forms": {},
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "press",
+        "ipa": "/pɹɛs/"
+      }
+    ]
+  },
+  "benefit": {
+    "word": "benefit",
+    "phonetic": "/ˈbenɪfɪt/",
+    "pos": "n.",
+    "translation": "好处，益处；救济金，补助金；额外奖励，保险金；慈善活动",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "benefits",
+      "thirdPerson": "benefits",
+      "presentParticiple": "benefiting或benefitting",
+      "past": "benefited或benefitted",
+      "pastParticiple": "benefited或benefitted"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "be",
+        "ipa": "/ˈbɛn/"
+      },
+      {
+        "syllable": "nef",
+        "ipa": "/.ɪ./"
+      },
+      {
+        "syllable": "it",
+        "ipa": "/fɪt/"
+      }
+    ]
+  },
+  "candidate": {
+    "word": "candidate",
+    "phonetic": "/ˈkændɪdət/",
+    "pos": "n.",
+    "translation": "候选人，申请者；有望体验（得到）……的人（物）；投考者，考生；攻读学位者",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "candidates"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "can",
+        "ipa": "/ˈkæn./"
+      },
+      {
+        "syllable": "did",
+        "ipa": "/dɪd/"
+      },
+      {
+        "syllable": "ate",
+        "ipa": "/ət/"
+      }
+    ]
+  },
+  "believe": {
+    "word": "believe",
+    "phonetic": "/bɪˈliːv/",
+    "pos": "v.",
+    "translation": "相信；认为，猜想；信教",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "thirdPerson": "believes",
+      "presentParticiple": "believing",
+      "past": "believed",
+      "pastParticiple": "believed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "be",
+        "ipa": "/bɪ/"
+      },
+      {
+        "syllable": "lieve",
+        "ipa": "/ˈliːv/"
+      }
+    ]
+  },
+  "guy": {
+    "word": "guy",
+    "phonetic": "/ɡaɪ/",
+    "pos": "n.",
+    "translation": "<非正式>男人，家伙；<美，非正式>伙计们，兄弟（或姐妹）们；<英>盖伊模拟像；（帐篷或杆柱的）固定拉绳，牵索",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "guys",
+      "thirdPerson": "guys",
+      "presentParticiple": "guying",
+      "past": "guyed",
+      "pastParticiple": "guyed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "guy",
+        "ipa": "/ɡaɪ/"
+      }
+    ]
+  },
+  "case": {
+    "word": "case",
+    "phonetic": "/keɪs/",
+    "pos": "n.",
+    "translation": "具体情况，实例；病例，病案；诉讼，官司；案件，案子；容器，箱子；事实，论据；（特定处境或品性的）人；（语法的）格",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "cases",
+      "thirdPerson": "cases",
+      "presentParticiple": "casing",
+      "past": "cased",
+      "pastParticiple": "cased"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "case",
+        "ipa": "/keɪs/"
+      }
+    ]
+  },
+  "job": {
+    "word": "job",
+    "phonetic": "/dʒɒb/",
+    "pos": "n.",
+    "translation": "工作，职业；零工，任务；职责，责任；<非正式>罪行，（尤指）盗窃；<非正式> 东西，物件；费力的事；幸运的事；刺，捅；<非正式>东西，物件",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "jobs",
+      "thirdPerson": "jobs",
+      "presentParticiple": "jobbing",
+      "past": "jobbed",
+      "pastParticiple": "jobbed"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "job",
+        "ipa": "/d͡ʒɒb/"
+      }
+    ]
+  },
+  "research": {
+    "word": "research",
+    "phonetic": "/rɪˈsɜːtʃ/",
+    "pos": "n.",
+    "translation": "（尤指大学或科研机构进行的）研究，探讨；研究工作，调查工作",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "researches",
+      "thirdPerson": "researches",
+      "presentParticiple": "researching",
+      "past": "researched",
+      "pastParticiple": "researched"
+    },
+    "roots": [
+      {
+        "part": "re-",
+        "type": "前缀",
+        "meaning": "再、重新"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "re",
+        "ipa": "/ɹɪˈs/"
+      },
+      {
+        "syllable": "search",
+        "ipa": "/ɜːtʃ/"
+      }
+    ]
+  },
+  "several": {
+    "word": "several",
+    "phonetic": "/ˈsevrəl/",
+    "pos": "adj.",
+    "translation": "不同的，各自的；<法律>单独，各个",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {},
+    "roots": [
+      {
+        "part": "-al",
+        "type": "后缀",
+        "meaning": "...的"
+      }
+    ],
+    "phonics": [
+      {
+        "syllable": "se",
+        "ipa": "/ˈsɛv/"
+      },
+      {
+        "syllable": "ver",
+        "ipa": "/(ə)/"
+      },
+      {
+        "syllable": "al",
+        "ipa": "/ɹəl/"
+      }
+    ]
+  },
+  "court": {
+    "word": "court",
+    "phonetic": "/kɔːt/",
+    "pos": "n.",
+    "translation": "法院，法庭；球场；王宫，宫廷；朝臣；全体审判人员；庭院，院子；董事（会），理事（会）；（用于大型宅第和公寓街区的名称中）宅第，公寓大楼",
+    "synonyms": [],
+    "antonyms": [],
+    "forms": {
+      "plural": "courts",
+      "thirdPerson": "courts",
+      "presentParticiple": "courting",
+      "past": "courted",
+      "pastParticiple": "courted"
+    },
+    "roots": [],
+    "phonics": [
+      {
+        "syllable": "court",
+        "ipa": "/kɔːt/"
+      }
+    ]
   }
 }
