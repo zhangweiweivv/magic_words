@@ -80,7 +80,10 @@
         <div class="question-hint">填写缺失的字母</div>
         
         <!-- 交互式填空 -->
-        <div class="fill-blank-letters">
+        <div
+          class="fill-blank-letters"
+          :style="{ '--letter-count': currentQuestion.letters.length }"
+        >
           <template v-for="(letter, idx) in currentQuestion.letters" :key="idx">
             <span v-if="!letter.isBlank" class="letter-fixed">{{ letter.char }}</span>
             <input
@@ -946,32 +949,45 @@ onMounted(() => {
   margin: 15px 0;
 }
 
-/* 拼写补全交互式填空 */
+/* 拼写补全交互式填空（单词始终一行显示） */
 .fill-blank-letters {
+  /* 依据字母数量动态调整格子/字体大小，保证不换行 */
+  --letter-count: 8;
+  --gap: clamp(2px, 0.6vw, 4px);
+  --tile-size: clamp(18px, calc((100vw - 80px) / (var(--letter-count) + 1)), 36px);
+  --tile-h: calc(var(--tile-size) * 1.22);
+  --tile-font: calc(var(--tile-size) * 0.78);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: var(--gap);
   margin: 25px 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .letter-fixed {
-  width: 36px;
-  height: 44px;
-  line-height: 44px;
+  flex: 0 0 auto;
+  width: var(--tile-size);
+  height: var(--tile-h);
+  line-height: var(--tile-h);
   text-align: center;
-  font-size: 28px;
+  font-size: var(--tile-font);
   font-weight: bold;
   color: var(--ocean-light, #5DADE2);
   font-family: 'Courier New', monospace;
 }
 
 .letter-input {
-  width: 36px;
-  height: 44px;
+  flex: 0 0 auto;
+  width: var(--tile-size);
+  height: var(--tile-h);
+  padding: 0;
   text-align: center;
-  font-size: 28px;
+  font-size: var(--tile-font);
   font-weight: bold;
   border: 2px solid var(--ocean-medium, #2E6B8A);
   border-radius: 8px;
@@ -980,6 +996,7 @@ onMounted(() => {
   font-family: 'Courier New', monospace;
   outline: none;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .letter-input:focus {

@@ -3,7 +3,10 @@
     <div class="question-meaning">{{ question.meaning }}</div>
     <div class="question-hint">填写缺失的字母</div>
 
-    <div class="fill-blank-letters">
+    <div
+      class="fill-blank-letters"
+      :style="{ '--letter-count': hintLetters.length }"
+    >
       <template v-for="(letter, idx) in hintLetters" :key="idx">
         <span v-if="!letter.isBlank" class="letter-fixed">{{ letter.char }}</span>
         <input
@@ -159,20 +162,31 @@ defineExpose({
 }
 
 .fill-blank-letters {
+  /* 依据字母数量动态调整格子/字体大小，保证不换行 */
+  --letter-count: 8;
+  --gap: clamp(2px, 0.6vw, 4px);
+  --tile-size: clamp(18px, calc((100vw - 80px) / (var(--letter-count) + 1)), 36px);
+  --tile-h: calc(var(--tile-size) * 1.22);
+  --tile-font: calc(var(--tile-size) * 0.78);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: var(--gap);
   margin: 22px 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .letter-fixed {
-  width: 36px;
-  height: 44px;
-  line-height: 44px;
+  flex: 0 0 auto;
+  width: var(--tile-size);
+  height: var(--tile-h);
+  line-height: var(--tile-h);
   text-align: center;
-  font-size: 28px;
+  font-size: var(--tile-font);
   font-weight: bold;
   color: var(--ocean-pale);
   font-family: 'Courier New', monospace;
@@ -180,10 +194,12 @@ defineExpose({
 }
 
 .letter-input {
-  width: 36px;
-  height: 44px;
+  flex: 0 0 auto;
+  width: var(--tile-size);
+  height: var(--tile-h);
+  padding: 0;
   text-align: center;
-  font-size: 28px;
+  font-size: var(--tile-font);
   font-weight: bold;
   border: 2px solid var(--ocean-pale);
   border-radius: 8px;
@@ -192,6 +208,7 @@ defineExpose({
   font-family: 'Courier New', monospace;
   outline: none;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .letter-input:focus {
