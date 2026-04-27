@@ -430,7 +430,7 @@ import { pointsApi } from '../api/points'
 import { backupApi } from '../api/backup'
 
 // 验证状态
-const verified = ref(false)
+const verified = ref(true)
 const password = ref('')
 const errorMsg = ref('')
 
@@ -587,6 +587,10 @@ function logout() {
   verified.value = false
   password.value = ''
 }
+
+onMounted(() => {
+  loadData()
+})
 
 async function loadData() {
   try {
